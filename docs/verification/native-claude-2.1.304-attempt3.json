@@ -1,0 +1,141 @@
+{
+  "attempts": [
+    {
+      "actual_models": [
+        "claude-opus-5-5"
+      ],
+      "automatic_retries": 0,
+      "cancellation_requested": false,
+      "event_counts": {
+        "assistant": 7,
+        "rate_limit_event": 1,
+        "result:success": 1,
+        "system:hook_response": 1,
+        "system:hook_started": 1,
+        "system:init": 1,
+        "system:thinking_tokens": 7,
+        "user": 4
+      },
+      "execution_outcome": "completed",
+      "followup_available": true,
+      "kind": "production_edit_test_repair",
+      "known_fixture_test_failure_count": 1,
+      "known_fixture_test_success_count": 1,
+      "known_missing_python_command_count": 0,
+      "launch_count": 1,
+      "possible_partial_effects": true,
+      "raw_output_retained": false,
+      "reason": "exited",
+      "result_unavailable": false,
+      "returncode": 0,
+      "runtime_metadata": {
+        "actual_model": "claude-opus-5-5",
+        "configuration_sources": [
+          "native_user",
+          "native_project",
+          "operator_environment_names"
+        ],
+        "exit_status": 0,
+        "permission_denial_count": 0,
+        "tool_error_count": 1
+      },
+      "session_id_sha256": [
+        "9574bf45a666cde2b78d0e82b7f05cc7cdd4b5fbd5ee973643039b7f8c20f2ba"
+      ],
+      "state": "completed",
+      "stderr_bytes": 333,
+      "stdout_bytes": 34234,
+      "terminal": {
+        "is_error": false,
+        "keys": [
+          "duration_api_ms",
+          "duration_ms",
+          "is_error",
+          "modelUsage",
+          "num_turns",
+          "permission_denials",
+          "result",
+          "session_id",
+          "subtype",
+          "total_cost_usd",
+          "type",
+          "usage",
+          "uuid"
+        ],
+        "num_turns": 5,
+        "permission_denial_count": 0,
+        "permission_denial_shapes": [],
+        "subtype": "success"
+      },
+      "terminal_result_count": 1,
+      "tool_use_counts": {
+        "Bash": 2,
+        "Edit": 1,
+        "Read": 1
+      }
+    },
+    {
+      "automatic_retries": 0,
+      "cancellation_requested": true,
+      "execution_outcome": "cancelled",
+      "followup_available": false,
+      "kind": "production_cancel_after_mutation",
+      "launch_count": 1,
+      "partial_effect_present": true,
+      "possible_partial_effects": true,
+      "raw_output_retained": false,
+      "reason": "cancelled",
+      "result_unavailable": true,
+      "runtime_metadata": {},
+      "state": "cancelled",
+      "synthetic_descendant_alive_after_cleanup": false
+    }
+  ],
+  "auth_material_read_or_copied": false,
+  "candidate_admission_override": "harness_only_no_global_policy_changes",
+  "candidate_prior_evidence_sha256": "e1ae1184b60ade8f0eced4b7dd01faab46adec89f9345b67b836b56f010522fe",
+  "cleanup_process_group_absent": [
+    true,
+    true
+  ],
+  "environment_values_recorded": false,
+  "executable_sha256": "b9ac5374839f14abf3f1f45610637c332b5daee5ce0d1634726cef87aab78e6a",
+  "fixture_changed": true,
+  "fixture_final_test_passed": true,
+  "fixture_initial_test_failed": true,
+  "hooks": {
+    "event_counts": {
+      "PostToolUse": 3,
+      "PreToolUse": 4,
+      "SessionStart": 1
+    },
+    "scope_denial_count": 0
+  },
+  "host_configuration_changed": false,
+  "maximum_model_invocations": 2,
+  "model_invocations_submitted": 2,
+  "native_arguments": [
+    "--print",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--permission-prompts",
+    "none"
+  ],
+  "native_auth_location_preserved": true,
+  "native_recipe_sha256": "de885baaadfdf5810321e32992c7e961f3a360dda90b903ab98ffc243564885e",
+  "observed_version": "2.1.304 (Claude Code)",
+  "offline_exact_shell_fixture": {
+    "command_not_found": false,
+    "exit_status": 1,
+    "expected_test_failure_observed": true
+  },
+  "pool_running_after_cancel": 0,
+  "project_leases_after_cancel": 0,
+  "schema_version": 1,
+  "scope": "candidate_production_registry_runtime_pool_task_manager",
+  "synthetic_mcp": {
+    "inherited_sentinel_matches": false
+  },
+  "timestamp_utc": "2026-11-01T05:29:03.846281+00:00"
+}

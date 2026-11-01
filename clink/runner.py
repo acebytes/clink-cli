@@ -156,6 +156,7 @@ class ProcessPool:
         request_id: str,
         metadata: dict[str, Any] | None = None,
         prelaunch: Callable[[], None] | None = None,
+        on_started: Callable[[], None] | None = None,
     ) -> ProcessOutput:
         if os.name != "posix":
             raise BackendError("unsupported_platform", "Delegation requires verified POSIX process-group cleanup.")
@@ -204,12 +205,16 @@ class ProcessPool:
                             continue
                     process = spawn.result()
                     self._children.add(process)
+                    if on_started is not None:
+                        on_started()
                     raise
             except FileNotFoundError as exc:
                 raise BackendError("cli_missing", "The admitted CLI executable is unavailable.") from exc
             except (PermissionError, OSError) as exc:
                 raise BackendError("invalid_config", "The CLI executable could not be launched.") from exc
             self._children.add(process)
+            if on_started is not None:
+                on_started()
             assert process.stdin is not None and process.stdout is not None and process.stderr is not None
             tasks = [
                 asyncio.create_task(self._read(process.stdout)),

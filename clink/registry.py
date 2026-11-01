@@ -18,7 +18,7 @@ from clink.constants import (
     USER_CONFIG_DIR,
     CLIInternalDefaults,
 )
-from clink.models import CLIClientConfig, CLIRoleConfig, ResolvedCLIClient, ResolvedCLIRole
+from clink.models import CLIClientConfig, CLIRoleConfig, ResolvedCLIClient, ResolvedCLIRole, ResolvedNativeTask
 from utils.env import get_env
 
 logger = logging.getLogger("clink.registry")
@@ -175,6 +175,20 @@ class ClinkRegistry:
             )
         if not any(working_dir == root or root in working_dir.parents for root in roots):
             raise RegistryLoadError(f"working_dir is outside allowed_roots in {source_path}")
+        native_task = None
+        if raw.native_task is not None:
+            if adapter != "claude":
+                raise RegistryLoadError(f"Native task profiles currently require the claude adapter in {source_path}")
+            native_roles = raw.native_task.roles
+            if raw.native_task.enabled and "default" not in native_roles:
+                raise RegistryLoadError(f"An enabled native task profile requires a default role in {source_path}")
+            native_task = ResolvedNativeTask(
+                enabled=raw.native_task.enabled,
+                inherit_env=tuple(raw.native_task.inherit_env),
+                required_env=tuple(raw.native_task.required_env),
+                roles=self._resolve_role_mapping(native_roles, defaults, source_path, adapter, native=True),
+                default_model=raw.native_task.default_model,
+            )
         return ResolvedCLIClient(
             name=raw.name,
             adapter=adapter,
@@ -189,6 +203,7 @@ class ClinkRegistry:
             runner=defaults.runner,
             roles=self._resolve_roles(raw, defaults, source_path, adapter),
             default_model=raw.default_model,
+            native_task=native_task,
         )
 
     def _resolve_executable(self, raw: CLIClientConfig, adapter: str, source_path: Path) -> tuple[str, ...]:
@@ -228,12 +243,25 @@ class ClinkRegistry:
     ) -> dict[str, ResolvedCLIRole]:
         roles = dict(raw.roles)
         roles.setdefault("default", CLIRoleConfig())
+        return self._resolve_role_mapping(roles, defaults, source_path, adapter)
+
+    def _resolve_role_mapping(
+        self,
+        roles: dict[str, CLIRoleConfig],
+        defaults: CLIInternalDefaults,
+        source_path: Path,
+        adapter: str,
+        *,
+        native: bool = False,
+    ) -> dict[str, ResolvedCLIRole]:
         resolved: dict[str, ResolvedCLIRole] = {}
         for name, config in roles.items():
+            if native and (config.role_args or config.prompt_path is None):
+                raise RegistryLoadError(f"Native roles require prompt_path and no role_args in {source_path}")
             self._validate_args(config.role_args, adapter, f"role_args for role '{name}'", source_path)
             candidate = config.prompt_path if config.prompt_path is not None else defaults.default_role_prompt
             if not candidate:
-                raise RegistryLoadError(f"Role '{name}' for CLI '{raw.name}' requires prompt_path")
+                raise RegistryLoadError(f"Role '{name}' requires prompt_path in {source_path}")
             prompt_path = self._resolve_path(candidate, source_path.parent)
             try:
                 if not prompt_path.is_file():

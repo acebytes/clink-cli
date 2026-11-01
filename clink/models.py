@@ -9,6 +9,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 _NAME_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")
+_ENVIRONMENT_NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,127}$")
 
 
 def _validate_name(value: str) -> str:
@@ -53,6 +54,43 @@ class CLIRoleConfig(BaseModel):
     _validate_native_model = field_validator("model")(_validate_model)
 
 
+class NativeTaskConfig(BaseModel):
+    """Opt-in task profile; inherited environment is configured by name only."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    enabled: bool = False
+    inherit_env: list[str] = Field(default_factory=list, max_length=128)
+    required_env: list[str] = Field(default_factory=list, max_length=128)
+    roles: dict[str, CLIRoleConfig] = Field(default_factory=dict, max_length=64)
+    default_model: str | None = None
+
+    _validate_native_model = field_validator("default_model")(_validate_model)
+
+    @field_validator("inherit_env", "required_env")
+    @classmethod
+    def _environment_names(cls, names: list[str]) -> list[str]:
+        for name in names:
+            if not _ENVIRONMENT_NAME.fullmatch(name) or name.startswith("CLINK_"):
+                raise ValueError("native environment entries must be valid names outside the server namespace")
+        if len(names) != len(set(names)):
+            raise ValueError("native environment names must be unique")
+        return names
+
+    @field_validator("roles")
+    @classmethod
+    def _role_names(cls, roles: dict[str, CLIRoleConfig]) -> dict[str, CLIRoleConfig]:
+        for name in roles:
+            _validate_name(name)
+        return roles
+
+    @model_validator(mode="after")
+    def _required_are_inherited(self) -> NativeTaskConfig:
+        if not set(self.required_env).issubset(self.inherit_env):
+            raise ValueError("required_env names must also appear in inherit_env")
+        return self
+
+
 class CLIClientConfig(BaseModel):
     """Raw version-one manifest; every recognized field is validated explicitly."""
 
@@ -69,6 +107,7 @@ class CLIClientConfig(BaseModel):
     timeout_seconds: int | None = Field(default=None, gt=0, le=1800)
     roles: dict[str, CLIRoleConfig] = Field(default_factory=dict)
     default_model: str | None = None
+    native_task: NativeTaskConfig | None = None
 
     _validate_client_name = field_validator("name")(_validate_name)
     _validate_native_model = field_validator("default_model")(_validate_model)
@@ -94,6 +133,18 @@ class ResolvedCLIRole(BaseModel):
     model: str | None = None
 
 
+class ResolvedNativeTask(BaseModel):
+    """Native capability profile, separate from advisory configuration."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    enabled: bool = False
+    inherit_env: tuple[str, ...] = ()
+    required_env: tuple[str, ...] = ()
+    roles: dict[str, ResolvedCLIRole] = Field(default_factory=dict)
+    default_model: str | None = None
+
+
 class ResolvedCLIClient(BaseModel):
     """Frozen runtime fields; backend targets additionally snapshot nested mappings."""
 
@@ -112,6 +163,7 @@ class ResolvedCLIClient(BaseModel):
     runner: str | None = None
     roles: dict[str, ResolvedCLIRole]
     default_model: str | None = None
+    native_task: ResolvedNativeTask | None = None
     output_to_file: None = None
 
     @model_validator(mode="before")

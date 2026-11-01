@@ -15,15 +15,22 @@ CATALOG = "clink/resources/codex-0.166.0-models-direct.json"
 CATALOG_SHA256 = "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12"
 REQUIRED_RESOURCES = (
     CATALOG,
+    "clink/resources/native-claude-2.1.304-admission.json",
     "clink/resources/CODEX-LICENSE",
     "clink/resources/CODEX-NOTICE",
     "clink/resources/PROVENANCE.md",
     "conf/cli_clients/codex.json",
     "conf/cli_clients/claude.json",
     "conf/cli_clients/gemini.json",
+    "conf/cli_clients/agy.json",
+    "conf/cli_clients/grok.json",
     "systemprompts/clink/default.txt",
     "systemprompts/clink/default_planner.txt",
+    "systemprompts/clink/default_codereviewer.txt",
     "systemprompts/clink/codex_codereviewer.txt",
+    "systemprompts/clink/native_default.txt",
+    "systemprompts/clink/native_planner.txt",
+    "systemprompts/clink/native_codereviewer.txt",
 )
 
 

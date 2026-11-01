@@ -6,6 +6,22 @@
   "default_model": "sonnet",
   "additional_args": [],
   "env": {},
+  "native_task": {
+    "enabled": true,
+    "inherit_env": [],
+    "required_env": [],
+    "roles": {
+      "default": {
+        "prompt_path": "../../systemprompts/clink/native_default.txt"
+      },
+      "planner": {
+        "prompt_path": "../../systemprompts/clink/native_planner.txt"
+      },
+      "codereviewer": {
+        "prompt_path": "../../systemprompts/clink/native_codereviewer.txt"
+      }
+    }
+  },
   "roles": {
     "default": {
       "prompt_path": "../../systemprompts/clink/default.txt",

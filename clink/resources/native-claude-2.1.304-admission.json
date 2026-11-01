@@ -1,0 +1,99 @@
+{
+  "actual_models": [
+    "claude-opus-5-5"
+  ],
+  "adapter": "claude",
+  "attempt_history": [
+    {
+      "outcome": "Standalone partial: hooks, native followup and permission denial observed; native preapproval ineffective, no edit/MCP/subagent or cancellation mutation; explicit invalid-flag failure retained.",
+      "path": "docs/verification/native-claude-2.1.304-attempt1.json"
+    },
+    {
+      "outcome": "Production partial: edit, hook, subagent, MCP/environment, followup and permission denial passed; bare python unavailable caused actual shell tests and mutation/cancellation to fail. This receipt is not standalone admission.",
+      "path": "docs/verification/native-claude-2.1.304-attempt2.json"
+    },
+    {
+      "outcome": "Production repair: offline exact shell/interpreter diagnosis before calls, native failing-then-passing tests, edit and cancellation after mutation with descendant/group cleanup passed; prior successful capability evidence reused because binary and recipe were unchanged.",
+      "path": "docs/verification/native-claude-2.1.304-attempt3.json"
+    }
+  ],
+  "budget": {
+    "automatic_retries": 0,
+    "maximum_seconds_per_native_invocation": 180,
+    "native_agent_tool_invocations_observed": 1,
+    "native_subagent_api_requests": "not separately observed or counted; internal model requests and native turns may exceed top-level invocations",
+    "non_inference_invalid_flag_launches": 1,
+    "top_level_native_model_invocations": 10
+  },
+  "documentation_sources": [
+    "https://code.claude.com/docs/en/headless",
+    "https://code.claude.com/docs/en/permissions",
+    "https://code.claude.com/docs/en/settings",
+    "https://code.claude.com/docs/en/hooks",
+    "https://code.claude.com/docs/en/sub-agents",
+    "https://code.claude.com/docs/en/mcp",
+    "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md"
+  ],
+  "executable_sha256": "b9ac5374839f14abf3f1f45610637c332b5daee5ce0d1634726cef87aab78e6a",
+  "fixture_protective_controls": "Project PreToolUse hook permits only exact synthetic file/tool/foreground-agent/MCP operations, asks for the synthetic permission target, and denies unrelated operations. No host configuration was edited and no bypass or configuration-disabling flags were used.",
+  "gates": {
+    "actual_native_edit_and_failing_then_passing_test": true,
+    "cancel_cleanup_released_processes_and_ownership": true,
+    "exact_installed_version_and_binary": true,
+    "explicit_cli_error_no_retry": true,
+    "native_followup_preserved_session_and_context": true,
+    "native_mcp_executed_with_inherited_environment": true,
+    "native_project_hook_executed": true,
+    "native_subagent_executed": true,
+    "no_automatic_retry_in_any_attempt": true,
+    "permission_needed_without_write_or_retry": true,
+    "production_cancel_after_mutation": true,
+    "production_recipe_matches_current": true
+  },
+  "limitations": [
+    "Checks cover this installed macOS Claude binary and synthetic operations; normal native permissions and configuration remain authoritative for other projects.",
+    "Normal HOME/configuration and subscription authentication were preserved. The native CLI may retain its ordinary private session/cache files; those files were not read or exported by the verifier.",
+    "Configured discovery was preserved and synthetic project hooks/subagent/MCP were exercised. This does not assert that every installed user plugin or integration was independently exercised.",
+    "Cancellation preserved the known mutation and stopped the observed synthetic descendant/process groups. It does not roll back file/external effects or prove cleanup of detached descendants or remote MCP work.",
+    "Completed execution does not establish task fulfillment; agent-reported claims remain unverified unless independently checked.",
+    "Native image transport and headless approval relays were not verified. Missing/expired server records do not establish execution outcome.",
+    "Admission remains pending genuine independent review; earlier failed/partial attempts and consumed invocations were preserved."
+  ],
+  "model_selection": "No explicit --model was passed; native CLI configuration selected the observed model.",
+  "native_arguments": [
+    "--print",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--permission-prompts",
+    "none"
+  ],
+  "observed_version": "2.1.304 (Claude Code)",
+  "privacy": {
+    "credential_material_read_or_copied": false,
+    "environment_values_recorded": false,
+    "host_configuration_edited": false,
+    "known_synthetic_sentinel_checks": "booleans and bounded counts only",
+    "raw_sessions_prompts_tool_inputs_results_retained_in_evidence": false,
+    "session_identifiers": "sha256 only"
+  },
+  "profile": "native_task_v1",
+  "recipe_sha256": "de885baaadfdf5810321e32992c7e961f3a360dda90b903ab98ffc243564885e",
+  "schema_version": 1,
+  "source_evidence": [
+    {
+      "path": "docs/verification/native-claude-2.1.304-attempt1.json",
+      "sha256": "6096bb4b0a473826e87d6159d4759bf384979cd51a873a5df4b1d663b1561e5e"
+    },
+    {
+      "path": "docs/verification/native-claude-2.1.304-attempt2.json",
+      "sha256": "e1ae1184b60ade8f0eced4b7dd01faab46adec89f9345b67b836b56f010522fe"
+    },
+    {
+      "path": "docs/verification/native-claude-2.1.304-attempt3.json",
+      "sha256": "7fde0a7b620454dacac05413abf397e11db0402f463b2ea8484f44e65b47f68f"
+    }
+  ],
+  "status": "runtime_checks_passed_pending_independent_review",
+  "verification_path": "Actual ClinkRegistry, CLIBackend, NativeRuntime.run, ProcessPool and NativeTaskManager start/status/followup/cancel; harness-only candidate _policy override; global production policy was not changed."
+}

@@ -1,0 +1,312 @@
+{
+  "attempts": [
+    {
+      "actual_models": [
+        "claude-opus-5-5"
+      ],
+      "automatic_retries": 0,
+      "duration_seconds": 12.183,
+      "event_counts": {
+        "assistant": 5,
+        "rate_limit_event": 1,
+        "result:success": 1,
+        "system:hook_response": 1,
+        "system:hook_started": 1,
+        "system:init": 1,
+        "system:permission_denied": 1,
+        "system:thinking_tokens": 3,
+        "user": 2
+      },
+      "kind": "edit_test_hook_subagent_mcp",
+      "launch_count": 1,
+      "malformed_line_count": 0,
+      "process_group_absent_after_cleanup": true,
+      "raw_output_retained": false,
+      "reason": "exited",
+      "returncode": 0,
+      "session_id_sha256": [
+        "4e3421e626985bf923069003ee1ad05601d4e16675b8fb584ef6898256ed4f27"
+      ],
+      "stderr_bytes": 333,
+      "stderr_sha256": "98c01e46661846d9c18ca6c746e326b1224796aec007d87590eca6c496aebce2",
+      "stdout_bytes": 28246,
+      "terminal": {
+        "is_error": false,
+        "keys": [
+          "duration_api_ms",
+          "duration_ms",
+          "is_error",
+          "modelUsage",
+          "num_turns",
+          "permission_denials",
+          "result",
+          "session_id",
+          "subtype",
+          "total_cost_usd",
+          "type",
+          "usage",
+          "uuid"
+        ],
+        "num_turns": 3,
+        "permission_denial_count": 1,
+        "permission_denial_shapes": [
+          [
+            "tool_input",
+            "tool_name",
+            "tool_use_id"
+          ]
+        ],
+        "subtype": "success"
+      },
+      "terminal_result_count": 1,
+      "tool_use_counts": {
+        "Bash": 1,
+        "Read": 1
+      }
+    },
+    {
+      "actual_models": [
+        "claude-opus-5-5"
+      ],
+      "automatic_retries": 0,
+      "context_token_matches": true,
+      "duration_seconds": 4.097,
+      "event_counts": {
+        "assistant": 1,
+        "rate_limit_event": 1,
+        "result:success": 1,
+        "system:hook_response": 1,
+        "system:hook_started": 1,
+        "system:init": 1
+      },
+      "kind": "native_followup",
+      "launch_count": 1,
+      "malformed_line_count": 0,
+      "process_group_absent_after_cleanup": true,
+      "raw_output_retained": false,
+      "reason": "exited",
+      "returncode": 0,
+      "same_native_session": true,
+      "session_id_sha256": [
+        "4e3421e626985bf923069003ee1ad05601d4e16675b8fb584ef6898256ed4f27"
+      ],
+      "stderr_bytes": 333,
+      "stderr_sha256": "98c01e46661846d9c18ca6c746e326b1224796aec007d87590eca6c496aebce2",
+      "stdout_bytes": 15837,
+      "terminal": {
+        "is_error": false,
+        "keys": [
+          "duration_api_ms",
+          "duration_ms",
+          "is_error",
+          "modelUsage",
+          "num_turns",
+          "permission_denials",
+          "result",
+          "session_id",
+          "subtype",
+          "total_cost_usd",
+          "type",
+          "usage",
+          "uuid"
+        ],
+        "num_turns": 1,
+        "permission_denial_count": 0,
+        "permission_denial_shapes": [],
+        "subtype": "success"
+      },
+      "terminal_result_count": 1,
+      "tool_use_counts": {}
+    },
+    {
+      "actual_models": [
+        "claude-opus-5-5"
+      ],
+      "automatic_retries": 0,
+      "duration_seconds": 6.825,
+      "event_counts": {
+        "assistant": 2,
+        "rate_limit_event": 1,
+        "result:success": 1,
+        "system:hook_response": 1,
+        "system:hook_started": 1,
+        "system:init": 1,
+        "system:permission_denied": 1,
+        "user": 1
+      },
+      "kind": "permission_needed",
+      "launch_count": 1,
+      "malformed_line_count": 0,
+      "process_group_absent_after_cleanup": true,
+      "protected_file_absent": true,
+      "raw_output_retained": false,
+      "reason": "exited",
+      "returncode": 0,
+      "session_id_sha256": [
+        "c2c8c77eae75514bdf8ec92a38fab6032492828d596f4d2726cc164028982217"
+      ],
+      "stderr_bytes": 333,
+      "stderr_sha256": "98c01e46661846d9c18ca6c746e326b1224796aec007d87590eca6c496aebce2",
+      "stdout_bytes": 21253,
+      "terminal": {
+        "is_error": false,
+        "keys": [
+          "duration_api_ms",
+          "duration_ms",
+          "is_error",
+          "modelUsage",
+          "num_turns",
+          "permission_denials",
+          "result",
+          "session_id",
+          "subtype",
+          "total_cost_usd",
+          "type",
+          "usage",
+          "uuid"
+        ],
+        "num_turns": 2,
+        "permission_denial_count": 1,
+        "permission_denial_shapes": [
+          [
+            "tool_input",
+            "tool_name",
+            "tool_use_id"
+          ]
+        ],
+        "subtype": "success"
+      },
+      "terminal_result_count": 1,
+      "tool_use_counts": {
+        "Write": 1
+      }
+    },
+    {
+      "actual_models": [
+        "claude-opus-5-5"
+      ],
+      "automatic_retries": 0,
+      "duration_seconds": 9.958,
+      "event_counts": {
+        "assistant": 3,
+        "rate_limit_event": 1,
+        "result:success": 1,
+        "system:hook_response": 1,
+        "system:hook_started": 1,
+        "system:init": 1,
+        "system:permission_denied": 1,
+        "user": 1
+      },
+      "kind": "cancel_after_mutation",
+      "launch_count": 1,
+      "malformed_line_count": 0,
+      "partial_effect_present": false,
+      "process_group_absent_after_cleanup": true,
+      "raw_output_retained": false,
+      "reason": "exited",
+      "returncode": 0,
+      "session_id_sha256": [
+        "191a338e2c4979d42ca2e2c18b58585da6748cdcfd2f5dc8d9e5f78de4c2e7df"
+      ],
+      "stderr_bytes": 333,
+      "stderr_sha256": "98c01e46661846d9c18ca6c746e326b1224796aec007d87590eca6c496aebce2",
+      "stdout_bytes": 22049,
+      "terminal": {
+        "is_error": false,
+        "keys": [
+          "duration_api_ms",
+          "duration_ms",
+          "is_error",
+          "modelUsage",
+          "num_turns",
+          "permission_denials",
+          "result",
+          "session_id",
+          "subtype",
+          "total_cost_usd",
+          "type",
+          "usage",
+          "uuid"
+        ],
+        "num_turns": 2,
+        "permission_denial_count": 1,
+        "permission_denial_shapes": [
+          [
+            "tool_input",
+            "tool_name",
+            "tool_use_id"
+          ]
+        ],
+        "subtype": "success"
+      },
+      "terminal_result_count": 1,
+      "tool_use_counts": {
+        "Bash": 1
+      }
+    },
+    {
+      "actual_models": [],
+      "automatic_retries": 0,
+      "duration_seconds": 0.075,
+      "event_counts": {},
+      "kind": "explicit_cli_error_no_retry",
+      "launch_count": 1,
+      "malformed_line_count": 0,
+      "process_group_absent_after_cleanup": true,
+      "raw_output_retained": false,
+      "reason": "exited",
+      "returncode": 1,
+      "session_id_sha256": [],
+      "stderr_bytes": 58,
+      "stderr_sha256": "6b3e7c206f7055d0d7704ad729c6dcaa1983fad726a06902c560653860a75c07",
+      "stdout_bytes": 0,
+      "terminal_result_count": 0,
+      "tool_use_counts": {}
+    }
+  ],
+  "auth_material_read_or_copied": false,
+  "environment_names": [
+    "CLINK_DELEGATION_DEPTH",
+    "CLINK_NATIVE_VERIFY_SENTINEL",
+    "HOME",
+    "LANG",
+    "LC_ALL",
+    "LC_CTYPE",
+    "LOGNAME",
+    "PATH",
+    "TMPDIR",
+    "USER"
+  ],
+  "environment_values_recorded": false,
+  "executable_sha256": "b9ac5374839f14abf3f1f45610637c332b5daee5ce0d1634726cef87aab78e6a",
+  "fixture_changed": false,
+  "fixture_final_test_passed": false,
+  "fixture_initial_test_failed": true,
+  "hooks": {
+    "event_counts": {
+      "PostToolUse": 1,
+      "PreToolUse": 2,
+      "SessionStart": 1
+    },
+    "scope_denial_count": 0
+  },
+  "host_configuration_changed": false,
+  "maximum_model_invocations": 4,
+  "model_invocations_submitted": 4,
+  "native_arguments": [
+    "--print",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--permission-prompts",
+    "none"
+  ],
+  "native_auth_location_preserved": true,
+  "observed_version": "2.1.304 (Claude Code)",
+  "schema_version": 1,
+  "scope": "standalone_native_cli_synthetic_project",
+  "synthetic_mcp": {
+    "inherited_sentinel_matches": false
+  },
+  "timestamp_utc": "2026-11-01T05:21:58.478141+00:00"
+}
