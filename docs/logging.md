@@ -1,5 +1,7 @@
 # Logging
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 ## Quick Start - Follow Logs
 
 The easiest way to monitor logs is to use the `-f` flag when starting the server:

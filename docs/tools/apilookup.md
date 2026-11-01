@@ -1,5 +1,7 @@
 # API Lookup Tool
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](../getting-started.md), [CLI configuration](../cli-configuration.md), [migration](../migration.md), and the live tool schemas for current behavior.
+
 The `apilookup` tool ensures you get **current, accurate API/SDK documentation** by forcing the AI to search for the latest information rather than relying on outdated training data. This is especially critical for OS-tied APIs (iOS, macOS, Android, etc.) where the AI's knowledge cutoff may be months or years old.
 Most importantly, it does this within in a sub-process / sub-agent, saving you precious tokens within your working context window. 
 

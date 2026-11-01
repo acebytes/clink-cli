@@ -1,5 +1,7 @@
 # WSL (Windows Subsystem for Linux) Setup Guide
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 This guide provides detailed instructions for setting up PAL MCP Server on Windows using WSL.
 
 ## Prerequisites for WSL

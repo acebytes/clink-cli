@@ -1,0 +1,41 @@
+{
+  "runtime": "docker",
+  "python": "3.12.15",
+  "native_cli_calls": 0,
+  "transport": "MCP stdio",
+  "provider_credentials_supplied": false,
+  "network_denied": true,
+  "server_name": "clink-mcp-server",
+  "tool_count": 18,
+  "tools": [
+    "analyze",
+    "apilookup",
+    "challenge",
+    "chat",
+    "clink",
+    "codereview",
+    "consensus",
+    "debug",
+    "docgen",
+    "listmodels",
+    "planner",
+    "precommit",
+    "refactor",
+    "secaudit",
+    "testgen",
+    "thinkdeep",
+    "tracer",
+    "version"
+  ],
+  "local_calls": [
+    "version",
+    "listmodels",
+    "challenge",
+    "planner",
+    "docgen",
+    "tracer"
+  ],
+  "missing_cli_error": "cli_missing",
+  "healthcheck_exit_code": 0,
+  "container_user_network_readonly": "clink none true"
+}

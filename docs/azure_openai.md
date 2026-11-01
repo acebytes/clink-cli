@@ -1,5 +1,7 @@
 # Azure OpenAI Configuration
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 Azure OpenAI support lets PAL MCP talk to GPT-4o, GPT-4.1, GPT-5, and o-series deployments that you expose through your Azure resource. This guide describes the configuration expected by the server: a couple of required environment variables plus a JSON manifest that lists every deployment you want to expose.
 
 ## 1. Required Environment Variables

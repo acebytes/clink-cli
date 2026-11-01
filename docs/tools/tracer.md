@@ -1,5 +1,7 @@
 # Tracer Tool - Static Code Analysis Prompt Generator
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](../getting-started.md), [CLI configuration](../cli-configuration.md), [migration](../migration.md), and the live tool schemas for current behavior.
+
 **Creates detailed analysis prompts for call-flow mapping and dependency tracing**
 
 The `tracer` tool is a specialized prompt-generation tool that creates structured analysis requests for Claude to perform comprehensive static code analysis. Rather than passing entire projects to another model, this tool generates focused prompts that Claude can use to efficiently trace execution flows and map dependencies within the codebase.

@@ -1,5 +1,7 @@
 # Locale Configuration for PAL MCP Server
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 This guide explains how to configure and use the localization feature to customize the language of responses from MCP tools.
 
 ## Overview

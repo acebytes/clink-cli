@@ -1,0 +1,188 @@
+Ignoring tomli: markers 'python_version < "3.11"' don't match your environment
+Collecting mcp<2,>=1.0.0 (from -r requirements.txt (line 1))
+  Downloading mcp-1.30.0-py3-none-any.whl.metadata (9.3 kB)
+Collecting pydantic>=2.0.0 (from -r requirements.txt (line 2))
+  Downloading pydantic-2.14.2-py3-none-any.whl.metadata (137 kB)
+Collecting python-dotenv>=1.0.0 (from -r requirements.txt (line 3))
+  Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+Collecting pytest>=7.4.0 (from -r requirements-dev.txt (line 1))
+  Downloading pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+Collecting pytest-asyncio>=0.21.0 (from -r requirements-dev.txt (line 2))
+  Downloading pytest_asyncio-1.4.1-py3-none-any.whl.metadata (4.4 kB)
+Collecting pytest-mock>=3.11.0 (from -r requirements-dev.txt (line 3))
+  Downloading pytest_mock-3.17.0-py3-none-any.whl.metadata (3.9 kB)
+Collecting black>=23.0.0 (from -r requirements-dev.txt (line 4))
+  Downloading black-26.10.1-py3-none-any.whl.metadata (108 kB)
+Collecting ruff>=0.1.0 (from -r requirements-dev.txt (line 5))
+  Downloading ruff-0.17.3-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (20 kB)
+Collecting isort>=5.12.0 (from -r requirements-dev.txt (line 6))
+  Downloading isort-9.0.2-py3-none-any.whl.metadata (11 kB)
+Collecting build>=1.0.0 (from -r requirements-dev.txt (line 7))
+  Downloading build-1.6.1-py3-none-any.whl.metadata (5.6 kB)
+Collecting anyio>=4.5 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+Collecting httpx-sse>=0.4 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading httpx_sse-0.4.3-py3-none-any.whl.metadata (9.7 kB)
+Collecting httpx<1.0.0,>=0.27.1 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+Collecting jsonschema>=4.20.0 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)
+Collecting pydantic-settings>=2.5.2 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading pydantic_settings-2.16.2-py3-none-any.whl.metadata (4.0 kB)
+Collecting pyjwt>=2.10.1 (from pyjwt[crypto]>=2.10.1->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
+Collecting python-multipart>=0.0.9 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading python_multipart-0.0.33-py3-none-any.whl.metadata (6.3 kB)
+Collecting sse-starlette>=1.6.1 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading sse_starlette-3.6.0-py3-none-any.whl.metadata (15 kB)
+Collecting starlette>=0.27 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading starlette-1.10.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting typing-extensions>=4.9.0 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting typing-inspection>=0.4.1 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+Collecting uvicorn>=0.31.1 (from mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting annotated-types>=0.6.0 (from pydantic>=2.0.0->-r requirements.txt (line 2))
+  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.50.2 (from pydantic>=2.0.0->-r requirements.txt (line 2))
+  Downloading pydantic_core-2.50.2-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl.metadata (6.5 kB)
+Collecting iniconfig>=2 (from pytest>=7.4.0->-r requirements-dev.txt (line 1))
+  Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+Collecting packaging>=24 (from pytest>=7.4.0->-r requirements-dev.txt (line 1))
+  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting pluggy<2,>=1.6 (from pytest>=7.4.0->-r requirements-dev.txt (line 1))
+  Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+Collecting pygments>=2.15 (from pytest>=7.4.0->-r requirements-dev.txt (line 1))
+  Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting click>=8.0.0 (from black>=23.0.0->-r requirements-dev.txt (line 4))
+  Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Collecting mypy-extensions>=0.4.3 (from black>=23.0.0->-r requirements-dev.txt (line 4))
+  Downloading mypy_extensions-1.1.0-py3-none-any.whl.metadata (1.1 kB)
+Collecting pathspec>=1.0.0 (from black>=23.0.0->-r requirements-dev.txt (line 4))
+  Downloading pathspec-1.1.1-py3-none-any.whl.metadata (14 kB)
+Collecting platformdirs>=2 (from black>=23.0.0->-r requirements-dev.txt (line 4))
+  Downloading platformdirs-4.14.2-py3-none-any.whl.metadata (5.4 kB)
+Collecting pytokens~=0.4.0 (from black>=23.0.0->-r requirements-dev.txt (line 4))
+  Downloading pytokens-0.4.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (3.8 kB)
+Collecting pyproject_hooks (from build>=1.0.0->-r requirements-dev.txt (line 7))
+  Downloading pyproject_hooks-1.3.3-py3-none-any.whl.metadata (1.3 kB)
+Collecting idna>=2.8 (from anyio>=4.5->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Collecting certifi (from httpx<1.0.0,>=0.27.1->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
+Collecting httpcore==1.* (from httpx<1.0.0,>=0.27.1->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Collecting h11>=0.16 (from httpcore==1.*->httpx<1.0.0,>=0.27.1->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting attrs>=22.2.0 (from jsonschema>=4.20.0->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+Collecting jsonschema-specifications>=2023.03.6 (from jsonschema>=4.20.0->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+Collecting referencing>=0.28.4 (from jsonschema>=4.20.0->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+Collecting rpds-py>=0.25.0 (from jsonschema>=4.20.0->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading rpds_py-2026.9.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (4.1 kB)
+Collecting cryptography>=3.4.0 (from pyjwt[crypto]>=2.10.1->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_aarch64.whl.metadata (4.4 kB)
+Collecting cffi>=2.0.0 (from cryptography>=3.4.0->pyjwt[crypto]>=2.10.1->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading cffi-2.1.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl.metadata (2.5 kB)
+Collecting pycparser (from cffi>=2.0.0->cryptography>=3.4.0->pyjwt[crypto]>=2.10.1->mcp<2,>=1.0.0->-r requirements.txt (line 1))
+  Downloading pycparser-3.12-py3-none-any.whl.metadata (9.7 kB)
+Downloading mcp-1.30.0-py3-none-any.whl (234 kB)
+Downloading pydantic-2.14.2-py3-none-any.whl (490 kB)
+Downloading pydantic_core-2.50.2-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 27.2 MB/s eta 0:00:00
+Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+Downloading pytest-9.2.0-py3-none-any.whl (411 kB)
+Downloading pytest_asyncio-1.4.1-py3-none-any.whl (17 kB)
+Downloading pytest_mock-3.17.0-py3-none-any.whl (11 kB)
+Downloading black-26.10.1-py3-none-any.whl (239 kB)
+Downloading ruff-0.17.3-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (10.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.1/10.1 MB 22.0 MB/s eta 0:00:00
+Downloading isort-9.0.2-py3-none-any.whl (105 kB)
+Downloading build-1.6.1-py3-none-any.whl (31 kB)
+Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+Downloading click-8.5.0-py3-none-any.whl (125 kB)
+Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+Downloading httpx_sse-0.4.3-py3-none-any.whl (9.0 kB)
+Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+Downloading jsonschema-4.26.0-py3-none-any.whl (90 kB)
+Downloading mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)
+Downloading packaging-26.3-py3-none-any.whl (129 kB)
+Downloading pathspec-1.1.1-py3-none-any.whl (57 kB)
+Downloading platformdirs-4.14.2-py3-none-any.whl (35 kB)
+Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+Downloading pydantic_settings-2.16.2-py3-none-any.whl (81 kB)
+Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 58.4 MB/s eta 0:00:00
+Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+Downloading python_multipart-0.0.33-py3-none-any.whl (32 kB)
+Downloading pytokens-0.4.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (255 kB)
+Downloading sse_starlette-3.6.0-py3-none-any.whl (17 kB)
+Downloading starlette-1.10.0-py3-none-any.whl (80 kB)
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+Downloading pyproject_hooks-1.3.3-py3-none-any.whl (10 kB)
+Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_aarch64.whl (4.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.7/4.7 MB 44.9 MB/s eta 0:00:00
+Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+Downloading idna-3.20-py3-none-any.whl (69 kB)
+Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+Downloading referencing-0.37.0-py3-none-any.whl (26 kB)
+Downloading rpds_py-2026.9.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (373 kB)
+Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
+Downloading cffi-2.1.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (222 kB)
+Downloading pycparser-3.12-py3-none-any.whl (62 kB)
+Saved ./test_output/ci-linux-wheels/mcp-1.30.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pydantic-2.14.2-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pydantic_core-2.50.2-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl
+Saved ./test_output/ci-linux-wheels/python_dotenv-1.2.4-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pytest-9.2.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pytest_asyncio-1.4.1-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pytest_mock-3.17.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/black-26.10.1-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/ruff-0.17.3-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
+Saved ./test_output/ci-linux-wheels/isort-9.0.2-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/build-1.6.1-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/annotated_types-0.8.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/anyio-4.15.1-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/click-8.5.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/httpx-0.28.1-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/httpcore-1.0.9-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/httpx_sse-0.4.3-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/iniconfig-2.3.1-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/jsonschema-4.26.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/mypy_extensions-1.1.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/packaging-26.3-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pathspec-1.1.1-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/platformdirs-4.14.2-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pluggy-1.7.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pydantic_settings-2.16.2-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pygments-2.21.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pyjwt-2.15.1-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/python_multipart-0.0.33-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pytokens-0.4.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl
+Saved ./test_output/ci-linux-wheels/sse_starlette-3.6.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/starlette-1.10.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/typing_extensions-4.16.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/typing_inspection-0.4.4-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/uvicorn-0.54.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/pyproject_hooks-1.3.3-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/attrs-26.1.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/cryptography-50.0.2-cp311-abi3-manylinux_2_34_aarch64.whl
+Saved ./test_output/ci-linux-wheels/h11-0.16.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/idna-3.20-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/jsonschema_specifications-2025.9.1-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/referencing-0.37.0-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/rpds_py-2026.9.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
+Saved ./test_output/ci-linux-wheels/certifi-2026.10.23-py3-none-any.whl
+Saved ./test_output/ci-linux-wheels/cffi-2.1.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl
+Saved ./test_output/ci-linux-wheels/pycparser-3.12-py3-none-any.whl
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip

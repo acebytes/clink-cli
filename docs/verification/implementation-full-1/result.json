@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/d/Tools/clink-mcp-server/docs/baseline/2026-10-31/offline.sb",
+    "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/",
+    "-v",
+    "-m",
+    "not integration",
+    "-p",
+    "pytest_asyncio.plugin",
+    "-p",
+    "pytest_mock",
+    "--junitxml=/Users/d/Tools/clink-mcp-server/docs/verification/implementation-full-1/junit.xml"
+  ],
+  "cwd": "/Users/d/Tools/clink-mcp-server",
+  "exit_code": 2,
+  "duration_seconds": 0.901,
+  "environment_keys": [
+    "HOME",
+    "LANG",
+    "PAL_MCP_FORCE_ENV_OVERRIDE",
+    "PATH",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE"
+  ],
+  "network_blocked": true,
+  "unrelated_home_reads_denied": true
+}

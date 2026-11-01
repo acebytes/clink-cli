@@ -1,5 +1,7 @@
 # challenge - Challenge an approach or validate ideas with confidence
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](../getting-started.md), [CLI configuration](../cli-configuration.md), [migration](../migration.md), and the live tool schemas for current behavior.
+
 The `challenge` tool encourages thoughtful critical thinking instead of automatic agreement with the dreaded **You're absolutely right!** responses - especially 
 when you're not. This tool wraps your comment with instructions that prompt critical thinking and honest analysis instead of blind agreement.
 

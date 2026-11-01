@@ -1,5 +1,7 @@
 # HTTP Transport Recorder for Testing
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 A custom HTTP recorder for testing expensive API calls (like o3-pro) with real responses.
 
 ## Overview

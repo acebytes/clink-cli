@@ -1,0 +1,40 @@
+{
+  "recorded_at": "2026-11-01T01:41:06.395229+00:00",
+  "cli_name": "codex",
+  "selected_model": "gpt-6.1-sol",
+  "real_cli_opt_in": true,
+  "results": [
+    {
+      "tool": "chat",
+      "success": false,
+      "status": "error",
+      "error_code": "parse_error",
+      "remedy": null,
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "clink",
+      "success": false,
+      "status": "error",
+      "error_code": "parse_error",
+      "remedy": null,
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "thinkdeep",
+      "success": false,
+      "status": "error",
+      "error_code": "parse_error",
+      "remedy": null,
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "codereview",
+      "success": false,
+      "status": "error",
+      "error_code": "parse_error",
+      "remedy": null,
+      "fixture_unchanged": true
+    }
+  ]
+}

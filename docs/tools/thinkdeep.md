@@ -1,5 +1,7 @@
 # ThinkDeep Tool - Extended Reasoning Partner
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](../getting-started.md), [CLI configuration](../cli-configuration.md), [migration](../migration.md), and the live tool schemas for current behavior.
+
 **Get a second opinion to augment Claude's own extended thinking**
 
 The `thinkdeep` tool provides extended reasoning capabilities, offering a second perspective to augment Claude's analysis. It's designed to challenge assumptions, find edge cases, and provide alternative approaches to complex problems.

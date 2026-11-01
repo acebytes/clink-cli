@@ -1,0 +1,49 @@
+{
+  "recorded_at": "2026-11-01T02:01:56.100664+00:00",
+  "verification_only_search_override": true,
+  "mandatory_controls_unchanged": true,
+  "base_admission_sha256": "dde71d9ab47bdcb37405b151ae16240643e01065278cb570f16afeaedf5439c2",
+  "binary_sha256": "39acf979729dd290f9a24ee38b2914e036c91b65952872e28ae2a6b88a7db7c1",
+  "recipe_sha256": "4bf9a7fe0491e12965d5c36dd7ccc9d197dd271cdf57df378c68fc1b9e0dae16",
+  "resource_files": [
+    [
+      "clink/resources/codex-0.166.0-models-direct.json",
+      "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12"
+    ]
+  ],
+  "parser_hashes": {
+    "clink/parsers/base.py": "58b844ac99cefeb8297613b80352a97de7b3dd144d205cb70ef62baf13298086",
+    "clink/parsers/codex.py": "bfea486db130f30653e7f73f3a8dfa0f4bfb0e46dded3e240138debaf990e74f"
+  },
+  "success": true,
+  "status": "success",
+  "search_performed": true,
+  "sources": [
+    "https://github.com/modelcontextprotocol/docs/blob/main/introduction.mdx",
+    "https://huggingface.co/learn/context-course/unit2/introduction",
+    "https://www.anthropic.com/news/model-context-protocol",
+    "https://huggingface.co/learn/context-course/en/unit2/introduction",
+    "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2026-07-28/basic/index.mdx",
+    "https://cloud.google.com/discover/what-is-model-context-protocol",
+    "https://huggingface.co/model-context-protocol",
+    "https://docs.anthropic.com/en/docs/mcp",
+    "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/docs/2026-07-28/learn/architecture.mdx",
+    "https://blog.modelcontextprotocol.io/posts/2026-07-28/",
+    "https://modelcontextprotocol.info/specification/",
+    "https://www.oracle.com/webfolder/technetwork/slackimages/devrel/slides-devcoach-071025.pdf",
+    "https://ucilnica.fri.uni-lj.si/pluginfile.php/135779/mod_folder/content/0/NLP-12%20LLM-based%20agents.pdf",
+    "https://indico.cern.ch/event/1580741/contributions/6779379/attachments/3169224/5633694/MCP_Talk.pdf",
+    "https://agents4science.github.io/Class/Assets/Lecture_5_web.pdf",
+    "https://isomer-user-content.by.gov.sg/36/703ff9fe-9db1-4e09-98c2-89e3d7007ef0/Draft%20Addendum%20on%20Securing%20Agentic%20AI%20%5BFor%20Public%20Consultation%5D.pdf",
+    "https://machine-programming.github.io/lectures/lecture-9.pdf",
+    "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+    "https://www.itpro.com/technology/artificial-intelligence/what-is-model-context-protocol-mcp",
+    "https://arxiv.org/abs/2602.01129"
+  ],
+  "requested_model": "gpt-6.1-sol",
+  "actual_model": null,
+  "backend": {
+    "cli_name": "codex",
+    "role": "default"
+  }
+}

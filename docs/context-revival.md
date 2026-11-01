@@ -1,5 +1,7 @@
 # Context Revival: AI Memory Beyond Context Limits
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 ## **The Most Profound Feature: Context Revival After Reset**
 
 **This powerful feature cannot be highlighted enough**: The PAL MCP Server implements a simple continuation system that seemingly transcends Claude's context limitations. 

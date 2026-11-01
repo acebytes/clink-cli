@@ -1,5 +1,7 @@
 # Clink Tool - CLI-to-CLI Bridge
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](../getting-started.md), [CLI configuration](../cli-configuration.md), [migration](../migration.md), and the live tool schemas for current behavior.
+
 **Spawn AI subagents, connect external CLIs, orchestrate isolated contexts – all without leaving your session**
 
 The `clink` tool transforms your CLI into a multi-agent orchestrator. Launch isolated Codex instances from _within_ Codex, delegate to Gemini's 1M context, or run specialized Claude agents—all while preserving conversation continuity. Instead of context-switching or token bloat, spawn fresh subagents that handle complex tasks in isolation and return only the results you need.

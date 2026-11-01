@@ -1,18 +1,22 @@
-# PAL MCP Server Documentation
+# clink-mcp-server documentation
 
-_Formerly known as PAL MCP. See the short [name change note](name-change.md) for context._
+Current CLI-only setup and operation:
 
 | Document | Description |
-|----------|-------------|
-| [Getting Started](getting-started.md) | Installation paths, prerequisite setup, and first-run guidance. |
-| [Adding Providers](adding_providers.md) | How to register new AI providers and advertise capabilities. |
-| [Azure OpenAI](azure_openai.md) | Configure Azure deployments, capability overrides, and env mappings. |
-| [Model Ranking](model_ranking.md) | How intelligence scores translate into auto-mode ordering. |
-| [Custom Models](custom_models.md) | Configure OpenRouter/custom models and aliases. |
-| [Adding Tools](adding_tools.md) | Create new tools using the shared base classes. |
-| [Advanced Usage](advanced-usage.md) | Auto-mode tricks, workflow tools, and collaboration tips. |
-| [Configuration](configuration.md) | .env options, restriction policies, logging levels. |
-| [Testing](testing.md) | Test strategy, command cheats, and coverage notes. |
-| [Troubleshooting](troubleshooting.md) | Common issues and resolutions. |
+| --- | --- |
+| [Getting started](getting-started.md) | Explicit setup, stdio client connection, discovery, and first consultation. |
+| [CLI configuration](cli-configuration.md) | Strict manifests, native models, whole-client precedence, roots, roles, and execution bounds. |
+| [Migration from PAL](migration.md) | Changed configuration priority, removed provider routing, and continuation/launcher changes. |
+| [Codex/Claude policy verification](verification/cli-policy/README.md) | Version-bound Codex policy evidence, current admission status, preserved attempts, verified structured search, and Claude limitations. |
+| [Antigravity/Grok admission investigation](clink-cli-admission.md) | Installed identities and unresolved policy gates for these two unavailable CLIs. |
+| [Docker deployment](docker-deployment.md) | Stdio container packaging and native CLI limitations. |
+| [Implementation results](clink-implementation-results.md) | Integrated verification, preserved failures, and current delivery limits. |
+| [Development guide](../CLAUDE.md) | Current test commands, code map, diagnostics, and implementation guardrails. |
 
-Additional docs live in this directory; start with the table above to orient yourself.
+## Historical provenance
+
+The [PAL audit](clink-only-audit.md), [baseline](clink-only-baseline.md), and [review](clink-only-review.md) describe the pinned upstream source and preimplementation evidence. The [approved design](clink-only-design.md) and [implementation plan](clink-implementation-plan.md) record the migration's intended contracts. They do not replace current test/admission results.
+
+Retained upstream guides, including [provider configuration](configuration.md), [adding providers](adding_providers.md), [Azure OpenAI](azure_openai.md), [custom models](custom_models.md), [model ranking](model_ranking.md), [advanced usage](advanced-usage.md), and the older [tool reference](tools/), describe former PAL behavior. Provider credentials, automatic routing, permission flags, setup commands, and capability claims in those historical guides are not instructions for this fork. Use the current guides above and the server's tool schemas.
+
+Derived from PAL MCP Server, formerly Zen MCP. Copyright 2025 Beehive Innovations; [Apache 2.0 license](../LICENSE).

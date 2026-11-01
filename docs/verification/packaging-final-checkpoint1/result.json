@@ -1,0 +1,107 @@
+{
+  "image": "clink-mcp-server:packaging-final-checkpoint1",
+  "native_cli_calls": 0,
+  "provider_credentials_supplied": false,
+  "publishing_or_deployment": false,
+  "exit_code": 0,
+  "seconds": 30.793,
+  "commands": [
+    {
+      "step": "build",
+      "command": [
+        "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+        "-m",
+        "build",
+        "--outdir",
+        "/Users/d/Tools/clink-mcp-server/test_output/packaging-final-checkpoint1/dist"
+      ]
+    },
+    {
+      "step": "artifact-verification",
+      "command": [
+        "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+        "scripts/verify_distribution.py",
+        "/Users/d/Tools/clink-mcp-server/test_output/packaging-final-checkpoint1/dist"
+      ]
+    },
+    {
+      "step": "create-environment",
+      "command": [
+        "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+        "-m",
+        "venv",
+        "/Users/d/Tools/clink-mcp-server/test_output/packaging-final-checkpoint1/env"
+      ]
+    },
+    {
+      "step": "install-fresh-wheel",
+      "command": [
+        "/Users/d/Tools/clink-mcp-server/test_output/packaging-final-checkpoint1/env/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "/Users/d/Tools/clink-mcp-server/test_output/packaging-final-checkpoint1/dist/clink_mcp_server-0.1.0-py3-none-any.whl"
+      ]
+    },
+    {
+      "step": "fresh-runtime",
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "docs/baseline/2026-10-31/offline.sb",
+        "/Users/d/Tools/clink-mcp-server/test_output/packaging-final-checkpoint1/env/bin/python",
+        "test_output/package_check/smoke.py",
+        "--output",
+        "/Users/d/Tools/clink-mcp-server/docs/verification/packaging-final-checkpoint1/fresh-runtime.json"
+      ]
+    },
+    {
+      "step": "docker-build",
+      "command": [
+        "docker",
+        "build",
+        "--target",
+        "runtime",
+        "-t",
+        "clink-mcp-server:packaging-final-checkpoint1",
+        "."
+      ]
+    },
+    {
+      "step": "docker-runtime",
+      "command": [
+        "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+        "test_output/package_check/smoke.py",
+        "--docker",
+        "--image",
+        "clink-mcp-server:packaging-final-checkpoint1",
+        "--output",
+        "/Users/d/Tools/clink-mcp-server/docs/verification/packaging-final-checkpoint1/docker-runtime.json"
+      ]
+    },
+    {
+      "step": "docker-image",
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "--format",
+        "{{.Id}} {{.Os}} {{.Architecture}}",
+        "clink-mcp-server:packaging-final-checkpoint1"
+      ]
+    },
+    {
+      "step": "linux-offline",
+      "command": [
+        "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+        "test_output/run_linux_offline.py",
+        "linux-packaging-final-checkpoint1",
+        "--image",
+        "clink-mcp-server:packaging-final-checkpoint1"
+      ]
+    }
+  ],
+  "production_inputs_changed_during_run": [],
+  "linux_evidence": "docs/verification/linux-packaging-final-checkpoint1",
+  "production_tree_sha256": "db13f3e7b1b85aa93780269ac15933e93ea570a0b61ebcf7d30bd71c8d4b9118"
+}

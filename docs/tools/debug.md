@@ -1,5 +1,7 @@
 # Debug Tool - Systematic Investigation & Expert Analysis
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](../getting-started.md), [CLI configuration](../cli-configuration.md), [migration](../migration.md), and the live tool schemas for current behavior.
+
 **Step-by-step investigation followed by expert debugging assistance**
 
 The `debug` workflow guides Claude through a systematic investigation process where Claude performs methodical code 

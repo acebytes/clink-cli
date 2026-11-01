@@ -1,0 +1,70 @@
+{
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "none",
+    "--read-only",
+    "--tmpfs",
+    "/tmp:exec,nosuid,size=1g",
+    "--user",
+    "501:20",
+    "-e",
+    "HOME=/tmp/clink-home",
+    "-e",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "-e",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+    "-v",
+    "/Users/d/Tools/clink-mcp-server:/work:ro",
+    "-v",
+    "/Users/d/Tools/clink-mcp-server/docs/verification/linux-packaging-final-checkpoint1:/evidence",
+    "-w",
+    "/work",
+    "clink-mcp-server:packaging-final-checkpoint1",
+    "sh",
+    "-ec",
+    "mkdir -p \"$HOME\"\npython /work/test_output/linux-preflight.py\npython -m venv /tmp/test-venv\n/tmp/test-venv/bin/pip install --no-index --find-links /work/test_output/ci-linux-wheels -r requirements.txt -r requirements-dev.txt\n/tmp/test-venv/bin/python -m pytest tests/ -m \"not integration and not real_cli\" -p pytest_asyncio.plugin -p pytest_mock -p no:cacheprovider --junitxml=/evidence/junit.xml\n"
+  ],
+  "exit_code": 0,
+  "seconds": 9.349,
+  "image": "clink-mcp-server:packaging-final-checkpoint1",
+  "python": "3.12 Linux arm64",
+  "test_source_readonly": true,
+  "network": "none",
+  "synthetic_home": true,
+  "native_cli_calls": 0,
+  "credential_mounts": false,
+  "source_changes_during_run": []
+}
+tests/test_uvx_resource_packaging.py::test_cli_manifests_are_package_resources PASSED [ 97%]
+tests/test_uvx_resource_packaging.py::test_role_prompt_resources_resolve_relative_to_installed_manifests PASSED [ 97%]
+tests/test_uvx_resource_packaging.py::test_distribution_explicitly_excludes_provider_packages_and_catalogs PASSED [ 97%]
+tests/test_uvx_resource_packaging.py::test_pinned_codex_runtime_resource_survives_package_installation PASSED [ 97%]
+tests/test_uvx_resource_packaging.py::test_codex_resource_retains_license_notice_and_modification_provenance PASSED [ 97%]
+tests/test_uvx_support.py::test_package_has_clink_identity_entrypoint_and_supported_python_floor PASSED [ 97%]
+tests/test_uvx_support.py::test_dependencies_match_minimal_requirements_exactly PASSED [ 98%]
+tests/test_uvx_support.py::test_entrypoint_imports_from_arbitrary_cwd_without_keys_or_cli PASSED [ 98%]
+tests/test_uvx_support.py::test_optional_dotenv_fallback_preserves_runtime_environment PASSED [ 98%]
+tests/test_workflow_file_embedding.py::test_intermediate_step_references_files_without_read_or_launch[AnalyzeTool] PASSED [ 98%]
+tests/test_workflow_file_embedding.py::test_intermediate_step_references_files_without_read_or_launch[CodeReviewTool] PASSED [ 98%]
+tests/test_workflow_file_embedding.py::test_final_step_forwards_files_without_duplicate_embedding[CodeReviewTool] PASSED [ 98%]
+tests/test_workflow_file_embedding.py::test_final_step_forwards_files_without_duplicate_embedding[DebugIssueTool] PASSED [ 98%]
+tests/test_workflow_file_embedding.py::test_expert_files_are_unique_and_deterministic PASSED [ 98%]
+tests/test_workflow_file_embedding.py::test_admission_error_prevents_file_reads_and_launch PASSED [ 98%]
+tests/test_workflow_file_embedding.py::test_opt_out_keeps_final_files_local PASSED [ 98%]
+tests/test_workflow_metadata.py::test_workflow_metadata_in_response PASSED [ 99%]
+tests/test_workflow_metadata.py::test_workflow_metadata_in_error_response PASSED [ 99%]
+tests/test_workflow_metadata.py::test_local_workflow_metadata_does_not_invent_backend PASSED [ 99%]
+tests/test_workflow_metadata.py::test_workflow_metadata_preserves_existing_response_fields PASSED [ 99%]
+tests/test_workflow_prompt_size_validation_simple.py::test_workflow_tool_accepts_normal_step_content PASSED [ 99%]
+tests/test_workflow_prompt_size_validation_simple.py::test_workflow_tool_rejects_oversized_step_with_guidance PASSED [ 99%]
+tests/test_workflow_utf8.py::test_workflow_cli_preserves_french_findings_and_analysis[AnalyzeTool] PASSED [ 99%]
+tests/test_workflow_utf8.py::test_workflow_cli_preserves_french_findings_and_analysis[CodeReviewTool] PASSED [ 99%]
+tests/test_workflow_utf8.py::test_workflow_cli_preserves_french_findings_and_analysis[DebugIssueTool] PASSED [ 99%]
+tests/test_workflow_utf8.py::test_workflow_local_findings_preserve_unicode_without_launch PASSED [ 99%]
+tests/test_workflow_utf8.py::test_workflow_json_roundtrip_preserves_emoji_and_cjk PASSED [100%]
+
+------------------- generated xml file: /evidence/junit.xml --------------------
+=================== 1008 passed, 16 subtests passed in 5.75s ===================

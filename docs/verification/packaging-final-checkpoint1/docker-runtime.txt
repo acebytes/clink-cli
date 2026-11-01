@@ -1,0 +1,28 @@
+Warning: Could not set up file logging: [Errno 30] Read-only file system: '/usr/local/lib/python3.12/site-packages/logs'
+2026-11-01 02:07:22,771 - server - INFO - All tools enabled (DISABLED_TOOLS not set)
+2026-11-01 02:07:22,772 - server - INFO - clink-mcp-server starting version=0.1.0 tools=18
+2026-11-01 02:07:22,782 - mcp.server.lowlevel.server - INFO - Processing request of type ListToolsRequest
+2026-11-01 02:07:22,782 - server - INFO - MCP Client Connected: Claude
+2026-11-01 02:07:22,782 - mcp_activity - INFO - MCP_CLIENT_INFO: Claude (raw=mcp v0.1.0)
+2026-11-01 02:07:22,789 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-11-01 02:07:22,789 - server - INFO - tool_start request_id=91dd3627-df1b-4427-bee0-23d685b5a514 tool=version
+2026-11-01 02:07:22,789 - server - INFO - tool_end request_id=91dd3627-df1b-4427-bee0-23d685b5a514 tool=version duration=0.000 success=True
+2026-11-01 02:07:22,790 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-11-01 02:07:22,791 - server - INFO - tool_start request_id=2f924063-10f4-4963-89e7-f28aa6925e62 tool=listmodels
+2026-11-01 02:07:22,791 - server - INFO - tool_end request_id=2f924063-10f4-4963-89e7-f28aa6925e62 tool=listmodels duration=0.000 success=True
+2026-11-01 02:07:22,792 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-11-01 02:07:22,793 - server - INFO - tool_start request_id=b58a7680-61ac-4f21-99a4-13bea592fb2d tool=challenge
+2026-11-01 02:07:22,793 - server - INFO - tool_end request_id=b58a7680-61ac-4f21-99a4-13bea592fb2d tool=challenge duration=0.000 success=True
+2026-11-01 02:07:22,794 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-11-01 02:07:22,795 - server - INFO - tool_start request_id=e43f18dc-a6cf-4c74-a913-feacf47ae2ae tool=planner
+2026-11-01 02:07:22,795 - server - INFO - tool_end request_id=e43f18dc-a6cf-4c74-a913-feacf47ae2ae tool=planner duration=0.001 success=True
+2026-11-01 02:07:22,797 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-11-01 02:07:22,798 - server - INFO - tool_start request_id=cde98d47-1082-4d7a-849e-1eb7d813ec47 tool=docgen
+2026-11-01 02:07:22,798 - server - INFO - tool_end request_id=cde98d47-1082-4d7a-849e-1eb7d813ec47 tool=docgen duration=0.000 success=True
+2026-11-01 02:07:22,800 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-11-01 02:07:22,801 - server - INFO - tool_start request_id=3c6e47e2-11fd-43e3-b0dd-f1bf9c2fcaea tool=tracer
+2026-11-01 02:07:22,802 - server - INFO - tool_end request_id=3c6e47e2-11fd-43e3-b0dd-f1bf9c2fcaea tool=tracer duration=0.001 success=True
+2026-11-01 02:07:22,804 - mcp.server.lowlevel.server - INFO - Processing request of type CallToolRequest
+2026-11-01 02:07:22,804 - server - INFO - tool_start request_id=1dd28489-bd6c-4bcb-bce8-2e7885e7263d tool=clink
+2026-11-01 02:07:22,805 - server - INFO - tool_end request_id=1dd28489-bd6c-4bcb-bce8-2e7885e7263d tool=clink duration=0.000 success=False
+{"runtime": "docker", "python": "3.12.15", "native_cli_calls": 0, "transport": "MCP stdio", "provider_credentials_supplied": false, "network_denied": true, "catalog_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12", "server_name": "clink-mcp-server", "tool_count": 18, "tools": ["analyze", "apilookup", "challenge", "chat", "clink", "codereview", "consensus", "debug", "docgen", "listmodels", "planner", "precommit", "refactor", "secaudit", "testgen", "thinkdeep", "tracer", "version"], "local_calls": ["version", "listmodels", "challenge", "planner", "docgen", "tracer"], "missing_cli_error": "cli_missing", "healthcheck_exit_code": 0, "installed_resource_sdk_dependencies": {"catalog_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12", "sdk_absent": ["providers", "openai", "google"], "dependencies": [["PyJWT", "2.15.1"], ["annotated-types", "0.8.0"], ["anyio", "4.15.1"], ["attrs", "26.1.0"], ["certifi", "2026.10.23"], ["cffi", "2.1.1"], ["click", "8.5.0"], ["clink-mcp-server", "0.1.0"], ["cryptography", "50.0.2"], ["h11", "0.16.0"], ["httpcore", "1.0.9"], ["httpx", "0.28.1"], ["httpx-sse", "0.4.3"], ["idna", "3.20"], ["jsonschema", "4.26.0"], ["jsonschema-specifications", "2025.9.1"], ["mcp", "1.30.0"], ["pip", "25.0.1"], ["pycparser", "3.12"], ["pydantic", "2.14.2"], ["pydantic-settings", "2.16.2"], ["pydantic_core", "2.50.2"], ["python-dotenv", "1.2.4"], ["python-multipart", "0.0.33"], ["referencing", "0.37.0"], ["rpds-py", "2026.9.1"], ["sse-starlette", "3.6.0"], ["starlette", "1.10.0"], ["typing-inspection", "0.4.4"], ["typing_extensions", "4.16.0"], ["uvicorn", "0.54.0"]]}, "container_user_network_readonly": "clink none true"}

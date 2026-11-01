@@ -1,5 +1,7 @@
 # Gemini CLI Setup
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 > **Note**: While PAL MCP Server connects successfully to Gemini CLI, tool invocation is not working
 > correctly yet. We'll update this guide once the integration is fully functional.
 

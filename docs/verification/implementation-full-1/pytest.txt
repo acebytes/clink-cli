@@ -1,0 +1,43 @@
+/Users/d/Tools/clink-mcp-server/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.2.0, pluggy-1.7.0 -- /Users/d/Tools/clink-mcp-server/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/d/Tools/clink-mcp-server
+configfile: pytest.ini
+plugins: mock-3.17.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 902 items / 1 error / 2 deselected / 900 selected
+
+==================================== ERRORS ====================================
+__________________ ERROR collecting tests/test_clink_tool.py ___________________
+ImportError while importing test module '/Users/d/Tools/clink-mcp-server/tests/test_clink_tool.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.12/site-packages/_pytest/python.py:528: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.12/site-packages/_pytest/pathlib.py:640: in import_path
+    importlib.import_module(module_name)
+/opt/homebrew/Cellar/python@3.12/3.12.15/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+.venv/lib/python3.12/site-packages/_pytest/assertion/rewrite.py:185: in exec_module
+    exec(co, module.__dict__)
+tests/test_clink_tool.py:8: in <module>
+    from tools.clink import MAX_RESPONSE_CHARS, CLinkTool
+E   ImportError: cannot import name 'MAX_RESPONSE_CHARS' from 'tools.clink' (/Users/d/Tools/clink-mcp-server/tools/clink.py)
+- generated xml file: /Users/d/Tools/clink-mcp-server/docs/verification/implementation-full-1/junit.xml -
+=========================== short test summary info ============================
+ERROR tests/test_clink_tool.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+======================== 2 deselected, 1 error in 0.65s ========================

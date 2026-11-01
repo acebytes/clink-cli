@@ -1,0 +1,20 @@
+/Users/d/Tools/clink-mcp-server/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.2.0, pluggy-1.7.0
+rootdir: /Users/d/Tools/clink-mcp-server
+configfile: pytest.ini
+plugins: asyncio-1.4.1, platformdirs-4.14.2, mock-3.17.0, anyio-4.15.1
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 33 items
+
+tests/test_docker_implementation.py ........                             [ 24%]
+tests/test_docker_healthcheck.py ............                            [ 60%]
+tests/test_deploy_scripts.py ......                                      [ 78%]
+tests/test_uvx_resource_packaging.py ...                                 [ 87%]
+tests/test_uvx_support.py ....                                           [100%]
+
+- generated xml file: /Users/d/Tools/clink-mcp-server/docs/verification/packaging-2026-11-01/focused-unit.xml -
+============================== 33 passed in 1.12s ==============================

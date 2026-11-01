@@ -1,0 +1,32 @@
+{
+  "checks": [
+    {
+      "command": "env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest tests/test_cli_admission_policy.py -q -p pytest_asyncio.plugin -p pytest_mock",
+      "exit_code": 0,
+      "passed": 32
+    },
+    {
+      "command": ".venv/bin/ruff check scripts/verify_cli_policy.py tests/test_cli_admission_policy.py",
+      "exit_code": 0
+    },
+    {
+      "command": ".venv/bin/black --check scripts/verify_cli_policy.py tests/test_cli_admission_policy.py",
+      "exit_code": 0
+    },
+    {
+      "command": ".venv/bin/isort --check-only scripts/verify_cli_policy.py tests/test_cli_admission_policy.py",
+      "exit_code": 0
+    }
+  ],
+  "final_admission": {
+    "path": "codex-0.166.0-admission-v5-search.json",
+    "sha256": "43e1700703aba5b3034612eceed2ee04c5d135be45c99ca17458dbec909ceb69"
+  },
+  "no_additional_native_calls_after_final_confirmation": true,
+  "policy_recipe_sha256": "4bf9a7fe0491e12965d5c36dd7ccc9d197dd271cdf57df378c68fc1b9e0dae16",
+  "recorded_at_utc": "2026-11-01T02:06:39.110249+00:00",
+  "schema_version": 1,
+  "standing_authorization_handoff": "Routine verification repairs, review exports and bounded scope amendments were authorized; no repeated permission requests are needed for the same development scope. Native inference required verified isolation first; historical failed/invalidated evidence remains retained. No commits or host configuration edits were performed by this verifier task.",
+  "tests_sha256": "42f6d0cd05df7cb30449dd11160cc15c848554ecc7ab0f46e3ddfff7413479d3",
+  "verifier_sha256": "7dbbfa6d0b7131844e4a3ca84824ac0f035060474d890e3021a6f7a7ae665535"
+}

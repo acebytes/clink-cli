@@ -1,5 +1,7 @@
 # Adding Tools to PAL MCP Server
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 PAL MCP tools are Python classes that inherit from the shared infrastructure in `tools/shared/base_tool.py`.
 Every tool must provide a request model (Pydantic), a system prompt, and the methods the base class marks as
 abstract. The quickest path to a working tool is to copy an existing implementation that matches your use case

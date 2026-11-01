@@ -94,3 +94,5 @@ Retrieved through Context7 `/openai/codex` and `/websites/code_claude` during th
 - [Claude CLI restricted/safe/strict MCP controls](https://code.claude.com/docs/en/cli-reference), [managed precedence](https://code.claude.com/docs/en/managed-settings), and [all-hooks setting](https://code.claude.com/docs/en/settings-reference).
 
 The implementation/research delegation requested Sol 6.1/ultra; the independent read-only correctness review requested Sol 6.1/high. Effective agent runtime metadata was unavailable and remains unverified. The native Codex challenge explicitly requested `gpt-6.1-sol`/`high`; this is separate from delegation-runtime metadata and does not prove the provider's actual model identity.
+
+Final verifier checks are retained in `verification-results.json`: 32 focused tests passed, and Ruff, Black and isort checks passed. The final search aggregate was accepted by independent review. Runtime/catalog/parser changes are frozen; no further native calls were made after the final backend confirmation. Routine verification and review repairs had standing authorization, and all prior failures and invalidated admissions remain preserved.

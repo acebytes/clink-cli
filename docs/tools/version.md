@@ -1,5 +1,7 @@
 # Version Tool - Server Information
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](../getting-started.md), [CLI configuration](../cli-configuration.md), [migration](../migration.md), and the live tool schemas for current behavior.
+
 **Get server version, configuration details, and list of available tools**
 
 The `version` tool provides information about the PAL MCP Server version, configuration details, and system capabilities. This is useful for debugging, understanding server capabilities, and verifying your installation.

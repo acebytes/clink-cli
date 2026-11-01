@@ -1,0 +1,86 @@
+/Users/d/Tools/clink-mcp-server/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.2.0, pluggy-1.7.0 -- /Users/d/Tools/clink-mcp-server/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/d/Tools/clink-mcp-server
+configfile: pytest.ini
+plugins: mock-3.17.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 15 items
+
+tests/test_cli_stdio.py::test_mcp_stdio_discovery_local_workflows_and_errors PASSED [  6%]
+tests/test_cli_server.py::test_all_schemas_and_local_tools_without_provider_imports PASSED [ 13%]
+tests/test_cli_server.py::test_cross_tool_cross_cli_replay_and_native_model PASSED [ 20%]
+tests/test_cli_server.py::test_same_continuation_serialized_and_new_calls_independent PASSED [ 26%]
+tests/test_cli_server.py::test_missing_thread_and_private_arguments_fail_before_launch PASSED [ 33%]
+tests/test_cli_server.py::test_thinkdeep_opt_out_duplicate_and_conflict PASSED [ 40%]
+tests/test_cli_discovery.py::test_discovery_does_not_resolve_or_execute PASSED [ 46%]
+tests/test_cli_discovery.py::test_lookup_requests_verified_search_and_exposes_sources PASSED [ 53%]
+tests/test_cli_discovery.py::test_disabled_tools_and_metadata_schema_are_local PASSED [ 60%]
+tests/test_consensus_integration.py::test_server_keeps_cross_tool_history_private_and_restores_sequential_consensus PASSED [ 66%]
+tests/test_consensus_integration.py::test_server_exact_repeat_validates_context_without_relaunch PASSED [ 73%]
+tests/test_consensus_integration.py::test_server_partial_outcomes_are_terminal_failed_attempt_without_successful_turn PASSED [ 80%]
+tests/test_consensus_integration.py::test_partial_consensus_can_be_synthesized_cross_tool_without_disclosing_peer_history_to_consultants PASSED [ 86%]
+tests/test_consensus_integration.py::test_invalidated_consensus_verdicts_are_not_usable_cross_tool_history[parallel] PASSED [ 93%]
+tests/test_consensus_integration.py::test_invalidated_consensus_verdicts_are_not_usable_cross_tool_history[sequential] FAILED [100%]
+
+=================================== FAILURES ===================================
+_ test_invalidated_consensus_verdicts_are_not_usable_cross_tool_history[sequential] _
+tests/test_consensus_integration.py:175: in test_invalidated_consensus_verdicts_are_not_usable_cross_tool_history
+    assert "PEER_first" not in history
+E   AssertionError: assert 'PEER_first' not in '--- Turn 1 (Agent using consensus) ---\nFiles used in this turn: /private/tmp/pytest-of-d/pytest-242/test_invalidated_consensus_ver1/context.py\n\nEvaluate splitting the queue worker\n--- Turn 2 (Assistant using consensus) ---\nFiles used in this turn: /private/tmp/pytest-of-d/pytest-242/test_invalidated_consensus_ver1/context.py\n\n[Consensus invalidated: prior consultant verdicts are unusable; start a new consensus.]\n--- Turn 3 (Agent using consensus) ---\nPrivate notes summarize PEER_first for later synthesis.\n--- Turn 4 (Assistant using consensus) ---\n[Consensus invalidated: prior consultant verdicts are unusable; start a new consensus.]'
+E     
+E     'PEER_first' is contained here:
+E       --- Turn 1 (Agent using consensus) ---
+E       Files used in this turn: /private/tmp/pytest-of-d/pytest-242/test_invalidated_consensus_ver1/context.py
+E       
+E       Evaluate splitting the queue worker
+E       --- Turn 2 (Assistant using consensus) ---
+E       Files used in this turn: /private/tmp/pytest-of-d/pytest-242/test_invalidated_consensus_ver1/context.py
+E       
+E       [Consensus invalidated: prior consultant verdicts are unusable; start a new consensus.]
+E       --- Turn 3 (Agent using consensus) ---
+E       Private notes summarize PEER_first for later synthesis.
+E     ?                         ++++++++++
+E       --- Turn 4 (Assistant using consensus) ---
+E       [Consensus invalidated: prior consultant verdicts are unusable; start a new consensus.]
+----------------------------- Captured stderr call -----------------------------
+2026-10-31 18:33:55,657 - server - INFO - tool_start request_id=e6d497e9-3dca-46d7-bfa8-ee25c3907245 tool=consensus
+2026-10-31 18:33:55,660 - server - INFO - tool_end request_id=e6d497e9-3dca-46d7-bfa8-ee25c3907245 tool=consensus duration=0.003 success=True
+2026-10-31 18:33:55,660 - server - INFO - tool_start request_id=e13d8236-e1e3-494f-893f-792e8e1d7f79 tool=consensus
+2026-10-31 18:33:55,663 - server - INFO - tool_end request_id=e13d8236-e1e3-494f-893f-792e8e1d7f79 tool=consensus duration=0.003 success=True
+2026-10-31 18:33:55,663 - server - INFO - tool_start request_id=de1c2dfc-2a35-4362-a0e4-31a98c6b35ac tool=consensus
+2026-10-31 18:33:55,665 - server - INFO - tool_end request_id=de1c2dfc-2a35-4362-a0e4-31a98c6b35ac tool=consensus duration=0.001 success=False
+2026-10-31 18:33:55,665 - server - INFO - tool_start request_id=998344c6-5454-44dd-bd1a-a578d92529ba tool=clink
+2026-10-31 18:33:55,666 - server - INFO - tool_end request_id=998344c6-5454-44dd-bd1a-a578d92529ba tool=clink duration=0.001 success=True
+------------------------------ Captured log call -------------------------------
+INFO     server:server.py:616 tool_start request_id=e6d497e9-3dca-46d7-bfa8-ee25c3907245 tool=consensus
+INFO     server:server.py:628 tool_end request_id=e6d497e9-3dca-46d7-bfa8-ee25c3907245 tool=consensus duration=0.003 success=True
+INFO     server:server.py:616 tool_start request_id=e13d8236-e1e3-494f-893f-792e8e1d7f79 tool=consensus
+INFO     server:server.py:628 tool_end request_id=e13d8236-e1e3-494f-893f-792e8e1d7f79 tool=consensus duration=0.003 success=True
+INFO     server:server.py:616 tool_start request_id=de1c2dfc-2a35-4362-a0e4-31a98c6b35ac tool=consensus
+INFO     server:server.py:628 tool_end request_id=de1c2dfc-2a35-4362-a0e4-31a98c6b35ac tool=consensus duration=0.001 success=False
+INFO     server:server.py:616 tool_start request_id=998344c6-5454-44dd-bd1a-a578d92529ba tool=clink
+INFO     server:server.py:628 tool_end request_id=998344c6-5454-44dd-bd1a-a578d92529ba tool=clink duration=0.001 success=True
+- generated xml file: /Users/d/Tools/clink-mcp-server/docs/verification/stdio-checkpoint2/junit.xml -
+=========================== short test summary info ============================
+FAILED tests/test_consensus_integration.py::test_invalidated_consensus_verdicts_are_not_usable_cross_tool_history[sequential] - AssertionError: assert 'PEER_first' not in '--- Turn 1 (Agent using consensus) ---\nFiles used in this turn: /private/tmp/pytest-of-d/pytest-242/test_invalidated_consensus_ver1/context.py\n\nEvaluate splitting the queue worker\n--- Turn 2 (Assistant using consensus) ---\nFiles used in this turn: /private/tmp/pytest-of-d/pytest-242/test_invalidated_consensus_ver1/context.py\n\n[Consensus invalidated: prior consultant verdicts are unusable; start a new consensus.]\n--- Turn 3 (Agent using consensus) ---\nPrivate notes summarize PEER_first for later synthesis.\n--- Turn 4 (Assistant using consensus) ---\n[Consensus invalidated: prior consultant verdicts are unusable; start a new consensus.]'
+  
+  'PEER_first' is contained here:
+    --- Turn 1 (Agent using consensus) ---
+    Files used in this turn: /private/tmp/pytest-of-d/pytest-242/test_invalidated_consensus_ver1/context.py
+    
+    Evaluate splitting the queue worker
+    --- Turn 2 (Assistant using consensus) ---
+    Files used in this turn: /private/tmp/pytest-of-d/pytest-242/test_invalidated_consensus_ver1/context.py
+    
+    [Consensus invalidated: prior consultant verdicts are unusable; start a new consensus.]
+    --- Turn 3 (Agent using consensus) ---
+    Private notes summarize PEER_first for later synthesis.
+  ?                         ++++++++++
+    --- Turn 4 (Assistant using consensus) ---
+    [Consensus invalidated: prior consultant verdicts are unusable; start a new consensus.]
+========================= 1 failed, 14 passed in 0.84s =========================

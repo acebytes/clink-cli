@@ -1,5 +1,7 @@
 # Adding a New Provider
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 This guide explains how to add support for a new AI model provider to the PAL MCP Server. The provider system is designed to be extensible and follows a simple pattern.
 
 ## Overview

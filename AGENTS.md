@@ -5,36 +5,38 @@ See `requirements.txt` and `requirements-dev.txt`
 Also read CLAUDE.md and CLAUDE.local.md if available.
 
 ## Project Structure & Module Organization
-PAL MCP Server centers on `server.py`, which exposes MCP entrypoints and coordinates multi-model workflows. 
-Feature-specific tools live in `tools/`, provider integrations in `providers/`, and shared helpers in `utils/`. 
-Prompt and system context assets stay in `systemprompts/`, while configuration templates and automation scripts live under `conf/`, `scripts/`, and `docker/`. 
-Unit tests sit in `tests/`; simulator-driven scenarios and log utilities are in `simulator_tests/` with the `communication_simulator_test.py` harness. 
-Authoritative documentation and samples live in `docs/`, and runtime diagnostics are rotated in `logs/`.
+`clink-mcp-server` is an advisory CLI-only fork of PAL MCP Server. `server.py` exposes all 18 MCP tools; `tools/` preserves their schemas and caller-driven workflows. `clink/backend.py` resolves immutable requests through the strict manifest registry, adapter policy, bounded subprocess runner, and parsers. Shared continuation and workflow state lives in `utils/`.
+
+Prompts are under `systemprompts/`, bundled CLI manifests under `conf/cli_clients/`, and tests under `tests/`. Current setup/configuration docs are `docs/getting-started.md`, `docs/cli-configuration.md`, and `docs/migration.md`. Historical PAL audit/baseline/provider documents are provenance, not current execution guidance. Preserve Apache 2.0 and Copyright 2025 Beehive Innovations attribution.
 
 ## Build, Test, and Development Commands
-- `source .pal_venv/bin/activate` – activate the managed Python environment.
-- `./run-server.sh` – install dependencies, refresh `.env`, and launch the MCP server locally.
-- `./code_quality_checks.sh` – run Ruff autofix, Black, isort, and the default pytest suite.
-- `python communication_simulator_test.py --quick` – smoke-test orchestration across tools and providers.
-- `./run_integration_tests.sh [--with-simulator]` – exercise provider-dependent flows against remote or Ollama models.
+Use Python 3.10+; Python 3.12 is the tested runtime.
 
-Run code quality checks:
-```bash
-.pal_venv/bin/activate && ./code_quality_checks.sh
+```sh
+# Explicit setup only: creates .venv if absent and installs runtime requirements.
+./run-server.sh --setup
+
+# Ordinary MCP stdio launch; does not install packages or rewrite configuration.
+./run-server.sh
+
+# Development dependencies and nonintegration verification.
+.venv/bin/python -m pip install -r requirements-dev.txt
+.venv/bin/python -m pytest tests/test_clink_backend.py -q
+.venv/bin/python -m pytest tests/ -v -m "not integration"
+.venv/bin/python -m ruff check .
+.venv/bin/python -m black --check .
+.venv/bin/python -m isort --check-only .
 ```
 
-For example, this is how we run an individual / all tests:
-
-```bash
-.pal_venv/bin/activate && pytest tests/test_auto_mode_model_listing.py -q
-.pal_venv/bin/activate && pytest -q
-```
+Do not use old `.pal_venv` instructions or automatic provider installers. Native CLI policy probes are separate opt-in checks, may incur usage, and require established protective controls before a model call. Read `scripts/verify_cli_policy.py --help` through the managed Python before an authorized probe. Keep all prior failure receipts; do not fabricate admission or retry silently.
 
 ## Coding Style & Naming Conventions
-Target Python 3.9+ with Black and isort using a 120-character line limit; Ruff enforces pycodestyle, pyflakes, bugbear, comprehension, and pyupgrade rules. Prefer explicit type hints, snake_case modules, and imperative commit-time docstrings. Extend workflows by defining hook or abstract methods instead of checking `hasattr()`/`getattr()`—inheritance-backed contracts keep behavior discoverable and testable.
+Target Python 3.10+ with Black and isort using a 120-character line limit; Ruff enforces pycodestyle, pyflakes, bugbear, comprehension, and pyupgrade rules. Prefer explicit type hints, snake_case modules, and imperative commit-time docstrings. Extend workflows by defining hook or abstract methods instead of checking `hasattr()`/`getattr()`—inheritance-backed contracts keep behavior discoverable and testable.
 
 ## Testing Guidelines
-Mirror production modules inside `tests/` and name tests `test_<behavior>` or `Test<Feature>` classes. Run `python -m pytest tests/ -v -m "not integration"` before every commit, adding `--cov=. --cov-report=html` for coverage-sensitive changes. Use `python communication_simulator_test.py --verbose` or `--individual <case>` to validate cross-agent flows, and reserve `./run_integration_tests.sh` for provider or transport modifications. Capture relevant excerpts from `logs/mcp_server.log` or `logs/mcp_activity.log` when documenting failures.
+Mirror production modules inside `tests/` and name tests `test_<behavior>` or `Test<Feature>` classes. Run `.venv/bin/python -m pytest tests/ -v -m "not integration"` before every commit; add coverage for coverage-sensitive changes. Use synthetic executables/fixtures for parser, runner, state, cancellation, and error cases. Local discovery must work without provider credentials or installed CLIs. Do not count retired hosted-provider simulator scenarios as CLI coverage.
+
+Live CLI checks are explicitly opt-in, use disposable synthetic workspaces, and must record the installed version, policy recipe, actual model when available, no-write/hook/MCP results, and cancellation evidence. Keep credentials, user records, prompts, and raw session bodies out of tracked evidence and logs. Relevant runtime diagnostics are rotated under `logs/`; report bounded technical excerpts only.
 
 ## Commit & Pull Request Guidelines
 Follow Conventional Commits: `type(scope): summary`, where `type` is one of `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, or `chore`. Keep commits focused, referencing issues or simulator cases when helpful. Pull requests should outline intent, list validation commands executed, flag configuration or tool toggles, and attach screenshots or log snippets when user-visible behavior changes.
@@ -99,4 +101,6 @@ gh pr merge <pr-number>
 Install GitHub CLI: `brew install gh` (macOS) or visit https://cli.github.com for other platforms.
 
 ## Security & Configuration Tips
-Store API keys and provider URLs in `.env` or your MCP client config; never commit secrets or generated log artifacts. Use `run-server.sh` to regenerate environments and verify connectivity after dependency changes. When adding providers or tools, sanitize prompts and responses, document required environment variables in `docs/`, and update `claude_config_example.json` if new capabilities ship by default.
+Native CLIs own authentication; the server does not require hosted-provider API keys. Never commit secrets or generated logs. The launcher must not copy credentials, refresh `.env`, register MCP clients, or change native CLI configuration. Optional server settings are documented in `.env.example`; manifests follow whole-client precedence in `docs/cli-configuration.md`.
+
+Keep advisory policy enforced in the shared backend: no project edits, mutating shell tools, recursive delegation, inherited MCP, hooks/plugins, unsafe extra arguments, automatic retry, or provider fallback. Installed binaries and operator-reported login do not prove admission. Keep unverified adapters unavailable. Approved roots constrain server-supplied context, not every native filesystem read; disclose read scope honestly. Changes to authority, state, subprocess cleanup, or bounds require focused regression coverage.

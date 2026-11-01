@@ -1,5 +1,7 @@
 # Secaudit Tool - Comprehensive Security Audit
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](../getting-started.md), [CLI configuration](../cli-configuration.md), [migration](../migration.md), and the live tool schemas for current behavior.
+
 **Systematic OWASP-based security assessment with compliance evaluation through workflow-driven investigation**
 
 The `secaudit` tool provides comprehensive security auditing capabilities with systematic OWASP Top 10 assessment, compliance framework evaluation, 

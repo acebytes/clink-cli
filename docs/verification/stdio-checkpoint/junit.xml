@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="14" time="0.819" timestamp="2026-10-31T18:33:28.030852-07:00" hostname="studio192.local"><testcase classname="tests.test_cli_stdio" name="test_mcp_stdio_discovery_local_workflows_and_errors" time="0.382"><failure message="AssertionError('(\'docgen\', [TextContent(type=\'text\', text=&quot;Input validation error: \'document_complexity\' is a required property&quot;, annotations=None, meta=None)])\nassert not True\n +  where True = CallToolResult(meta=None, content=[TextContent(type=\'text\', text=&quot;Input validation error: \'document_complexity\' is a required property&quot;, annotations=None, meta=None)], structuredContent=None, isError=True).isError') [single exception in ExceptionGroup]">+ Exception Group Traceback (most recent call last):
+  |   File "/Users/d/Tools/clink-mcp-server/tests/test_cli_stdio.py", line 27, in test_mcp_stdio_discovery_local_workflows_and_errors
+  |     async with stdio_client(parameters) as (read, write):
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/opt/homebrew/Cellar/python@3.12/3.12.15/Frameworks/Python.framework/Versions/3.12/lib/python3.12/contextlib.py", line 231, in __aexit__
+  |     await self.gen.athrow(value)
+  |   File "/Users/d/Tools/clink-mcp-server/.venv/lib/python3.12/site-packages/mcp/client/stdio/__init__.py", line 183, in stdio_client
+  |     anyio.create_task_group() as tg,
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/Users/d/Tools/clink-mcp-server/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Exception Group Traceback (most recent call last):
+    |   File "/Users/d/Tools/clink-mcp-server/tests/test_cli_stdio.py", line 28, in test_mcp_stdio_discovery_local_workflows_and_errors
+    |     async with ClientSession(read, write) as session:
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/d/Tools/clink-mcp-server/.venv/lib/python3.12/site-packages/mcp/shared/session.py", line 238, in __aexit__
+    |     return await self._task_group.__aexit__(exc_type, exc_val, exc_tb)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/Users/d/Tools/clink-mcp-server/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 847, in __aexit__
+    |     raise BaseExceptionGroup(
+    | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+    +-+---------------- 1 ----------------
+      | Traceback (most recent call last):
+      |   File "/Users/d/Tools/clink-mcp-server/tests/test_cli_stdio.py", line 66, in test_mcp_stdio_discovery_local_workflows_and_errors
+      |     assert not response.isError, (name, response.content)
+      | AssertionError: ('docgen', [TextContent(type='text', text="Input validation error: 'document_complexity' is a required property", annotations=None, meta=None)])
+      | assert not True
+      |  +  where True = CallToolResult(meta=None, content=[TextContent(type='text', text="Input validation error: 'document_complexity' is a required property", annotations=None, meta=None)], structuredContent=None, isError=True).isError
+      +------------------------------------</failure></testcase><testcase classname="tests.test_cli_server" name="test_all_schemas_and_local_tools_without_provider_imports" time="0.004" /><testcase classname="tests.test_cli_server" name="test_cross_tool_cross_cli_replay_and_native_model" time="0.028" /><testcase classname="tests.test_cli_server" name="test_same_continuation_serialized_and_new_calls_independent" time="0.052" /><testcase classname="tests.test_cli_server" name="test_missing_thread_and_private_arguments_fail_before_launch" time="0.003" /><testcase classname="tests.test_cli_server" name="test_thinkdeep_opt_out_duplicate_and_conflict" time="0.005" /><testcase classname="tests.test_cli_discovery" name="test_discovery_does_not_resolve_or_execute" time="0.003" /><testcase classname="tests.test_cli_discovery" name="test_lookup_requests_verified_search_and_exposes_sources" time="0.002" /><testcase classname="tests.test_cli_discovery" name="test_disabled_tools_and_metadata_schema_are_local" time="0.002" /><testcase classname="tests.test_consensus_integration" name="test_server_keeps_cross_tool_history_private_and_restores_sequential_consensus" time="0.007" /><testcase classname="tests.test_consensus_integration" name="test_server_exact_repeat_validates_context_without_relaunch" time="0.008" /><testcase classname="tests.test_consensus_integration" name="test_server_partial_outcomes_are_terminal_failed_attempt_without_successful_turn" time="0.004" /><testcase classname="tests.test_consensus_integration" name="test_partial_consensus_can_be_synthesized_cross_tool_without_disclosing_peer_history_to_consultants" time="0.005" /><testcase classname="tests.test_consensus_integration" name="test_invalidated_consensus_verdicts_are_not_usable_cross_tool_history" time="0.007" /></testsuite></testsuites>

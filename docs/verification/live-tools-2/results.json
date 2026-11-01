@@ -1,0 +1,349 @@
+{
+  "recorded_at": "2026-11-01T01:59:12.381874+00:00",
+  "cli_name": "codex",
+  "selected_model": "gpt-6.1-sol",
+  "real_cli_opt_in": true,
+  "python_version": "3.12.15",
+  "smoke_script_sha256": "ebbacf37b47e9f5b9c7cef5186c3dca1236c69b1990c35bf1c0064ecefe79c1c",
+  "results": [
+    {
+      "tool": "chat",
+      "status": "continuation_available",
+      "success": true,
+      "requested_model": "gpt-6.1-sol",
+      "actual_model": null,
+      "backend": {
+        "cli_name": "codex",
+        "role": "default"
+      },
+      "verification_status": "verified",
+      "sources": [],
+      "warnings": [
+        {
+          "code": "native_filesystem_access_disabled",
+          "message": "Native shell tools are disabled; declared regular files are supplied inline."
+        }
+      ],
+      "expert_analysis_present": false,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "clink",
+      "status": "continuation_available",
+      "success": true,
+      "requested_model": "gpt-6.1-sol",
+      "actual_model": null,
+      "backend": {
+        "cli_name": "codex",
+        "role": "default"
+      },
+      "verification_status": "verified",
+      "sources": [],
+      "warnings": [
+        {
+          "code": "native_filesystem_access_disabled",
+          "message": "Native shell tools are disabled; declared regular files are supplied inline."
+        }
+      ],
+      "expert_analysis_present": false,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "thinkdeep",
+      "status": "calling_expert_analysis",
+      "success": true,
+      "requested_model": "gpt-6.1-sol",
+      "actual_model": null,
+      "backend": {
+        "cli_name": "codex",
+        "role": "default"
+      },
+      "verification_status": "verified",
+      "sources": [],
+      "warnings": [
+        {
+          "code": "native_filesystem_access_disabled",
+          "message": "Native shell tools are disabled; declared regular files are supplied inline."
+        }
+      ],
+      "expert_analysis_present": true,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "codereview",
+      "status": "calling_expert_analysis",
+      "success": true,
+      "requested_model": "gpt-6.1-sol",
+      "actual_model": null,
+      "backend": {
+        "cli_name": "codex",
+        "role": "default"
+      },
+      "verification_status": "verified",
+      "sources": [],
+      "warnings": [
+        {
+          "code": "native_filesystem_access_disabled",
+          "message": "Native shell tools are disabled; declared regular files are supplied inline."
+        }
+      ],
+      "expert_analysis_present": true,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "precommit",
+      "status": "calling_expert_analysis",
+      "success": true,
+      "requested_model": "gpt-6.1-sol",
+      "actual_model": null,
+      "backend": {
+        "cli_name": "codex",
+        "role": "default"
+      },
+      "verification_status": "verified",
+      "sources": [],
+      "warnings": [
+        {
+          "code": "native_filesystem_access_disabled",
+          "message": "Native shell tools are disabled; declared regular files are supplied inline."
+        }
+      ],
+      "expert_analysis_present": true,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "debug",
+      "status": "calling_expert_analysis",
+      "success": true,
+      "requested_model": "gpt-6.1-sol",
+      "actual_model": null,
+      "backend": {
+        "cli_name": "codex",
+        "role": "default"
+      },
+      "verification_status": "verified",
+      "sources": [],
+      "warnings": [
+        {
+          "code": "native_filesystem_access_disabled",
+          "message": "Native shell tools are disabled; declared regular files are supplied inline."
+        }
+      ],
+      "expert_analysis_present": true,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "analyze",
+      "status": "calling_expert_analysis",
+      "success": true,
+      "requested_model": "gpt-6.1-sol",
+      "actual_model": null,
+      "backend": {
+        "cli_name": "codex",
+        "role": "default"
+      },
+      "verification_status": "verified",
+      "sources": [],
+      "warnings": [
+        {
+          "code": "native_filesystem_access_disabled",
+          "message": "Native shell tools are disabled; declared regular files are supplied inline."
+        }
+      ],
+      "expert_analysis_present": true,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "refactor",
+      "status": "calling_expert_analysis",
+      "success": true,
+      "requested_model": "gpt-6.1-sol",
+      "actual_model": null,
+      "backend": {
+        "cli_name": "codex",
+        "role": "default"
+      },
+      "verification_status": "verified",
+      "sources": [],
+      "warnings": [
+        {
+          "code": "native_filesystem_access_disabled",
+          "message": "Native shell tools are disabled; declared regular files are supplied inline."
+        }
+      ],
+      "expert_analysis_present": true,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "testgen",
+      "status": "calling_expert_analysis",
+      "success": true,
+      "requested_model": "gpt-6.1-sol",
+      "actual_model": null,
+      "backend": {
+        "cli_name": "codex",
+        "role": "default"
+      },
+      "verification_status": "verified",
+      "sources": [],
+      "warnings": [
+        {
+          "code": "native_filesystem_access_disabled",
+          "message": "Native shell tools are disabled; declared regular files are supplied inline."
+        }
+      ],
+      "expert_analysis_present": true,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "secaudit",
+      "status": "calling_expert_analysis",
+      "success": true,
+      "requested_model": "gpt-6.1-sol",
+      "actual_model": null,
+      "backend": {
+        "cli_name": "codex",
+        "role": "default"
+      },
+      "verification_status": "verified",
+      "sources": [],
+      "warnings": [
+        {
+          "code": "native_filesystem_access_disabled",
+          "message": "Native shell tools are disabled; declared regular files are supplied inline."
+        }
+      ],
+      "expert_analysis_present": true,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "consensus",
+      "status": "consensus_workflow_complete",
+      "success": true,
+      "requested_model": null,
+      "actual_model": null,
+      "backend": null,
+      "verification_status": null,
+      "sources": [],
+      "warnings": [],
+      "expert_analysis_present": false,
+      "participants": [
+        {
+          "status": "success",
+          "valid": true,
+          "requested_model": "gpt-6.1-sol",
+          "actual_model": null,
+          "backend": {
+            "cli_name": "codex",
+            "role": "default"
+          }
+        },
+        {
+          "status": "success",
+          "valid": true,
+          "requested_model": "gpt-6.1-sol",
+          "actual_model": null,
+          "backend": {
+            "cli_name": "codex",
+            "role": "default"
+          }
+        }
+      ],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "planner",
+      "status": "planning_complete",
+      "success": true,
+      "requested_model": null,
+      "actual_model": null,
+      "backend": null,
+      "verification_status": null,
+      "sources": [],
+      "warnings": [],
+      "expert_analysis_present": false,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "docgen",
+      "status": "documentation_analysis_complete",
+      "success": true,
+      "requested_model": null,
+      "actual_model": null,
+      "backend": null,
+      "verification_status": null,
+      "sources": [],
+      "warnings": [],
+      "expert_analysis_present": false,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "tracer",
+      "status": "tracing_complete",
+      "success": true,
+      "requested_model": null,
+      "actual_model": null,
+      "backend": null,
+      "verification_status": null,
+      "sources": [],
+      "warnings": [],
+      "expert_analysis_present": false,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "challenge",
+      "status": "challenge_accepted",
+      "success": true,
+      "requested_model": null,
+      "actual_model": null,
+      "backend": null,
+      "verification_status": null,
+      "sources": [],
+      "warnings": [],
+      "expert_analysis_present": false,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "listmodels",
+      "status": "success",
+      "success": true,
+      "requested_model": null,
+      "actual_model": null,
+      "backend": null,
+      "verification_status": null,
+      "sources": [],
+      "warnings": [],
+      "expert_analysis_present": false,
+      "participants": [],
+      "fixture_unchanged": true
+    },
+    {
+      "tool": "version",
+      "status": "success",
+      "success": true,
+      "requested_model": null,
+      "actual_model": null,
+      "backend": null,
+      "verification_status": null,
+      "sources": [],
+      "warnings": [],
+      "expert_analysis_present": false,
+      "participants": [],
+      "fixture_unchanged": true
+    }
+  ]
+}

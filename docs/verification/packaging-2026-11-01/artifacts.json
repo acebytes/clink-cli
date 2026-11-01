@@ -1,0 +1,20 @@
+{
+  "clink_mcp_server-0.1.0-py3-none-any.whl": {
+    "sha256": "2f2a33d8c1a8bf7fa586a8df3a43cabb1ad41ebf29b01c567a2aaffaa17b38d2",
+    "member_count": 92,
+    "provider_packages": false,
+    "provider_catalogs": false,
+    "cli_manifests": true,
+    "role_prompts": true,
+    "license": true
+  },
+  "clink_mcp_server-0.1.0.tar.gz": {
+    "sha256": "58a9a1d6dff6924632c1e1856fed4c983bf66fcdf6144f211c6ae9ccf8b72630",
+    "member_count": 113,
+    "provider_packages": false,
+    "provider_catalogs": false,
+    "cli_manifests": true,
+    "role_prompts": true,
+    "license": true
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "runtime": "docker",
+  "python": "3.12.15",
+  "native_cli_calls": 0,
+  "transport": "MCP stdio",
+  "provider_credentials_supplied": false,
+  "network_denied": true,
+  "catalog_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+  "server_name": "clink-mcp-server",
+  "tool_count": 18,
+  "tools": [
+    "analyze",
+    "apilookup",
+    "challenge",
+    "chat",
+    "clink",
+    "codereview",
+    "consensus",
+    "debug",
+    "docgen",
+    "listmodels",
+    "planner",
+    "precommit",
+    "refactor",
+    "secaudit",
+    "testgen",
+    "thinkdeep",
+    "tracer",
+    "version"
+  ],
+  "local_calls": [
+    "version",
+    "listmodels",
+    "challenge",
+    "planner",
+    "docgen",
+    "tracer"
+  ],
+  "missing_cli_error": "cli_missing",
+  "healthcheck_exit_code": 0,
+  "installed_resource_sdk_dependencies": {
+    "catalog_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+    "sdk_absent": [
+      "providers",
+      "openai",
+      "google"
+    ],
+    "dependencies": [
+      [
+        "PyJWT",
+        "2.15.1"
+      ],
+      [
+        "annotated-types",
+        "0.8.0"
+      ],
+      [
+        "anyio",
+        "4.15.1"
+      ],
+      [
+        "attrs",
+        "26.1.0"
+      ],
+      [
+        "certifi",
+        "2026.10.23"
+      ],
+      [
+        "cffi",
+        "2.1.1"
+      ],
+      [
+        "click",
+        "8.5.0"
+      ],
+      [
+        "clink-mcp-server",
+        "0.1.0"
+      ],
+      [
+        "cryptography",
+        "50.0.2"
+      ],
+      [
+        "h11",
+        "0.16.0"
+      ],
+      [
+        "httpcore",
+        "1.0.9"
+      ],
+      [
+        "httpx",
+        "0.28.1"
+      ],
+      [
+        "httpx-sse",
+        "0.4.3"
+      ],
+      [
+        "idna",
+        "3.20"
+      ],
+      [
+        "jsonschema",
+        "4.26.0"
+      ],
+      [
+        "jsonschema-specifications",
+        "2025.9.1"
+      ],
+      [
+        "mcp",
+        "1.30.0"
+      ],
+      [
+        "pip",
+        "25.0.1"
+      ],
+      [
+        "pycparser",
+        "3.12"
+      ],
+      [
+        "pydantic",
+        "2.14.2"
+      ],
+      [
+        "pydantic-settings",
+        "2.16.2"
+      ],
+      [
+        "pydantic_core",
+        "2.50.2"
+      ],
+      [
+        "python-dotenv",
+        "1.2.4"
+      ],
+      [
+        "python-multipart",
+        "0.0.33"
+      ],
+      [
+        "referencing",
+        "0.37.0"
+      ],
+      [
+        "rpds-py",
+        "2026.9.1"
+      ],
+      [
+        "sse-starlette",
+        "3.6.0"
+      ],
+      [
+        "starlette",
+        "1.10.0"
+      ],
+      [
+        "typing-inspection",
+        "0.4.4"
+      ],
+      [
+        "typing_extensions",
+        "4.16.0"
+      ],
+      [
+        "uvicorn",
+        "0.54.0"
+      ]
+    ]
+  },
+  "container_user_network_readonly": "clink none true"
+}

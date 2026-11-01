@@ -1,5 +1,7 @@
 # Custom Models & API Setup
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 This guide covers setting up multiple AI model providers including OpenRouter, custom API endpoints, and local model servers. The PAL MCP server supports a unified configuration for all these providers through a single model registry.
 
 ## Supported Providers

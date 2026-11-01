@@ -1,5 +1,7 @@
 # Contributing to PAL MCP Server
 
+> **Historical PAL guide.** Retained for upstream context; provider setup, model routing, permission flags, and capability claims below may not apply to clink-mcp-server. Use [current setup](getting-started.md), [CLI configuration](cli-configuration.md), [migration](migration.md), and the live tool schemas for current behavior.
+
 Thank you for your interest in contributing to PAL MCP Server! This guide will help you understand our development process, coding standards, and how to submit high-quality contributions.
 
 ## Getting Started
