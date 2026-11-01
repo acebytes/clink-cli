@@ -38,10 +38,20 @@ class RegistryLoadError(RuntimeError):
 class ClinkRegistry:
     """Resolve a strict version-one configuration snapshot before publishing it."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, project_dir: Path | None = None) -> None:
         self._startup_cwd = Path.cwd().resolve(strict=True)
+        self._project_dir = (
+            self._resolve_directory(str(project_dir), self._startup_cwd, "project_dir")
+            if project_dir is not None
+            else None
+        )
         self._clients: dict[str, ResolvedCLIClient] = {}
         self._load()
+
+    @property
+    def project_dir(self) -> Path | None:
+        """Return the canonical server binding captured before the first snapshot."""
+        return self._project_dir
 
     def _load(self) -> None:
         clients: dict[str, ResolvedCLIClient] = {}
@@ -100,6 +110,8 @@ class ClinkRegistry:
         yield CONFIG_DIR, False, False
         yield LEGACY_USER_CONFIG_DIR, False, True
         yield USER_CONFIG_DIR, False, False
+        if self._project_dir is not None:
+            yield self._project_dir / ".clink" / "cli_clients", False, False
         explicit = get_env(CONFIG_ENV_VAR)
         if explicit:
             yield self._resolve_path(explicit, self._startup_cwd), True, False
@@ -162,7 +174,7 @@ class ClinkRegistry:
         working_dir = (
             self._resolve_directory(raw.working_dir, source_path.parent, "working_dir")
             if raw.working_dir is not None
-            else self._startup_cwd
+            else self._project_dir or self._startup_cwd
         )
         if raw.allowed_roots is None:
             roots = (working_dir,)
@@ -307,8 +319,12 @@ class ClinkRegistry:
 _REGISTRY: ClinkRegistry | None = None
 
 
-def get_registry() -> ClinkRegistry:
+def get_registry(*, project_dir: Path | None = None) -> ClinkRegistry:
     global _REGISTRY
     if _REGISTRY is None:
-        _REGISTRY = ClinkRegistry()
+        _REGISTRY = ClinkRegistry(project_dir=project_dir)
+    elif project_dir is not None:
+        requested = _REGISTRY._resolve_directory(str(project_dir), Path.cwd(), "project_dir")
+        if requested != _REGISTRY.project_dir:
+            raise RegistryLoadError("CLI registry already has a different project binding; restart to change --project")
     return _REGISTRY

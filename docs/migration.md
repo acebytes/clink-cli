@@ -40,10 +40,13 @@ Source precedence is now:
 bundled conf/cli_clients
   < ~/.pal/cli_clients
   < ~/.clink/cli_clients
+  < <bound-project>/.clink/cli_clients
   < CLI_CLIENTS_CONFIG_PATH (JSON file or directory)
 ```
 
 **`CLI_CLIENTS_CONFIG_PATH` now wins.** Each later manifest replaces the entire client, including roles; fields are not deep-merged. Duplicate names in one source fail. A partial replacement can therefore remove a role you used before. Configuration and prompt changes require a server restart.
+
+For multiple repositories, [project setup](project-setup.md) creates local manifests/prompts and `.mcp.json` registration with explicit `--project` binding. Run `.venv/bin/python -m clink.setup --project /absolute/project` from the clink checkout, or use `/clink:setup` through its local Claude plugin. The project layer overrides user configuration only for that bound server. Existing launches without `--project` retain their old behavior; an explicit configuration path can still override the project layer. Generated manifests use bundled defaults and do not copy user settings or credentials.
 
 For each manifest:
 

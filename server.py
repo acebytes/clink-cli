@@ -18,6 +18,7 @@ The server runs on stdio (standard input/output) and communicates using JSON-RPC
 as defined by the MCP protocol.
 """
 
+import argparse
 import asyncio
 import json
 import logging
@@ -867,8 +868,23 @@ async def main():
             await backend.close()
 
 
-def run():
+def run(argv: list[str] | None = None):
     """Console script entry point for clink-mcp-server."""
+    from clink.registry import RegistryLoadError, get_registry
+
+    parser = argparse.ArgumentParser(description="CLI consultations and native task delegation over MCP stdio.")
+    parser.add_argument(
+        "--project",
+        metavar="EXISTING_DIR",
+        help="Bind project manifests and default workspace roots to this directory.",
+    )
+    arguments = parser.parse_args(argv)
+    if arguments.project is not None and not arguments.project.strip():
+        parser.error("--project must be a nonempty directory path")
+    try:
+        get_registry(project_dir=Path(arguments.project) if arguments.project is not None else None)
+    except RegistryLoadError as exc:
+        parser.error(str(exc))
     try:
         asyncio.run(main())
     except KeyboardInterrupt:

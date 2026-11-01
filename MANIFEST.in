@@ -8,6 +8,7 @@ include clink/resources/CODEX-LICENSE
 include clink/resources/CODEX-NOTICE
 recursive-include conf/cli_clients *.json
 recursive-include systemprompts/clink *.txt
+recursive-include integrations/claude *.json *.md
 prune providers
 prune tests
 prune simulator_tests

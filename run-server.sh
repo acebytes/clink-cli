@@ -8,9 +8,10 @@ venv_python="$script_dir/.venv/bin/python"
 
 usage() {
     cat <<'EOF'
-Usage: run-server.sh [--setup | --help]
+Usage: run-server.sh [--project EXISTING_DIR | --setup | --help]
 
   --setup    Create .venv if needed, install requirements.txt, and exit.
+  --project  Bind project manifests and default workspace roots to EXISTING_DIR.
   --help     Show this help.
   no option  Start the MCP stdio server using .venv/bin/python.
 
@@ -28,17 +29,15 @@ check_python() {
     "$1" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)' >/dev/null 2>&1
 }
 
-if [ "$#" -gt 1 ]; then
-    usage >&2
-    exit 2
-fi
-
+project_dir=
 case "${1-}" in
     -h|--help)
+        [ "$#" -eq 1 ] || { usage >&2; exit 2; }
         usage
         exit 0
         ;;
     --setup)
+        [ "$#" -eq 1 ] || { usage >&2; exit 2; }
         if [ ! -x "$venv_python" ]; then
             setup_python=
             for candidate in python3 python; do
@@ -55,7 +54,17 @@ case "${1-}" in
         printf '%s\n' 'Setup complete. Start the MCP server with ./run-server.sh or configure your MCP client to launch it.' >&2
         exit 0
         ;;
+    --project)
+        if [ "$#" -ne 2 ]; then
+            printf '%s\n' '--project requires exactly one existing directory.' >&2
+            usage >&2
+            exit 2
+        fi
+        [ -n "$2" ] || fail '--project must be a nonempty directory path.'
+        project_dir=$(CDPATH= cd -P -- "$2" 2>/dev/null && pwd) || fail '--project must be an existing directory.'
+        ;;
     '')
+        [ "$#" -eq 0 ] || { usage >&2; exit 2; }
         ;;
     *)
         printf '%s\n' 'Unsupported launcher option. See docs/migration.md for the new setup and logging commands.' >&2
@@ -71,4 +80,7 @@ if ! "$venv_python" -c 'import importlib.util; raise SystemExit(0 if all(importl
 fi
 
 cd "$script_dir"
+if [ -n "$project_dir" ]; then
+    exec "$venv_python" "$script_dir/server.py" --project "$project_dir"
+fi
 exec "$venv_python" "$script_dir/server.py"

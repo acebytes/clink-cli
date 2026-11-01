@@ -96,3 +96,48 @@ def test_legacy_options_fail_with_usage_without_mutation(workspace):
     assert result.returncode == 2
     assert "--setup" in result.stderr
     assert not (workspace / ".venv").exists()
+
+
+@pytest.mark.parametrize("relative", [False, True])
+def test_project_option_is_resolved_before_chdir_and_forwarded_as_one_argument(workspace, relative):
+    python_stub(workspace)
+    project = workspace.parent / "project with spaces"
+    project.mkdir()
+    value = project.name if relative else str(project)
+
+    result = run(workspace, "--project", value)
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.splitlines() == [
+        f"cwd={workspace}",
+        f"arg={workspace / 'server.py'}",
+        "arg=--project",
+        f"arg={project}",
+    ]
+    assert not (workspace / ".env").exists()
+
+
+@pytest.mark.parametrize(
+    "arguments,message",
+    [
+        (("--project",), "requires exactly one"),
+        (("--project", ""), "nonempty directory path"),
+        (("--project", "missing"), "existing directory"),
+        (("--project", "--setup"), "existing directory"),
+    ],
+)
+def test_invalid_project_option_fails_without_setup(workspace, arguments, message):
+    result = run(workspace, *arguments)
+
+    assert result.returncode != 0
+    assert message in result.stderr
+    assert not (workspace / ".venv").exists()
+
+
+def test_setup_rejects_project_selection_and_stays_dependency_only(workspace):
+    python_stub(workspace)
+
+    result = run(workspace, "--setup", "--project", str(workspace.parent))
+
+    assert result.returncode == 2
+    assert "arg=" not in result.stdout + result.stderr

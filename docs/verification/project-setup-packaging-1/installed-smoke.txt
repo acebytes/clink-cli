@@ -1,0 +1,14 @@
+[
+  {
+    "project": "project one",
+    "clients": 5,
+    "tools": 18,
+    "native_cli_calls": 0
+  },
+  {
+    "project": "project two",
+    "clients": 5,
+    "tools": 18,
+    "native_cli_calls": 0
+  }
+]

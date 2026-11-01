@@ -1,0 +1,3 @@
+Processing ./test_output/project-setup-packaging-1/dist/clink_mcp_server-0.1.0-py3-none-any.whl
+Installing collected packages: clink-mcp-server
+Successfully installed clink-mcp-server-0.1.0

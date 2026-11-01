@@ -292,6 +292,7 @@ def test_registry_native_profiles_require_explicit_native_role_prompts(tmp_path,
     )
     registry = ClinkRegistry.__new__(ClinkRegistry)
     registry._startup_cwd = tmp_path
+    registry._project_dir = None
     if accepted:
         client = registry._resolve_config(raw, source_path=tmp_path / "client.json")
         assert client.native_task.enabled

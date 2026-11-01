@@ -1,0 +1,62 @@
+[
+  {
+    "step": "build",
+    "argv": [
+      "/usr/bin/sandbox-exec",
+      "-f",
+      "/Users/d/Tools/clink-mcp-server/docs/baseline/2026-10-31/offline.sb",
+      "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+      "-m",
+      "build",
+      "--no-isolation",
+      "--outdir",
+      "/Users/d/Tools/clink-mcp-server/test_output/project-setup-packaging-1/dist"
+    ],
+    "exit_code": 0
+  },
+  {
+    "step": "distribution",
+    "argv": [
+      "/usr/bin/sandbox-exec",
+      "-f",
+      "/Users/d/Tools/clink-mcp-server/docs/baseline/2026-10-31/offline.sb",
+      "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+      "/Users/d/Tools/clink-mcp-server/scripts/verify_distribution.py",
+      "/Users/d/Tools/clink-mcp-server/test_output/project-setup-packaging-1/dist"
+    ],
+    "exit_code": 0
+  },
+  {
+    "step": "install",
+    "argv": [
+      "/usr/bin/sandbox-exec",
+      "-f",
+      "/Users/d/Tools/clink-mcp-server/docs/baseline/2026-10-31/offline.sb",
+      "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+      "-m",
+      "pip",
+      "install",
+      "--no-index",
+      "--no-deps",
+      "--no-compile",
+      "--target",
+      "/Users/d/Tools/clink-mcp-server/test_output/project-setup-packaging-1/installed",
+      "/Users/d/Tools/clink-mcp-server/test_output/project-setup-packaging-1/dist/clink_mcp_server-0.1.0-py3-none-any.whl"
+    ],
+    "exit_code": 0
+  },
+  {
+    "step": "installed-smoke",
+    "argv": [
+      "/usr/bin/sandbox-exec",
+      "-f",
+      "/Users/d/Tools/clink-mcp-server/docs/baseline/2026-10-31/offline.sb",
+      "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+      "/Users/d/Tools/clink-mcp-server/docs/verification/project-setup-packaging-1/verify.py",
+      "--smoke",
+      "/Users/d/Tools/clink-mcp-server/test_output/project-setup-packaging-1/installed",
+      "/Users/d/Tools/clink-mcp-server/test_output/project-setup-packaging-1/work"
+    ],
+    "exit_code": 0
+  }
+]

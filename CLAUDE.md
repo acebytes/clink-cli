@@ -23,6 +23,8 @@ Configure workspace roots explicitly in operator manifests before supplying path
 
 ## Checks
 
+For each repository, `.venv/bin/python -m clink.setup --project /absolute/project` generates project manifests, copied prompts, and `.mcp.json` registration. Project manifests override user manifests only with explicit server `--project` binding; `CLI_CLIENTS_CONFIG_PATH` remains highest priority. Setup preserves custom files and makes no native calls. `run-server.sh --setup` still installs dependencies only. The checkout-local plugin under `integrations/claude` exposes `/clink:setup`; see [project setup](docs/project-setup.md). Never infer trusted configuration from task request paths or rebind an already initialized server.
+
 ```sh
 .venv/bin/python -m pip install -r requirements-dev.txt
 .venv/bin/python -m pytest tests/test_native_adapters.py tests/test_native_runtime.py tests/test_native_fixture_trust.py -q

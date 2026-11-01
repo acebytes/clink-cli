@@ -27,7 +27,15 @@ Ordinary startup never installs or updates packages. Run `--setup` explicitly af
 
 The consultation default is client `codex`, role `default`; omitted `clink.action` and `action: "consult"` retain it. Native `start` requires explicit CLI selection and an approved project directory. Authenticate an admitted CLI using its native login mechanism. The server does not require provider API keys, log in for you, or copy credentials. Native authentication/cache maintenance can still write operational files.
 
-Read [CLI configuration](cli-configuration.md) before supplying paths outside the server checkout. Bundled manifests default to the server's startup directory, and the launcher starts from the checkout. Configure `working_dir` and `allowed_roots` for the intended project. Roots constrain project selection and server-supplied context; they do not sandbox all native tool authority. Chat's required `working_directory_absolute_path` may select a directory only within those roots; explicit context paths are checked after resolving symlinks.
+For project-local configuration, run this from the clink checkout:
+
+```sh
+.venv/bin/python -m clink.setup --project /absolute/path/to/your-project
+```
+
+This creates `.clink/` manifests/prompts and a project `.mcp.json` registration with an explicit `--project` binding. It sets the project roots, preserves existing custom files, and makes no model calls. The [project setup guide](project-setup.md) also covers Claude Code's `/clink:setup` command and configuration precedence. Use a separate binding for each repository.
+
+Manual [CLI configuration](cli-configuration.md) remains supported. Without `--project`, bundled manifests default to the server's startup directory, and the launcher starts from the checkout. Configure `working_dir` and `allowed_roots` for the intended project. Roots constrain project selection and server-supplied context; they do not sandbox all native tool authority. Chat's required `working_directory_absolute_path` may select a directory only within those roots; explicit context paths are checked after resolving symlinks.
 
 Choose settings in your MCP client's environment or, optionally, copy [.env.example](../.env.example) to `.env` yourself. Consultation model selection belongs in a manifest's top-level `default_model` or role `model`, or in an explicit request; native tasks use the separate `native_task` model defaults. A concrete model name is passed through to the native CLI; provider aliases are not translated.
 
@@ -43,14 +51,14 @@ The [Codex/Claude verification report](verification/cli-policy/README.md), [Anti
 
 ## 3. Connect your MCP client
 
-Add a stdio server entry using the absolute checkout path:
+If you ran project setup, use its generated `.mcp.json` and reconnect your client. Otherwise, add a stdio server entry using the absolute checkout and project paths:
 
 ```json
 {
   "mcpServers": {
     "clink": {
       "command": "/absolute/path/clink-mcp-server/run-server.sh",
-      "args": []
+      "args": ["--project", "/absolute/path/to/your-project"]
     }
   }
 }

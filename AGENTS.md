@@ -12,6 +12,8 @@ Prompts are under `systemprompts/`, bundled CLI manifests under `conf/cli_client
 ## Build, Test, and Development Commands
 Use Python 3.10+; Python 3.12 is the tested runtime.
 
+Project configuration is generated separately with `.venv/bin/python -m clink.setup --project /absolute/project`. It creates `.clink/` manifests/prompts and project `.mcp.json`; `./run-server.sh --setup` remains dependency installation only. `./run-server.sh --project /absolute/project` explicitly binds one server to that project, preserving installation cwd/logging/`.env`. The local Claude plugin under `integrations/claude` exposes `/clink:setup` when loaded directly from the checkout. See `docs/project-setup.md`.
+
 ```sh
 # Explicit setup only: creates .venv if absent and installs runtime requirements.
 ./run-server.sh --setup

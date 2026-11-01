@@ -54,6 +54,14 @@ Add this entry to your MCP client's configuration, replacing the checkout path:
 
 Ensure the MCP client's `PATH` resolves the CLI, or configure its absolute executable path in a client manifest. Configure `working_dir` and `allowed_roots` before selecting projects outside the server's default working directory. Restart the MCP connection after updating server code or configuration. See [getting started](docs/getting-started.md), [CLI configuration](docs/cli-configuration.md), and [migration from PAL](docs/migration.md).
 
+For multiple repositories, use [project setup](docs/project-setup.md) to generate each project's `.clink/` manifests/prompts and `.mcp.json` registration. From this checkout:
+
+```sh
+.venv/bin/python -m clink.setup --project /absolute/path/to/your-project
+```
+
+Claude Code also supports `/clink:setup` after loading the local plugin with `claude --plugin-dir /absolute/path/clink-mcp-server/integrations/claude`. Project settings override user settings when the server is launched with its generated `--project` binding. Setup preserves custom files and makes no model calls.
+
 ## Run the first native task
 
 Call `version` and `listmodels` with empty arguments first. `listmodels` separates advisory `clients` from `native_task_clients`; inspect the admitted Claude, Grok, or Antigravity native profile. Discovery reports installation and recorded verification without authenticating or making inference calls. The current binary, recipe, and admission record are checked again at launch, so discovery availability is provisional.
@@ -141,7 +149,7 @@ The analytical tools still use consultations. Native implementation requires exp
 
 ## Configuration and execution limits
 
-Client manifests load in this order: bundled clients → legacy `~/.pal/cli_clients` → `~/.clink/cli_clients` → `CLI_CLIENTS_CONFIG_PATH`. Each later manifest replaces the entire named client, rather than merging individual fields. See the [manifest example](docs/cli-configuration.md#manifest-example) and [native task profile](docs/cli-configuration.md#native-task-profile).
+Client manifests load in this order: bundled clients → legacy `~/.pal/cli_clients` → `~/.clink/cli_clients` → `<bound-project>/.clink/cli_clients` → `CLI_CLIENTS_CONFIG_PATH`. Project configuration requires explicit `--project` launch binding. Each later manifest replaces the entire named client, rather than merging individual fields. See [project setup](docs/project-setup.md), the [manifest example](docs/cli-configuration.md#manifest-example), and the [native task profile](docs/cli-configuration.md#native-task-profile).
 
 Consultations default to `codex/default`. Model selection follows request → role → client → admitted adapter default. Native tasks require explicit CLI selection and use separate native-role and native-profile defaults. All bundled native profiles leave the model to native CLI configuration unless overridden; Claude native tasks do not inherit the advisory `sonnet` default, and native Codex does not inherit the restrictive consultation catalog/default. Omitted, `null`, or `auto` model selection uses the next default. Provider aliases are never translated and backends are never silently switched.
 

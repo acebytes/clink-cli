@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "distributions": [
+    {
+      "artifact": "clink_mcp_server-0.1.0-py3-none-any.whl",
+      "sha256": "42858a9c35d5ca1fbfb99c2333f63aae04ddd623ca06e16793bed5aded4036a0",
+      "members": 119,
+      "resource_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+      "provider_packages_or_catalogs": false,
+      "entrypoint": "clink-mcp-server=server:run",
+      "native_cli_calls": 0
+    },
+    {
+      "artifact": "clink_mcp_server-0.1.0.tar.gz",
+      "sha256": "72f71389acec22072bfae69f71538b01a05708955276a6e6d65363e56b5fca14",
+      "members": 126,
+      "resource_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+      "provider_packages_or_catalogs": false,
+      "entrypoint": "clink-mcp-server=server:run",
+      "native_cli_calls": 0
+    }
+  ],
+  "installed_setup_and_stdio": [
+    {
+      "project": "project one",
+      "clients": 5,
+      "tools": 18,
+      "native_cli_calls": 0
+    },
+    {
+      "project": "project two",
+      "clients": 5,
+      "tools": 18,
+      "native_cli_calls": 0
+    }
+  ],
+  "plugin_in_sdist": true,
+  "native_cli_calls": 0,
+  "network_blocked": true,
+  "synthetic_home": true,
+  "dependencies_reused_without_resolution": true,
+  "verifier_sha256": "da3a0d27e0ae5dc2199611f3b1cb40d469996f842c4208ff0e34ec25f3857570"
+}

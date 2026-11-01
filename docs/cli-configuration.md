@@ -27,13 +27,16 @@ The registry reads JSON manifests in this order, from lowest to highest priority
 1. Bundled `conf/cli_clients/`.
 2. Deprecated `~/.pal/cli_clients/`, with a migration warning.
 3. `~/.clink/cli_clients/`.
-4. `CLI_CLIENTS_CONFIG_PATH`, pointing to one JSON file or a directory.
+4. `<bound-project>/.clink/cli_clients/`, only when the server starts with `--project`.
+5. `CLI_CLIENTS_CONFIG_PATH`, pointing to one JSON file or a directory.
 
 A later source replaces the **whole client** with the same case-insensitive name. Roles, environment values, and arguments are not merged across sources. Duplicate client names within one source fail validation. Directory entries are read in sorted order, without recursion. A configured explicit source must exist.
 
 **The explicit-path priority changed from PAL:** `CLI_CLIENTS_CONFIG_PATH` now has highest priority. Check overlapping client names before restarting.
 
 Configuration is validated as a complete snapshot. Invalid JSON, duplicate JSON keys, unsupported fields, invalid paths, or unsafe arguments fail startup. An omitted `schema_version` is accepted with a migration warning; new manifests should declare `1`. Restart after configuration or prompt changes.
+
+Use [project setup](project-setup.md) to generate project-local manifests, portable prompt files, and an MCP registration bound to that directory. Project configuration replaces user configuration for the same client. The binding is captured once per server; the registry does not search parent directories or select configuration from request paths. Existing launches without `--project` do not load project manifests. The explicit configuration path remains the highest-priority override.
 
 ## Manifest example
 
@@ -73,7 +76,7 @@ The prompt paths here resolve inside `~/.clink/cli_clients/prompts/`. This repla
 | `name` | Required client name; starts with a letter, then letters, digits, `_` or `-`, up to 64 characters. |
 | `adapter` | Registered adapter identity. It may be omitted only when `name` is `codex`, `claude`, or `gemini`. A custom client name must select a registered adapter. Registration alone does not grant admission. |
 | `command` | Required executable, parsed as argv without a shell. Bare names use the server's `PATH`; executable paths resolve relative to this manifest. Embedded arguments face the same strict validation as other arguments. |
-| `working_dir` | Existing directory. Defaults to the server's startup working directory. |
+| `working_dir` | Existing directory. Defaults to the bound project when launched with `--project`, otherwise the server's startup working directory. |
 | `allowed_roots` | Nonempty list of existing directories. Defaults to the resolved `working_dir` alone; `working_dir` must be inside one of these roots. |
 | `default_model` | Consultation native CLI identifier or `null`; admitted Codex IDs must match its frozen catalog. No provider alias translation. |
 | `timeout_seconds` | Positive integer, at most 1800; defaults to 1800 and can shorten the overall deadline. |
@@ -88,7 +91,9 @@ For consultation roles, the registry supplies a `default` role if omitted. Every
 
 ## Antigravity projects outside the checkout
 
-The bundled Agy manifest omits `working_dir` and `allowed_roots`. The registry therefore uses the server's startup working directory for both. `run-server.sh` starts in the checkout, so seeing only the checkout in `listmodels` is expected even when no operator manifest exists. Restarting without a configuration change preserves that default.
+For new multi-repository setups, [project setup](project-setup.md) generates these fields inside the target project automatically. The manual user-scope option below remains supported.
+
+The bundled Agy manifest omits `working_dir` and `allowed_roots`. Without `--project`, the registry therefore uses the server's startup working directory for both. `run-server.sh` starts in the checkout, so seeing only the checkout in `listmodels` is expected even when no operator manifest exists. Restarting without a configuration change preserves that default. An explicit `--project` binding supplies project defaults and loads its local manifests.
 
 For a project elsewhere, save this complete replacement as `~/.clink/cli_clients/agy.json`. Replace every `/absolute/path/to/clink-mcp-server` with your checkout path and both `/absolute/path/to/project` occurrences with the existing project directory. This example preserves all three consultation and native roles. If `CLI_CLIENTS_CONFIG_PATH` also defines `agy`, update that higher-priority manifest instead.
 
