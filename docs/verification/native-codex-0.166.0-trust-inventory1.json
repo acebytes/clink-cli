@@ -1,0 +1,11 @@
+{
+  "inventory_error": "rpc_process_ended",
+  "native_control_process_cleanup_complete": true,
+  "native_control_process_cleanup_failure": "rpc_group_signal_failed",
+  "native_startup_side_effects_possible": true,
+  "native_write_attempted": false,
+  "native_write_confirmed": false,
+  "runtime_permissions_resolved": false,
+  "scope": "native_codex_scoped_fixture_trust_inventory",
+  "top_level_model_submissions": 0
+}

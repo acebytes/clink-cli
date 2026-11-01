@@ -3,6 +3,7 @@
 import json
 import subprocess
 import sys
+from types import SimpleNamespace
 
 import pytest
 
@@ -13,12 +14,12 @@ from scripts import verify_native_adapters as verifier
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "capabilities_available, policy_denied",
-    [(True, True), (True, False), (False, True)],
-    ids=["complete_lifecycle", "ordinary_tool_failure", "unverified_project_trust"],
+    "capabilities_available, policy_denied, model",
+    [(True, True, None), (True, False, None), (False, True, None), (True, True, "gpt-6.1-sol")],
+    ids=["complete_lifecycle", "ordinary_tool_failure", "unverified_project_trust", "frozen_explicit_model"],
 )
 async def test_codex_candidate_lifecycle_keeps_permissions_and_unverified_gaps(
-    tmp_path, monkeypatch, capabilities_available, policy_denied
+    tmp_path, monkeypatch, capabilities_available, policy_denied, model
 ):
     monkeypatch.setattr(verifier, "PROJECT", tmp_path)
     monkeypatch.setattr(clink.native, "__file__", str(tmp_path / "clink/native.py"))
@@ -37,6 +38,8 @@ if "--version" in sys.argv:
     print("codex-cli 0.166.0")
     raise SystemExit
 root = pathlib.Path.cwd()
+with (root / "fake-request-models.jsonl").open("a") as output:
+    output.write(json.dumps(sys.argv[sys.argv.index("--model") + 1] if "--model" in sys.argv else None) + "\\n")
 content = sys.stdin.read()
 prompt = json.loads(content.split("<assigned_task_json>\\n", 1)[1].split("\\n</assigned_task_json>", 1)[0])
 session = sys.argv[-2] if "resume" in sys.argv else str(uuid.uuid4())
@@ -102,6 +105,70 @@ emit({"type": "turn.completed", "usage": {"input_tokens": 1, "cached_input_token
         return real_run(command, **kwargs)
 
     monkeypatch.setattr(verifier.subprocess, "run", process_metadata)
+    prepared_root = None
+    prior = None
+    if model is not None:
+        prepared_root = tmp_path / "test_output/native-adapters/codex-attempt1.fixture"
+        prepared_root.parent.mkdir(parents=True)
+        files = verifier.create_fixture(prepared_root, "codex")
+        directory = tmp_path / "docs/verification"
+        directory.mkdir(parents=True)
+        prior = directory / "prepared.json"
+        prior.write_text(
+            json.dumps(
+                {
+                    "scope": verifier.SCOPE,
+                    "adapter": "codex",
+                    "submission_ledger": [],
+                    "submission_allowance_total": 4,
+                    "submissions_consumed_total": 0,
+                    "fixture_config_files": files,
+                    "fixture_config_sha256": verifier.fixture_digest(prepared_root, files),
+                    "project_root_sha256": verifier.digest(str(prepared_root)),
+                }
+            )
+        )
+
+        class Control:
+            def __init__(self, *args, **kwargs):
+                self.cleanup_complete = False
+                self.cleanup_failure = None
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                self.cleanup_complete = True
+
+        class Scope:
+            def __init__(self, rpc, binding):
+                self.rpc, self.owned = rpc, {}
+                self.receipt = {
+                    "configured_before": {"model": "gpt-6-astra", "model_reasoning_effort": "ultra"},
+                    "managed_requirements_observed": True,
+                }
+
+            def inventory(self):
+                return self.receipt
+
+            def enroll(self):
+                self.owned = {("synthetic",): {"trusted": True}}
+                self.receipt.update(
+                    configured_after=dict(self.receipt["configured_before"]),
+                    native_write_attempted=True,
+                    native_write_confirmed=True,
+                )
+                return self.receipt
+
+            def cleanup(self):
+                self.owned.clear()
+                self.receipt["cleanup_complete"] = True
+                return self.receipt
+
+        monkeypatch.setattr(verifier, "NativeRpc", Control)
+        monkeypatch.setattr(verifier, "TrustScope", Scope)
+        monkeypatch.setattr(verifier, "approved_binding", lambda: SimpleNamespace(root=prepared_root))
+        monkeypatch.setattr(verifier, "configuration_gates", lambda *args: sorted(verifier.CONFIG_GATES))
     args = verifier.argument_parser().parse_args(
         [
             "--live",
@@ -113,6 +180,11 @@ emit({"type": "turn.completed", "usage": {"input_tokens": 1, "cached_input_token
             "5",
         ]
     )
+    args.model = model
+    if model is not None:
+        args.trust_codex_fixture = True
+        args.fixture_root = prepared_root
+        args.prior_evidence = prior
     receipt = await verifier.verify(args)
     if not capabilities_available:
         assert receipt["native_verified"] is False
@@ -132,6 +204,16 @@ emit({"type": "turn.completed", "usage": {"input_tokens": 1, "cached_input_token
         assert receipt["submission_ledger"][2]["state"] == "permission_needed"
         assert receipt["submission_ledger"][2]["observations"]["permission_policy_declined_observed"] is True
     assert receipt["pool_running_after_shutdown"] == receipt["project_leases_after_shutdown"] == 0
+    if model is not None:
+        root = tmp_path / "test_output/native-adapters/codex-attempt1.fixture"
+        assert [json.loads(line) for line in (root / "fake-request-models.jsonl").read_text().splitlines()] == [
+            model
+        ] * 4
+        assert receipt["explicit_request_model"] == model
+        assert receipt["configuration_preparation_gates"] == []
+        assert [entry["check"] for entry in receipt["submission_ledger"]] == list(verifier.CHECKS)
+        assert receipt["submission_ledger"][2]["state"] == "permission_needed"
+        assert all(entry["actual_model"] is None for entry in receipt["submission_ledger"])
     encoded = json.dumps(receipt)
     assert "child_fingerprint" not in encoded
     assert "CLINK_NATIVE_POLICY_CANARY" not in encoded

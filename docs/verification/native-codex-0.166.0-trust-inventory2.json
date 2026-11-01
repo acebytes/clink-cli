@@ -1,0 +1,36 @@
+{
+  "active_user_profile": false,
+  "configured_before": {
+    "approval_policy": null,
+    "approvals_reviewer": null,
+    "model": "gpt-6-astra",
+    "model_reasoning_effort": "ultra",
+    "sandbox_mode": null
+  },
+  "final_cas_or_interprocess_lock": false,
+  "fixture_hook_count": 0,
+  "fixture_intact_after_inventory": true,
+  "hook_inventory_errors_present": false,
+  "incidental_normalization_entries": 0,
+  "launch_environment": "authorized_host_run",
+  "native_control_process_cleanup_complete": true,
+  "native_control_process_cleanup_failure": null,
+  "native_fixture_hooks_enabled": false,
+  "native_fixture_hooks_trusted": false,
+  "native_hook_hashes_match": false,
+  "native_startup_side_effects_possible": true,
+  "native_write_attempted": false,
+  "native_write_confirmed": false,
+  "preexisting_record_count": 0,
+  "prior_inventory": {
+    "launch_environment": "workspace_restricted",
+    "native_failure_cause": "unresolved",
+    "path": "docs/verification/native-codex-0.166.0-trust-inventory1.json",
+    "sha256": "b0fae702721f2f920e712a4528b0cbc896e4eb812fc4356c79a20b96853bfd68"
+  },
+  "runtime_permissions_resolved": false,
+  "scope": "native_codex_scoped_fixture_trust",
+  "source_commit": "6ff1e1ca3b30fc8b914720681fcf5fe62e95f856",
+  "top_level_model_submissions": 0,
+  "unexpected_unrelated_change": false
+}

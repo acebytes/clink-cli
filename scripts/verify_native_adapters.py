@@ -2,9 +2,9 @@
 
 Candidate admission exists only in this process. Receipts contain technical
 observations, never prompts, argv, raw streams, native session IDs or environment
-values. Only explicit --trust-grok-fixture permits temporary enrollment of the
-exact synthetic project; its helper removes only its own unchanged trust entry.
-Other native configuration and permissions remain authoritative.
+values. Explicit --trust-grok-fixture and --trust-codex-fixture permit scoped
+enrollment of their bound synthetic fixtures; cleanup removes unchanged owned
+trust records. Native configuration and permissions remain authoritative.
 """
 
 from __future__ import annotations
@@ -56,6 +56,9 @@ from scripts.native_codex_fixture import (  # noqa: E402
     create_codex_fixture,
     observe_codex_stream,
 )
+from scripts.native_codex_trust import CLEANUP_ERROR_CODES as CODEX_CONTROL_CLEANUP_ERRORS  # noqa: E402
+from scripts.native_codex_trust import ERROR_CODES as CODEX_TRUST_ERROR_CODES  # noqa: E402
+from scripts.native_codex_trust import NativeRpc, TrustError, TrustScope, approved_binding  # noqa: E402
 from scripts.native_diagnostics import exception_diagnostic, valid_exception_diagnostic  # noqa: E402
 from scripts.native_fixture_trust import grok_fixture_trust  # noqa: E402
 from scripts.native_mcp_fixture import MCP_SERVER, mcp_environment_observed  # noqa: E402
@@ -838,6 +841,7 @@ async def run_checks(
     evidence: dict[str, Any],
     path: Path,
     timeout: float,
+    model: str | None = None,
 ) -> None:
     manifest = root / "client.json"
     manifest.write_text(
@@ -954,6 +958,7 @@ async def run_checks(
                         "request_key": "fixture-" + check,
                         "timeout_seconds": timeout,
                         "prompt": prompt,
+                        **({"model": model} if model is not None else {}),
                     }
                 )
             current_handle = submission["task_handle"]
@@ -1094,6 +1099,138 @@ async def run_checks(
         persist(path, evidence)
 
 
+def codex_selection_matches(receipt: dict[str, Any], evidence: dict[str, Any], phase: str, model: str | None) -> bool:
+    """Gate configured selection without presenting it as native-reported actual execution."""
+    settings = receipt.get("configured_" + phase, {})
+    settings = settings if isinstance(settings, dict) else {}
+    selected = model if model is not None else settings.get("model")
+    selection = {
+        "configured_model": safe_identifier(settings.get("model")),
+        "requested_model": model,
+        "selected_model": safe_identifier(selected),
+        "model_selection_origin": "explicit_request" if model is not None else "native_configuration",
+        "configured_reasoning_effort": safe_identifier(settings.get("model_reasoning_effort")),
+    }
+    for value, expected, label in (
+        (selected, "gpt-6.1-sol", "model"),
+        (settings.get("model_reasoning_effort"), "ultra", "reasoning_effort"),
+    ):
+        known = isinstance(value, str) and value not in {"unavailable", ""}
+        matched = known and value == expected
+        selection[label + "_known"] = known
+        selection[label + "_matches"] = matched
+        if not matched:
+            gate = "codex_configured_" + label + ("_mismatch" if known else "_unverified")
+            if gate not in evidence["gates"]:
+                evidence["gates"].append(gate)
+    evidence.setdefault(
+        "codex_configured_selection",
+        {"origin": "native_config_selection_snapshot_not_actual_model"},
+    )[phase] = selection
+    return selection["model_matches"] and selection["reasoning_effort_matches"]
+
+
+async def run_codex_trusted_checks(
+    executable: str,
+    root: Path,
+    candidate: AdapterPolicy,
+    checks: tuple[str, ...],
+    evidence: dict[str, Any],
+    path: Path,
+    timeout: float,
+    binding: Any,
+    model: str | None,
+) -> None:
+    """Use separate bounded control sessions for enrollment and finally cleanup."""
+    scope = None
+    preparation = None
+    cleanup = None
+    try:
+        preparation = NativeRpc(Path(executable), root, allow_writes=True)
+        with preparation as rpc:
+            scope = TrustScope(rpc, binding)
+            inventory = scope.inventory()
+            if inventory.get("managed_requirements_observed") is not True:
+                evidence["gates"].append("codex_managed_requirements_unverified")
+                evidence["stopped_after"] = "codex_managed_requirements_gate"
+                return
+            if not codex_selection_matches(inventory, evidence, "before", model):
+                evidence["stopped_after"] = "codex_configured_selection_gate"
+                return
+            enrolled = scope.enroll()
+            if enrolled.get("managed_requirements_observed") is not True:
+                evidence["gates"].append("codex_managed_requirements_unverified")
+                evidence["stopped_after"] = "codex_managed_requirements_gate"
+                return
+            if not codex_selection_matches(enrolled, evidence, "after", model):
+                evidence["stopped_after"] = "codex_configured_selection_gate"
+                return
+        if preparation.cleanup_complete is not True or preparation.cleanup_failure is not None:
+            evidence["stopped_after"] = "codex_trust_control_cleanup_failed"
+            return
+        evidence["configuration_preparation_gates"] = []
+        await run_checks(executable, "codex", root, candidate, checks, evidence, path, timeout, model=model)
+    except TrustError as exc:
+        evidence["codex_trust_error_code"] = exc.code if exc.code in CODEX_TRUST_ERROR_CODES else "unknown_trust_error"
+        evidence["stopped_after"] = "codex_fixture_trust_gate_failed"
+    finally:
+        try:
+            if scope is not None:
+                if scope.owned:
+                    cleanup = NativeRpc(Path(executable), root, allow_writes=True)
+                    with cleanup as rpc:
+                        scope.rpc = rpc
+                        scope.cleanup()
+                else:
+                    scope.cleanup()
+        except Exception as exc:
+            evidence["codex_trust_cleanup_error_code"] = (
+                exc.code
+                if isinstance(exc, TrustError) and exc.code in CODEX_TRUST_ERROR_CODES
+                else "unknown_trust_error"
+            )
+            evidence["gates"].append("codex_fixture_trust_cleanup_failed")
+        finally:
+            control_reaped = preparation is not None and preparation.cleanup_complete is True
+            if cleanup is not None:
+                control_reaped = control_reaped and cleanup.cleanup_complete is True
+            evidence["codex_trust_control_groups_reaped"] = control_reaped
+            if not control_reaped:
+                evidence["gates"].append("codex_trust_control_cleanup_unverified")
+            for phase, control in (("preparation", preparation), ("cleanup", cleanup)):
+                if control is not None and control.cleanup_failure is not None:
+                    failure = control.cleanup_failure
+                    evidence["codex_" + phase + "_control_cleanup_failure"] = (
+                        failure
+                        if isinstance(failure, str) and failure in CODEX_CONTROL_CLEANUP_ERRORS
+                        else "unknown_control_cleanup_error"
+                    )
+                    if "codex_trust_control_cleanup_failed" not in evidence["gates"]:
+                        evidence["gates"].append("codex_trust_control_cleanup_failed")
+            if scope is not None:
+                evidence["codex_fixture_trust"] = dict(scope.receipt)
+                confirmed = scope.receipt.get("native_write_confirmed") is True
+                uncertain = bool(scope.receipt.get("unconfirmed_write_record_count", 0)) or (
+                    scope.receipt.get("native_write_attempted") is True and not confirmed
+                )
+                evidence["host_configuration_changed"] = True if confirmed else None if uncertain else False
+                evidence["host_configuration_change_unconfirmed"] = uncertain
+                if scope.receipt.get("native_write_attempted") is True:
+                    evidence["host_configuration_change_scope"] = (
+                        "approved_codex_fixture_records_and_native_legacy_normalization"
+                    )
+                complete = (
+                    scope.receipt.get("cleanup_complete") is True
+                    and not scope.owned
+                    and not scope.receipt.get("unconfirmed_write_record_count", 0)
+                    and "codex_trust_cleanup_error_code" not in evidence
+                )
+                evidence["codex_owned_trust_entries_removed"] = complete
+                if not complete and "codex_fixture_trust_cleanup_failed" not in evidence["gates"]:
+                    evidence["gates"].append("codex_fixture_trust_cleanup_failed")
+            persist(path, evidence)
+
+
 async def verify(args: argparse.Namespace) -> dict[str, Any]:
     if not args.live:
         raise ValueError("No native verification without explicit --live opt-in")
@@ -1104,6 +1241,15 @@ async def verify(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError("Unknown native verification checks")
     if "followup" in checks and "edit" not in checks:
         raise ValueError("Follow-up requires an edit submission in the same process; sessions are not persisted")
+    if args.model is not None and (args.adapter != "codex" or args.model != "gpt-6.1-sol"):
+        raise ValueError("This verifier permits only the explicitly selected Codex execution model gpt-6.1-sol")
+    codex_binding = None
+    if args.trust_codex_fixture:
+        if args.adapter != "codex" or args.fixture_root is None or args.prior_evidence is None or args.prepare_only:
+            raise ValueError("Codex trust requires its live exact existing fixture and prior evidence")
+        codex_binding = approved_binding()
+        if args.fixture_root.expanduser().resolve(strict=True) != codex_binding.root:
+            raise ValueError("Codex trust is limited to the explicitly approved existing fixture")
     path = verification_path(args.evidence)
     if path.exists():
         raise ValueError("Evidence path already exists; preserve genuine prior attempts")
@@ -1188,6 +1334,7 @@ async def verify(args: argparse.Namespace) -> dict[str, Any]:
         "native_session_ids_recorded": False,
         "environment_values_recorded": False,
         "native_home_and_auth_preserved": True,
+        "explicit_request_model": args.model,
         "host_configuration_changed": False,
         "internal_native_subagent_submissions": "not_counted_by_top_level_process_bound",
     }
@@ -1224,8 +1371,14 @@ async def verify(args: argparse.Namespace) -> dict[str, Any]:
                 evidence["fixture_trust"] = trust_receipt
                 evidence["host_configuration_restored"] = trust_receipt.get("fixture_trust_removed") is True
                 persist(path, evidence)
+        elif args.trust_codex_fixture:
+            await run_codex_trusted_checks(
+                executable, root, candidate, checks, evidence, path, args.timeout, codex_binding, args.model
+            )
         else:
-            await run_checks(executable, args.adapter, root, candidate, checks, evidence, path, args.timeout)
+            await run_checks(
+                executable, args.adapter, root, candidate, checks, evidence, path, args.timeout, model=args.model
+            )
     except (BackendError, OSError, ValueError, RuntimeError) as exc:
         evidence["stopped_after"] = "verification_exception"
         evidence["exception_type"] = type(exc).__name__
@@ -1254,6 +1407,7 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--adapter", choices=ADAPTERS, required=True)
     parser.add_argument("--evidence", type=Path, required=True, help="Unique durable JSON path in docs/verification.")
     parser.add_argument("--timeout", type=float, default=MAX_SECONDS)
+    parser.add_argument("--model", help="Explicit Codex-only execution model; currently restricted to gpt-6.1-sol.")
     parser.add_argument("--checks", default=",".join(CHECKS))
     parser.add_argument(
         "--prepare-only", action="store_true", help="Collect version and fixture preflight without model work."
@@ -1271,6 +1425,11 @@ def argument_parser() -> argparse.ArgumentParser:
         "--trust-grok-fixture",
         action="store_true",
         help="Opt in to exact synthetic Grok trust enrollment and precise cleanup.",
+    )
+    parser.add_argument(
+        "--trust-codex-fixture",
+        action="store_true",
+        help="Opt in to the explicitly approved existing Codex fixture trust records and precise cleanup.",
     )
     parser.add_argument("--replace-check", choices=CHECKS, action="append", default=[])
     parser.add_argument(
