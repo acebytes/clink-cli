@@ -83,6 +83,50 @@ def test_recovered_tool_failure_does_not_override_success_and_is_counted_once():
     assert "PRIVATE" not in json.dumps(result.metadata)
 
 
+@pytest.mark.parametrize("explicit_empty", [False, True])
+def test_native_optional_step_type_accepts_omission_or_empty_string(explicit_empty):
+    update = step()
+    if explicit_empty:
+        update["step_update"]["step_type"] = ""
+    else:
+        del update["step_update"]["step_type"]
+    result = AgyNativeParser().parse(stream(init(), update, terminal()))
+    assert result.state == "completed"
+    assert result.metadata["tool_error_count"] == 0
+
+
+@pytest.mark.parametrize("states", [("ERROR",), ("ERROR", "ERROR"), ("ERROR", "DONE"), ("ACTIVE", "ERROR", "DONE")])
+def test_native_error_updates_preserve_recovery_and_deduplicate_explicit_tool_errors(states):
+    tool_info = {"error": {"type": "exit", "message": "PRIVATE_ERROR"}}
+    result = AgyNativeParser().parse(
+        stream(init(), *[step(state=state, tool_info=tool_info) for state in states], terminal())
+    )
+    assert result.state == "completed"
+    assert result.metadata["tool_error_count"] == 1
+    assert "PRIVATE" not in json.dumps(result.metadata)
+
+
+def test_error_updates_without_tool_error_details_do_not_override_terminal_success():
+    result = AgyNativeParser().parse(stream(init(), step(state="ERROR"), terminal()))
+    assert result.state == "completed"
+    assert result.metadata["tool_error_count"] == 0
+
+
+def test_distinct_error_steps_are_counted_and_terminal_failure_remains_authoritative():
+    tool_info = {"error": {"type": "exit", "message": "PRIVATE_ERROR"}}
+    result = AgyNativeParser().parse(
+        stream(
+            init(),
+            step(state="ERROR", tool_info=tool_info),
+            step(state="ERROR", step_index=2, tool_info=tool_info),
+            terminal(status="ERROR", error="PRIVATE_TERMINAL_ERROR"),
+        )
+    )
+    assert result.state == "failed"
+    assert result.metadata["tool_error_count"] == 2
+    assert "PRIVATE" not in json.dumps(result.metadata)
+
+
 def test_denied_actions_report_permission_needed_and_hide_details():
     result = AgyNativeParser().parse(
         stream(terminal(denied_actions=[{"action": "PRIVATE_ACTION", "display_name": "PRIVATE_TARGET"}]))
@@ -106,7 +150,7 @@ def test_new_finished_reason_prevents_false_success(reason):
     assert result.metadata["finished_reason"] == reason
 
 
-@pytest.mark.parametrize("status", ["ERROR", "CANCELED", "INTERRUPTED", "INVALID", "WAITING", "RUNNING"])
+@pytest.mark.parametrize("status", ["ERROR", "CANCELED", "INTERRUPTED", "INVALID", "WAITING", "RUNNING", "UNKNOWN"])
 def test_nonsuccess_status_is_failed_without_permission_guess(status):
     result = AgyNativeParser().parse(stream(terminal(status=status, error="PRIVATE_ERROR")))
     assert result.state == "failed"
@@ -176,6 +220,9 @@ def test_invalid_terminal_fields_are_rejected(changes):
         {"step_index": -1},
         {"state": "unknown"},
         {"step_type": []},
+        {"step_type": None},
+        {"step_type": "PRIVATE\nTYPE"},
+        {"step_type": "x" * 65},
         {"text_delta": 1},
         {"tool_info": []},
         {"tool_info": {"error": "PRIVATE"}},
@@ -185,6 +232,15 @@ def test_invalid_terminal_fields_are_rejected(changes):
 def test_invalid_step_fields_are_rejected(changes):
     with pytest.raises(ParserError):
         AgyNativeParser().parse(stream(init(), step(**changes), terminal()))
+
+
+@pytest.mark.parametrize("field", ["conversation_id", "step_index", "state"])
+def test_optional_step_type_does_not_relax_required_step_identity_fields(field):
+    update = step()
+    del update["step_update"]["step_type"]
+    del update["step_update"][field]
+    with pytest.raises(ParserError):
+        AgyNativeParser().parse(stream(init(), update, terminal()))
 
 
 def test_result_numeric_metadata_and_events_are_bounded():

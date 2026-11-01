@@ -12,7 +12,7 @@ RESULT_CHARACTERS = 20000
 MAX_EVENTS = 16384
 _SESSION = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,127}\Z")
 _SYMBOL = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,63}\Z")
-_STATUSES = {"SUCCESS", "ERROR", "CANCELED", "INTERRUPTED", "INVALID", "WAITING", "RUNNING"}
+_STATUSES = {"SUCCESS", "ERROR", "CANCELED", "INTERRUPTED", "INVALID", "WAITING", "RUNNING", "UNKNOWN"}
 _FINISHED_REASONS = {"", "print_timeout", "interrupted", "error"}
 _USAGE_FIELDS = ("input_tokens", "output_tokens", "thinking_tokens", "cache_read_tokens", "total_tokens")
 
@@ -126,19 +126,20 @@ class AgyNativeParser:
 
     @staticmethod
     def _step_error(step: dict[str, Any], failed_steps: set[int]) -> None:
-        """Count completed failed steps once while excluding their raw arguments/output."""
+        """Count reported step errors once while excluding their raw arguments/output."""
 
         index = step.get("step_index")
-        step_type = step.get("step_type")
+        # Installed StepUpdatePayload omits the empty step_type string on the wire.
+        step_type = step.get("step_type", "")
         step_state = step.get("state")
         if (
             not isinstance(index, int)
             or isinstance(index, bool)
             or index < 0
             or not isinstance(step_state, str)
-            or step_state not in {"ACTIVE", "DONE"}
+            or step_state not in {"ACTIVE", "DONE", "ERROR"}
             or not isinstance(step_type, str)
-            or not _SYMBOL.fullmatch(step_type)
+            or (step_type != "" and not _SYMBOL.fullmatch(step_type))
         ):
             raise ParserError("Antigravity native step identity or state is invalid")
         if "text_delta" in step and not isinstance(step["text_delta"], str):
@@ -156,5 +157,5 @@ class AgyNativeParser:
                 or not isinstance(error.get("message"), str)
             ):
                 raise ParserError("Antigravity native tool error is invalid")
-            if step["state"] == "DONE":
+            if step_state in {"DONE", "ERROR"}:
                 failed_steps.add(index)
