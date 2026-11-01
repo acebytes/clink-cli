@@ -1,23 +1,42 @@
 # clink-mcp-server
 
-A CLI orchestration server that preserves PAL's 18 MCP tools. Existing consultations return advice and proposed code as text; explicit `clink` native task actions can delegate implementation using the selected CLI's configured capabilities and permissions. Claude Code 2.1.304 native task admission is verified for the exact recorded binary and launch recipe; the admitted Codex consultation profile remains separate.
+Delegate work to installed CLI agents through MCP. Consultations return advice and proposed code. Explicit native tasks let an agent implement a request using its configured tools, hooks, skills, plugins, MCP integrations, and subagents under its own permissions. Start a task, inspect its progress, follow up in the same native session, or cancel it.
+
+The server preserves PAL's **18 MCP tools**. Native task actions extend the existing `clink` tool.
 
 Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-server), formerly Zen MCP. **Copyright 2025 Beehive Innovations.** This fork preserves the upstream attribution and [Apache 2.0 license](LICENSE).
 
-## Start from this checkout
+## What works now
 
-Use a POSIX environment on macOS or Linux and a Python interpreter compatible with [requirements.txt](requirements.txt). Python 3.10+ is required; Python 3.12 is the tested runtime. Native Windows delegation is unavailable until equivalent process-tree cleanup is verified.
+| Use | Interface | Current support |
+| --- | --- | --- |
+| Ask for analysis or proposed code | `clink` with omitted action or `action: "consult"` | Defaults to Codex and the `default` role; returns content without writing project files. |
+| Delegate implementation | `clink` actions `start`, `status`, `followup`, `cancel` | Claude Code native tasks, including configured capabilities and session continuation. |
+| Inspect configuration | `version`, `listmodels` | Local discovery without logging in or calling a model. |
+
+| CLI | Consultation | Native tasks |
+| --- | --- | --- |
+| Codex 0.166.0 | Verified text, explicit local images, and structured native search. | Not implemented. |
+| Claude Code 2.1.304 | Unavailable under the separate advisory policy. | Verified for the recorded binary and launch recipe. |
+| Antigravity (`agy`) / xAI Grok Build (`grok`) | JSON parser and discovery groundwork; execution unverified. | Next adapter work; not yet available. |
+| Gemini | Unavailable pending policy verification. | Not implemented. |
+
+Verification is bound to exact binaries and launch recipes. Current live evidence covers the recorded macOS arm64 installations. An installed executable or an authentication session alone does not admit execution; upgrading a CLI can require reverification. See the [Codex admission report](docs/verification/cli-policy/README.md) and [Claude native lifecycle results](docs/native-lifecycle-results.md).
+
+## Install and connect
+
+Python 3.10+ is required; Python 3.12 is the tested runtime. Process supervision targets POSIX systems. Other macOS builds and Linux need their own CLI verification; native Windows delegation is unavailable until equivalent process-tree cleanup is verified.
 
 ```sh
 ./run-server.sh --setup
 ./run-server.sh
 ```
 
-`--setup` creates `.venv` when needed and installs the runtime requirements, then exits. Ordinary startup uses `.venv/bin/python` without installing anything. The server communicates over stdio and normally runs under an MCP client; it may appear quiet when started directly.
+`--setup` creates `.venv` when needed and installs runtime requirements, then exits. Ordinary startup uses `.venv/bin/python` without installing anything. The server communicates over stdio and normally runs under an MCP client; it may appear quiet when started directly.
 
-The launcher does not create or refresh `.env`, copy credentials, register MCP servers, or change native CLI configuration. Optional server settings are listed in [.env.example](.env.example). The server does not require hosted-provider API keys. Authenticate a supported CLI using its own native login mechanism before requesting delegated work.
+The launcher does not create `.env`, copy credentials, register MCP servers, or change native CLI configuration. Optional server settings are in [.env.example](.env.example). Authenticate a supported CLI through its native login mechanism before delegating work; the server does not require hosted-provider API keys.
 
-Add a server entry to your MCP client's configuration using the absolute checkout path:
+Add this entry to your MCP client's configuration, replacing the checkout path:
 
 ```json
 {
@@ -30,73 +49,140 @@ Add a server entry to your MCP client's configuration using the absolute checkou
 }
 ```
 
-Ensure the client's `PATH` can resolve your native CLI, or configure its absolute executable path in a CLI manifest. Configure workspace roots before passing project paths outside this checkout. See [getting started](docs/getting-started.md), [CLI configuration](docs/cli-configuration.md), [native task lifecycle](docs/native-cli-tasks.md), and [migration from PAL](docs/migration.md).
+Ensure the MCP client's `PATH` resolves the CLI, or configure its absolute executable path in a client manifest. Configure `working_dir` and `allowed_roots` before selecting projects outside the server's default working directory. Restart the MCP connection after updating server code or configuration. See [getting started](docs/getting-started.md), [CLI configuration](docs/cli-configuration.md), and [migration from PAL](docs/migration.md).
 
-## Selection and availability
+## Run the first native task
 
-Consultations default to `cli_name: "codex"` and `role: "default"`. Omitted `clink.action` and explicit `"consult"` retain that behavior. Native `"start"` requires explicit CLI selection and a project directory; it never inherits the consultation default. For consultations, a concrete `model` is passed as a native CLI identifier. Selection follows request → role → client default → the admitted adapter's native default; omitted, `null`, or `"auto"` selects the next default. Provider aliases and catalogs are not used. Requested and reported model identities are separate, and absent actual identity remains unknown.
+Call `version` and `listmodels` with empty arguments first. `listmodels` separates advisory `clients` from `native_task_clients`; inspect Claude's native profile. Discovery reports installation and recorded verification without authenticating or making inference calls. The current binary, recipe, and admission record are checked again at launch, so discovery availability is provisional.
 
-Call `version` and `listmodels` first. Discovery lists configured clients, roles, executable presence, verification status, model defaults, file-read scope, and capabilities without logging in or calling a model. Executable presence alone does not admit execution.
-
-| CLI | Policy availability |
-| --- | --- |
-| Codex 0.166.0 | Text, explicit local images, and structured native search admitted for the pinned macOS arm64 binary, restrictive recipe, and frozen model catalog. |
-| Claude Code 2.1.304 | Native tasks admitted for the exact recorded binary/recipe; consultation remains `policy_unverified` under its separate advisory policy. |
-| Gemini | Unavailable until version-specific policy controls and live tests pass. |
-| Antigravity (`agy`) / xAI Grok Build (`grok`) | Parser/discovery support only; execution remains `policy_unverified`, with no native task admission. |
-
-The [accepted Codex admission](docs/verification/cli-policy/codex-0.166.0-admission-v5-search.json) binds the exact version, executable, restrictive recipe, and bundled model catalog by SHA-256. It covers the tested macOS arm64 binary; other builds/versions are not admitted by that record. The [verification report](docs/verification/cli-policy/README.md) preserves failed attempts and limits. Historical v1/v2 acceptances were invalidated for backend usability; corrected text/image probes and a real structured-source lookup support the current admission. [Antigravity/Grok findings](docs/clink-cli-admission.md) are a separate investigation.
-
-The [Claude native admission](docs/verification/native-claude-2.1.304-admission.json) combines genuine attempts 2/3: file edits, a native failing-then-passing test, configured hooks/subagent, synthetic MCP environment inheritance, same-session follow-up, `permission_needed`, and cancellation after known mutation with the synthetic descendant gone. Attempt 1 and attempt 2's incomplete test/cancellation coverage remain preserved. This covers the recorded installed binary/recipe and synthetic project, not every user configuration, model, platform, or detached/remote cleanup case. A changed binary/recipe fails closed and needs reverification. See [native lifecycle results](docs/native-lifecycle-results.md).
-
-The Codex catalog/default snapshot is frozen until an explicitly verified refresh. It accepts only the 12 exact native IDs listed in the admission record; unknown names and prefix/namespace aliases return `unsupported_capability` before launch. With no request, role, or client model, the captured native default `gpt-6.1-sol` is passed explicitly and reported as `effective_model`, with `default_origin: "pinned_native_catalog"`. Only `gpt-6.1-sol` was exercised live; `actual_model` remains unknown unless reported by the CLI. This is native-ID selection, not provider alias translation.
-
-Codex receives bounded inline text and admitted images; native file/command tools are disabled. The native read-only profile can still read beyond the workspace, so this is not OS read isolation. Native search is verified from completed search records with actual returned structured source URLs; model prose and requested/open-page URLs do not establish search results. The backend has no automatic fallback or model retry.
-
-For example, the `clink` tool accepts:
+Use a disposable project with one failing test inside your configured roots. These examples are arguments to the **`clink` MCP tool**, not shell commands. Replace the project path, specify its actual test command in the prompt, and choose a new request key for each new submission:
 
 ```json
-{"prompt":"Review the declared change and return findings.","cli_name":"codex","role":"codereviewer"}
+{
+  "action": "start",
+  "cli_name": "claude",
+  "project_dir": "/absolute/path/to/scratch-project",
+  "prompt": "Fix the failing addition test. Run this project's test command before and after the change. Report changed files, check results, and unfinished work.",
+  "request_key": "scratch-fix-start-1",
+  "timeout_seconds": 180
+}
 ```
 
-Chat retains its required `working_directory_absolute_path`; that directory and explicit file paths must be within operator-configured roots. A request cannot expand those roots. Consultation code generation returns content and does not create project files such as `pal_generated.code`.
+Start returns promptly with a `task_handle`, `attempt_id`, and state. Save them and poll using the returned handle:
 
-## Tools and continuity
+```json
+{"action":"status","task_handle":"nt_0123456789abcdef0123456789abcdef"}
+```
 
-All **18 tools are enabled** unless listed in `DISABLED_TOOLS`. `version` and `listmodels` remain available.
+States are `queued`, `running`, `completed`, `permission_needed`, `failed`, `cancelled`, or `uncertain`. Inspect `result.content`, any `error.code`, and `possible_partial_effects`. **`completed` means execution finished; independently inspect the diff and run the checks before accepting the work.** Agent-reported changes and checks are marked unverified.
+
+When `followup_available` is true, send a new prompt and request key on the same handle:
+
+```json
+{
+  "action": "followup",
+  "task_handle": "nt_0123456789abcdef0123456789abcdef",
+  "prompt": "Add one edge-case test for the behavior you just changed, run it, and report the result.",
+  "request_key": "scratch-fix-followup-1",
+  "timeout_seconds": 180
+}
+```
+
+A follow-up creates a new attempt and resumes the private native session. The CLI, project, role, instruction profile, and model selection remain fixed. Native tasks use `task_handle`; do not pass a PAL `continuation_id`. Optional declared context uses `absolute_file_paths`.
+
+To cancel active work:
+
+```json
+{"action":"cancel","task_handle":"nt_0123456789abcdef0123456789abcdef"}
+```
+
+Status and cancel accept only those two fields. Cancellation waits for supervised process cleanup and is idempotent. It does not roll back edits or external actions; if work already finished, its terminal outcome is retained.
+
+Redeliver an identical submission with its original request key to retrieve the same task and attempt without another execution. Changing the input while reusing the key returns `request_key_conflict`. Deduplication lasts only while the server retains the attempt. See [native task usage](docs/native-cli-tasks.md) for all input, state, and retention rules.
+
+## What to test now
+
+The automated suite and synthetic Claude lifecycle checks have passed. The next acceptance pass should exercise your actual MCP client and native CLI configuration in a disposable project.
+
+| Check | Action and expected result |
+| --- | --- |
+| Connection and discovery | Restart the MCP connection, then call `version` and `listmodels`. Claude appears under native profiles; Codex remains the consultation backend. Discovery makes no model call. |
+| Edit and test | Start the small failing-test task above. Receive a handle promptly, poll to completion, inspect the actual diff, and independently rerun the test successfully. |
+| Same-session follow-up | Submit a small adjustment when `followup_available` is true. Expect the same handle, a new attempt ID, and useful prior native context without resending the conversation. |
+| Duplicate delivery | Repeat an identical start with its original key. Expect the same handle/attempt and `deduplicated: true`, with no repeated work. Change the prompt with that key and expect `request_key_conflict`. |
+| Your configured capabilities | Exercise one known benign hook, subagent, or MCP operation. Verify its actual artifact or result. Configure required environment variable names in the native profile; do not put credential values in prompts. |
+| Cancellation | Start a harmless long-running task that first creates a disposable marker. Independently observe the marker and confirm work is still active before cancelling; `running` alone does not prove an edit happened. Expect cleanup before project ownership is released, the marker to remain, and repeated cancellation to retain the outcome. Independently check supervised descendants stopped. |
+| Permission refusal | Use a disposable target protected by a known native permission rule. Expect `permission_needed`, unchanged protected content, and no permission bypass or automatic retry. Check the state even if no `error` object is present. |
+| Project ownership | While a task is active, submit a separate start with a new key for the same project or an overlapping parent/child path. Expect `project_busy`. After cleanup, a new task can acquire the project. |
+| Restart behavior | Save useful results and finish active tasks, then restart the server. An old handle returns `unavailable` with unknown execution outcome; it must not launch replacement work. |
+| Consultation regression | Call `clink` with a review prompt and `absolute_file_paths`, omitting `action` and `cli_name`. Expect Codex advice and unchanged files. A subsequent consultation can use its PAL continuation ID. |
+
+A `policy_unverified` launch after a CLI upgrade needs a new verification record. Report the CLI version and error; do not disable the admission check. Useful bug reports include the action, task/attempt identifiers, state/error code, and expected versus observed effects. Exclude credentials and raw private session transcripts.
+
+## All 18 tools
+
+All tools are enabled unless listed in `DISABLED_TOOLS`; `version` and `listmodels` remain available.
 
 | Tools | Behavior |
 | --- | --- |
-| `chat`, `clink` with omitted action or `action: "consult"` | One advisory CLI consultation. |
-| `clink` with `start`, `status`, `followup`, or `cancel` | Explicit bounded native task lifecycle; launch requires separate native admission. |
-| `thinkdeep`, `codereview`, `precommit`, `debug`, `secaudit`, `analyze`, `refactor`, `testgen` | Preserve caller-driven investigation; consult an expert at the final hook when requested. |
-| `consensus` | Sequential consultations by default, with explicit parallel mode. Consultants receive the original proposal and declared context; the caller synthesizes. |
-| `apilookup` | One verified native search lookup returning structured sources; recognized empty results return `no_results`. No automatic follow-up or fallback. |
-| `planner`, `docgen`, `tracer`, `challenge` | Local caller-driven guidance with no delegated model call. |
+| `chat`, `clink` | Advisory consultation by default. `clink` also exposes the explicit native lifecycle above. `chat` requires `working_directory_absolute_path`. |
+| `thinkdeep`, `codereview`, `precommit`, `debug`, `secaudit`, `analyze`, `refactor`, `testgen` | Caller-driven investigation with existing final expert-call conditions. `use_assistant_model: false` skips delegated expert analysis. |
+| `consensus` | Sequential consultations by default, with explicit parallel mode. Participants receive the original proposal and declared context, without peer answers; the caller synthesizes. Declared file changes invalidate the comparison. |
+| `apilookup` | One verified native search lookup returning structured sources; recognized empty results return `no_results`. |
+| `planner`, `docgen`, `tracer`, `challenge` | Local caller-driven guidance without delegated inference. |
 | `listmodels`, `version` | Local discovery and provenance. |
 
-Server continuations preserve bounded conversation and separate per-tool workflow state across calls. They are process-local and disappear on restart or expiry. They are not native CLI session IDs. Native tasks instead use opaque `task_handle` and per-submission `attempt_id` values; private native sessions are never exposed. See [task state and retention](docs/native-cli-tasks.md#state-and-retention). Consensus consultants do not receive conversation replay, caller findings, or peer answers; declared file changes invalidate their aggregate.
+The analytical tools still use consultations. Native implementation requires explicit `clink` task actions. Consultation continuations preserve bounded conversation and separate per-tool workflow state; they are process-local and disappear on restart or expiry. They are distinct from native task handles and private CLI session IDs.
 
-## Execution boundaries
+## Configuration and execution limits
 
-Consultations retain enforced advisory controls: no project edits, mutating shell tools, recursive delegation, inherited MCP, or hooks/plugins. Explicit native tasks use a separate profile that intentionally preserves configured tools, hooks, skills, plugins, MCP integrations, and subagents under native permissions. It supplies no permission bypass, PTY, approval relay, or durable server task store. Unsupported headless approval needs return `permission_needed`.
+Client manifests load in this order: bundled clients → legacy `~/.pal/cli_clients` → `~/.clink/cli_clients` → `CLI_CLIENTS_CONFIG_PATH`. Each later manifest replaces the entire named client, rather than merging individual fields. See the [manifest example](docs/cli-configuration.md#manifest-example) and [native task profile](docs/cli-configuration.md#native-task-profile).
 
-Both profiles share bounded process supervision. Roots constrain project selection and server-supplied context; they do not establish native filesystem or external-tool isolation. Native tasks reserve one writer for overlapping canonical project directories and serialize native session input; external writers remain outside that coordination. Server shutdown cancels its active tasks and awaits cleanup.
+Consultations default to `codex/default`. Model selection follows request → role → client → admitted adapter default. Native tasks require explicit CLI selection and use separate native-role and native-profile defaults. Bundled Claude native tasks use native CLI configuration unless overridden; they do not inherit the advisory `sonnet` default. Omitted, `null`, or `auto` model selection uses the next default. Provider aliases are never translated and backends are never silently switched.
 
-The default pool permits two running processes and eight queued launches. Requests have a 1,800-second overall deadline, including lock/queue waits; queue wait is capped at 30 seconds. Capture is capped at 10 MiB per stream and returned delegated text at 20,000 characters, with truncation metadata. A failed request is not automatically retried; a new explicit request may incur usage. Native CLIs can retry internally, and cancellation cannot undo edits, external actions, or remote work already submitted. Native task `completed` describes terminal execution, not verified task fulfillment; agent-reported changes and checks remain unverified until independently checked. See [native task limits and risks](docs/native-cli-tasks.md).
+The admitted Codex catalog accepts 12 exact native model IDs; only `gpt-6.1-sol` has been exercised live. Its captured default is passed explicitly when no other model is selected. Requested/effective identity and CLI-reported actual identity remain separate. Consultations receive bounded inline text and admitted explicit images; Codex native file/command tools are disabled. Native tasks currently reject images and legacy sampling controls such as `temperature` and `thinking_mode`.
 
-## Development and provenance
+| Resource | Bound |
+| --- | --- |
+| Shared process pool | Two running processes by default (`CLINK_MAX_CONCURRENT`), eight queued launches, 30-second maximum queue wait. |
+| Attempt deadline | At most 1,800 seconds, including preparation and waiting; a shorter client timeout wins. Follow-ups get fresh deadlines. |
+| Native task retention | 64 tasks, 16 attempts per task, 8 MiB of retained serialized data; latest result text at most 20,000 characters. |
+| Terminal retention | Three hours without polling extensions. Active tasks are not evicted. Restart loses task handles, session mapping, and deduplication. |
+| Prompt and output | Assembled inline prompt at most 1 MiB; captured stdout and stderr at most 10 MiB each. Truncation is reported. |
 
-The [17-tool live matrix](docs/verification/live-tools-2/README.md) and [separate actual lookup](docs/verification/native-search-1/README.md) cover all 18 tool outcomes, with local tools remaining local and source files unchanged. The lookup returned 20 structured source URLs. Subsequent URL/hostname/Unicode and literal `is_error` hardening was tested offline with separately recorded parser hashes and synthetic/source-shaped fixtures; the live call was not repeated under that final hardening, and no raw native-output replay is claimed.
+Native tasks reserve one writer for overlapping canonical project directories and serialize session input. External writers are outside this coordination. Shutdown cancels active tasks and awaits cleanup. The server does not automatically retry, fall back, or recreate lost work; native CLIs may retry internally.
 
-Install development requirements separately, then run nonintegration tests and check-only formatting:
+**Risk & Mitigation:** Native agents can change files and invoke external integrations under their configured permissions. Approved roots constrain project selection and server-supplied context; they are not an OS sandbox. Codex's consultation profile also does not provide OS read isolation. Check actual effects after failures, cancellation, or lost handles. Detached descendants and remote MCP jobs can outlive supervised cleanup. The depth guard cannot police recursion through an already-running MCP server. Use disposable acceptance projects and independently verify changes and cleanup.
+
+## Ready for the next implementation
+
+The first Claude task lifecycle is complete. **Grok native delegation is the next recommended slice, followed by Antigravity.** Both can reuse task handles, attempt tracking, project ownership, deduplication, and process supervision.
+
+Grok's installed headless documentation describes structured results and exact-session resume, making it the stronger next candidate. Implementation still needs a native launch adapter, bounded private prompt-file transport, private session handling, and permission-refusal parsing. Its headless interface ignores piped stdin; the existing advisory parser also intentionally discards session identity. Live verification must cover capability inheritance, edit/test, follow-up, permission refusal, and cancellation, including daemon/background behavior, before native execution is enabled.
+
+Antigravity has manifest and JSON parser groundwork. Its next slice must establish the installed version's native launch/resume, permission, and cancellation contract, then run the same lifecycle checks. The earlier difficulty disabling inherited hooks does not block this native profile, which intentionally preserves configured capabilities. See [adapter investigation](docs/clink-cli-admission.md).
+
+Native Codex execution is another adapter extension. Durable restart recovery, interactive approval relay, PTY/tmux or takeover interfaces, native images, and general recursive scheduling need separate design and verification; they are not unfinished requirements of the first lifecycle.
+
+## Development and evidence
+
+The [native lifecycle results](docs/native-lifecycle-results.md) record **1,338 tests and 16 subtests passing**, with zero failures, errors, or skips, under network and unrelated-home-file isolation. Independent review, check-only formatting, package builds, and installed-wheel discovery of all 18 tools also passed.
+
+The [Claude native admission](docs/verification/native-claude-2.1.304-admission.json) records genuine file edits, a failing-then-passing test, configured hooks/subagent, synthetic MCP environment inheritance, session follow-up, permission refusal, and cancellation after a known mutation with the synthetic descendant gone. Earlier incomplete attempts remain preserved. This establishes the recorded binary/recipe and synthetic project, not every personal configuration, model, platform, or detached/remote cleanup case.
+
+The earlier [17-tool live matrix](docs/verification/live-tools-2/README.md) and [separate actual lookup](docs/verification/native-search-1/README.md) cover consultation/local outcomes for all 18 tools. Later search-parser hardening was tested offline, without claiming a repeated live call or raw-output replay.
+
+Install development requirements separately, then run existing tests and check-only formatting:
 
 ```sh
 .venv/bin/python -m pip install -r requirements-dev.txt
+.venv/bin/python -m pytest tests/test_native_tasks.py tests/test_native_server.py tests/test_native_runtime.py tests/test_native_runner.py -q
 .venv/bin/python -m pytest tests/ -v -m "not integration"
 .venv/bin/python -m ruff check .
 .venv/bin/python -m black --check .
 .venv/bin/python -m isort --check-only .
 ```
 
-See the [CLI-only implementation results](docs/clink-implementation-results.md) for integrated verification and current limits. The [historical PAL audit](docs/clink-only-audit.md) and [historical baseline](docs/clink-only-baseline.md) describe the pinned upstream implementation and its earlier test environment, not final CLI-only verification. The [earlier advisory design](docs/clink-only-design.md) and [implementation plan](docs/clink-implementation-plan.md) retain their original scope. The [native lifecycle plan](docs/native-cli-lifecycle-plan.md) and [delegation handoff](docs/native-cli-delegation-handoff.md) record the newer explicit native-task direction; historical admission receipts do not admit that profile. Real CLI policy tests require explicit opt-in and can use native subscription/API quota. Existing PAL documents that describe hosted providers are historical; use the configuration and migration guides above for this fork.
+Real native lifecycle verification uses the opt-in `scripts/verify_native_cli.py` harness and can consume subscription/API quota. Its checks are separate from advisory policy verification. Consult the [results and reproduction commands](docs/native-lifecycle-results.md) before running either; a successful probe does not automatically admit another binary.
+
+The [historical PAL audit](docs/clink-only-audit.md), [baseline](docs/clink-only-baseline.md), and [earlier advisory design](docs/clink-only-design.md) describe earlier stages. The [native lifecycle plan](docs/native-cli-lifecycle-plan.md) and [delegation handoff](docs/native-cli-delegation-handoff.md) record the current direction. Use the configuration, migration, and native usage guides linked above for current behavior; legacy PAL/provider documents are historical.
