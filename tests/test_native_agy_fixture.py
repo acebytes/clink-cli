@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -85,6 +86,8 @@ def test_builder_uses_supported_project_files_and_narrow_native_hooks(project):
     hooks = json.loads((project / ".agents/hooks.json").read_text())["clink-native-fixture"]
     assert set(hooks) == {"SessionStart", "PreToolUse", "PostToolUse", "Stop"}
     assert hooks["PreToolUse"][0]["matcher"] == fixture.FIXTURE_TOOLS
+    assert re.fullmatch(hooks["PreToolUse"][0]["matcher"], "call_mcp_tool")
+    assert not re.fullmatch(hooks["PreToolUse"][0]["matcher"], "call_mcp_tool_unrelated")
     assert hooks["PostToolUse"][0]["matcher"] == "^(view_file|read_file)$"
     agent = (project / ".agents/agents/fixture-specialist.md").read_text()
     assert "  - read_file\n" in agent
@@ -114,10 +117,15 @@ def test_capability_prompt_binds_one_exact_native_child_request(project):
         + json.dumps({"Path": str(project / "specialist.txt")})
         + ". Return its exact token. Do not edit files, run commands, or delegate.",
     }
-    assert "mcp_native_fixture_canary with exactly {}" in prompt
+    mcp_args = json.loads(
+        prompt.split("Call call_mcp_tool with exactly this JSON argument object: ", 1)[1].split(
+            ". Use invoke_subagent", 1
+        )[0]
+    )
+    assert mcp_args == {"ServerName": "native_fixture", "ToolName": "canary", "Arguments": {}}
     assert "spawn_subagent" not in prompt
     assert "do not override its model" in prompt
-    write_args = json.loads(prompt.split("JSON argument object: ", 1)[1].split(". Call mcp_native_fixture", 1)[0])
+    write_args = json.loads(prompt.split("JSON argument object: ", 1)[1].split(". Call call_mcp_tool", 1)[0])
     assert write_args == {
         "Path": str(project / "arithmetic.py"),
         "Content": fixture.EXPECTED_ARITHMETIC,
@@ -603,6 +611,71 @@ def test_exact_fixture_capabilities_emit_only_fixed_approval_metadata(project, k
     assert "CommandLine" not in log
 
 
+def test_exact_generic_dispatcher_approves_only_the_existing_synthetic_mcp_call(project):
+    args = {"ServerName": "native_fixture", "ToolName": "canary", "Arguments": {}}
+    assert hook(project, "pre_tool", {"toolCall": {"name": "call_mcp_tool", "args": args}}) == {
+        "decision": "auto_approve"
+    }
+    assert fixture.agy_fixture_observations(project)["agy_fixture_mcp_canary_approval_emitted"] is True
+    row = json.loads((project / "agy-hooks.jsonl").read_text())
+    assert row["call_name_category"] == "call_mcp_tool"
+    assert row["expected_keys_present"] is True
+    assert row["unexpected_keys_present"] is False
+    assert row["mcp_empty_args"] is True
+    assert "ServerName" not in json.dumps(row)
+    assert "native_fixture" not in json.dumps(row)
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"ServerName": "PRIVATE_OTHER_SERVER"},
+        {"ToolName": "PRIVATE_OTHER_TOOL"},
+        {"ServerName": None},
+        {"ToolName": None},
+        {"ServerName": ["native_fixture"]},
+        {"ToolName": ["canary"]},
+        {"Arguments": {"extra": "PRIVATE_ARGUMENT"}},
+        {"Arguments": "{}"},
+        {"Arguments": []},
+        {"Arguments": None},
+        {"Arguments": False},
+        {"extra": "PRIVATE_ARGUMENT"},
+        {"BypassSandbox": False},
+    ],
+)
+def test_generic_mcp_dispatcher_does_not_approve_changed_values_types_or_extra_keys(project, change):
+    args = {"ServerName": "native_fixture", "ToolName": "canary", "Arguments": {}}
+    args.update(change)
+    assert hook(project, "pre_tool", {"toolCall": {"name": "call_mcp_tool", "args": args}}) == {"decision": "allow"}
+    assert fixture.agy_fixture_observations(project)["agy_fixture_mcp_canary_approval_emitted"] is False
+    log = (project / "agy-hooks.jsonl").read_text()
+    for private in ("PRIVATE_OTHER_SERVER", "PRIVATE_OTHER_TOOL", "PRIVATE_ARGUMENT"):
+        assert private not in log
+
+
+@pytest.mark.parametrize("missing", ["ServerName", "ToolName", "Arguments"])
+def test_generic_mcp_dispatcher_requires_every_canonical_field(project, missing):
+    args = {"ServerName": "native_fixture", "ToolName": "canary", "Arguments": {}}
+    del args[missing]
+    assert hook(project, "pre_tool", {"toolCall": {"name": "call_mcp_tool", "args": args}}) == {"decision": "allow"}
+    assert fixture.agy_fixture_observations(project)["agy_fixture_mcp_canary_approval_emitted"] is False
+
+
+def test_generic_mcp_dispatcher_keeps_protected_target_force_ask_first(project):
+    args = {
+        "ServerName": "native_fixture",
+        "ToolName": "canary",
+        "Arguments": {},
+        "Path": str(project / "permission-needed.txt"),
+    }
+    assert hook(project, "pre_tool", {"toolCall": {"name": "call_mcp_tool", "args": args}}) == {
+        "decision": "force_ask",
+        "reason": "Synthetic approval probe",
+    }
+    assert fixture.agy_fixture_observations(project)["agy_fixture_mcp_canary_approval_emitted"] is False
+
+
 @pytest.mark.parametrize(
     "case",
     [
@@ -934,12 +1007,13 @@ if "to observe failure" in prompt:
     command_args = {"CommandLine": prompt.split("Run exactly `", 1)[1].split("`", 1)[0], "toolSummary": "Run synthetic arithmetic test", "WaitMsBeforeAsync": 10000}
     assert hook("pre_tool", {"conversationId": session, "toolCall": {"name": "run_command", "args": command_args}}) == {"decision": "auto_approve"}
     subprocess.run([sys.executable, "fixture.py"], capture_output=True)
-    write_args = json.loads(prompt.split("JSON argument object: ", 1)[1].split(". Call mcp_native_fixture", 1)[0])
+    write_args = json.loads(prompt.split("JSON argument object: ", 1)[1].split(". Call call_mcp_tool", 1)[0])
     assert hook("pre_tool", {"conversationId": session, "toolCall": {"name": "write_file", "args": write_args}}) == {"decision": "auto_approve"}
     (root / "arithmetic.py").write_text("def add(a, b):\\n    return a + b\\n")
     assert hook("pre_tool", {"conversationId": session, "toolCall": {"name": "run_command", "args": command_args}}) == {"decision": "auto_approve"}
     subprocess.run([sys.executable, "fixture.py"], capture_output=True)
-    assert hook("pre_tool", {"conversationId": session, "toolCall": {"name": "mcp_native_fixture_canary", "args": {}}}) == {"decision": "auto_approve"}
+    mcp_args = json.loads(prompt.split("Call call_mcp_tool with exactly this JSON argument object: ", 1)[1].split(". Use invoke_subagent", 1)[0])
+    assert hook("pre_tool", {"conversationId": session, "toolCall": {"name": "call_mcp_tool", "args": mcp_args}}) == {"decision": "auto_approve"}
     request = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "canary"}})
     subprocess.run([sys.executable, "agy_mcp_server.py"], input=request + "\\n", text=True, capture_output=True, check=True)
     child_args = json.loads(prompt.split("Use invoke_subagent with exactly this JSON argument object: ", 1)[1].split(". Wait for", 1)[0])

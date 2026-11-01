@@ -8,6 +8,7 @@ import signal
 import sys
 import textwrap
 import time
+from pathlib import Path
 
 import pytest
 
@@ -161,6 +162,101 @@ def assert_private_values_not_exported(scope, *summaries):
     encoded = json.dumps([scope.receipt, *summaries], sort_keys=True)
     assert PRIVATE not in encoded
     assert USER_FILE not in encoded
+
+
+@pytest.mark.parametrize("selection", ["default", "none", "original"])
+def test_registered_binding_default_preserves_original_dedicated_pins(monkeypatch, selection):
+    validated = []
+    monkeypatch.setattr(trust.PreparedBinding, "validate", lambda binding: validated.append(binding))
+    if selection == "default":
+        binding = trust.approved_binding()
+    else:
+        binding = trust.approved_binding(trust.FIXTURE if selection == "original" else None)
+    assert validated == [binding]
+    assert binding.root == trust.PROJECT / "test_output/native-adapters/native-codex-0.166.0-attempt1-prepare.fixture"
+    assert binding.file_hashes == {
+        ".codex/config.toml": "7417eaf3e862467bdf2a53699c14c5e5df1359af2892713c01ce510a54304de2",
+        ".codex/hooks.json": "a3b468eb9f3d6105481fc76410ca344085ddf3e02b25d78ceac67d2eea278cac",
+        "codex_hook.py": "943f26e6fd756b9984749c5fe4b53ecdcbc8ae56a060a8f4f24810200e0f3a42",
+        ".codex/rules/native-fixture.rules": "5e14c4ce793a0e520faf405ee6119955c5e84e549671c0d7ef2c170404843c08",
+        ".codex/agents/fixture-specialist.toml": "eeb6c8d906cb5759b03121ae29fd66a8db93c74364a6cd36518a5d972456fbfe",
+        "codex_mcp_server.py": "2424778ea57b8a9f8c3ef42b417074801a0ba4ac499c04df01d6a93aeca3cdcd",
+    }
+    assert binding.aggregate_files == trust.PREPARED_FILES
+    assert len(binding.aggregate_files) == 12
+    assert binding.aggregate_sha256 == "c6d7fe36c5c704719d2833318ed37e8d4a2cfa2abaa4bba33e9a8d7bd4067972"
+    expected_hooks = dict(
+        zip(
+            EVENTS,
+            (
+                "9482eed34b1b9a959850d28ca3a05e784ebba9c04f1a9fe26353ee44fb106078",
+                "37d003d178723374fd0153f1eb417f430faf9ed26a4910a880484d0af8c8b827",
+                "086d522ad2f2ee0a6fe0578146529008bf5440f8a211ae9a590257281dfcdf55",
+                "10dcd57fad2efbd7a7878861b49b276b258b00f3f76bd54c4263729554cfb1b8",
+                "ae582946138d8e3cb02829c07096c2f26f182bed3d616a395c7bd6bb89005177",
+            ),
+            strict=True,
+        )
+    )
+    assert binding.hook_hashes == {
+        f"{binding.root}/.codex/hooks.json:{event}:0:0": "sha256:" + value for event, value in expected_hooks.items()
+    }
+
+
+def test_registered_revised_binding_uses_all_twelve_new_pins_and_exact_hook_roots(monkeypatch):
+    validated = []
+    monkeypatch.setattr(trust.PreparedBinding, "validate", lambda binding: validated.append(binding))
+    binding = trust.approved_binding(trust.REVISED_FIXTURE)
+    assert validated == [binding]
+    assert binding.root == trust.PROJECT / "test_output/native-adapters/native-codex-0.166.0-attempt4-prepare.fixture"
+    assert binding.file_hashes == trust.REVISED_FILE_HASHES
+    assert set(binding.file_hashes) == set(binding.aggregate_files) == set(trust.PREPARED_FILES)
+    assert len(binding.file_hashes) == 12
+    expected_aggregate = "6d5b6637b4bcf88de20375b2de2417625f0aedaf3e045b4f7cb34d888b220f36"
+    assert binding.aggregate_sha256 == expected_aggregate
+    assert hashlib.sha256(json.dumps(binding.file_hashes, sort_keys=True).encode()).hexdigest() == expected_aggregate
+    expected_hooks = dict(
+        zip(
+            EVENTS,
+            (
+                "c4db559651e7f5160654f0539ba01245065dc1cb646f43f20b7403d82b1bc020",
+                "5fd023035dc0be87d1c956192e51c6c211d969bc6fd4211c6a8cc8038eddc3dc",
+                "c6dc7017f9b85cf66802028280844bceebc0a8fdb37af62b1c046c8625d10c48",
+                "ef657018c507d0c8f243d9612e0c2a09be608bd0d643f7d273bf21145cc7f484",
+                "cfb71cc0bff905295ece329a10d3c97192a4333f5b63d79342fc07e30375b40c",
+            ),
+            strict=True,
+        )
+    )
+    assert binding.hook_hashes == {
+        f"{binding.root}/.codex/hooks.json:{event}:0:0": "sha256:" + value for event, value in expected_hooks.items()
+    }
+
+
+@pytest.mark.parametrize("selection", ["marked_unknown", "alias", "registered_child"])
+def test_unregistered_binding_roots_are_refused_before_validation_or_alias_resolution(tmp_path, monkeypatch, selection):
+    unknown = tmp_path / "marked-unknown-fixture"
+    unknown.mkdir()
+    (unknown / ".clink-native-verification-fixture").write_text("synthetic-native-adapter-fixture-v1\n")
+    alias = tmp_path / "registered-fixture-alias"
+    alias.symlink_to(trust.REVISED_FIXTURE, target_is_directory=True)
+    requested = {
+        "marked_unknown": unknown,
+        "alias": alias,
+        "registered_child": trust.REVISED_FIXTURE / "nested-fixture",
+    }[selection]
+    validated = []
+    monkeypatch.setattr(trust.PreparedBinding, "validate", lambda binding: validated.append(binding))
+
+    def forbidden_resolution(*args, **kwargs):
+        pytest.fail("An unregistered root must be rejected without filesystem resolution")
+
+    with monkeypatch.context() as guard:
+        guard.setattr(Path, "resolve", forbidden_resolution)
+        with pytest.raises(trust.TrustError, match="fixture_root_not_registered") as caught:
+            trust.approved_binding(requested)
+    assert str(caught.value) == "fixture_root_not_registered"
+    assert validated == []
 
 
 def test_project_first_then_exact_inventory_hashes_before_five_hook_records(prepared):

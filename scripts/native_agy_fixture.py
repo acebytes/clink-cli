@@ -24,7 +24,7 @@ from scripts.native_mcp_fixture import MCP_SERVER
 
 SPECIALIST_TOKEN = "AGY_SPECIALIST_CANARY_586293"
 MAX_OBSERVATION_BYTES = 65536
-FIXTURE_TOOLS = "^(write_file|write_to_file|replace_file_content|multi_replace_file_content|run_command|mcp_native_fixture_canary|invoke_subagent)$"
+FIXTURE_TOOLS = "^(write_file|write_to_file|replace_file_content|multi_replace_file_content|run_command|mcp_native_fixture_canary|call_mcp_tool|invoke_subagent)$"
 APPROVAL_KINDS = ("test_command", "cancel_command", "arithmetic_edit", "mcp_canary", "subagent")
 # The installed oneharness async command schema omits Cwd; its workspace comes from workspacePaths.
 COMMAND_WAIT_MS = 10000
@@ -36,6 +36,7 @@ CALL_CATEGORIES = (
     "replace_file_content",
     "multi_replace_file_content",
     "mcp_native_fixture_canary",
+    "call_mcp_tool",
     "invoke_subagent",
     "unknown",
 )
@@ -118,7 +119,9 @@ def agy_capability_prompt(root: Path) -> str:
             },
             sort_keys=True,
         )
-        + ". Call mcp_native_fixture_canary with exactly {} as its arguments. "
+        + ". Call call_mcp_tool with exactly this JSON argument object: "
+        + json.dumps({"ServerName": "native_fixture", "ToolName": "canary", "Arguments": {}}, sort_keys=True)
+        + ". "
         "Use invoke_subagent with exactly this JSON argument object: "
         + json.dumps(_subagent_request(root), sort_keys=True)
         + ". Wait for the child's completion before the final answer; do not override its model. "
@@ -206,6 +209,7 @@ def predicate_diagnostic(call, workspace_paths):
     expected_by_kind = {
         "run_command": selected_command_keys, "write_to_file": write_keys, "write_file": modern_write_keys,
         "mcp_native_fixture_canary": set(),
+        "call_mcp_tool": {"ServerName", "ToolName", "Arguments"},
         "invoke_subagent": {"Subagents"} if "Subagents" in args else {"TypeName", "Role", "Prompt"}
     }
     expected = expected_by_kind.get(category, set())
@@ -257,7 +261,10 @@ def predicate_diagnostic(call, workspace_paths):
     observed["write_overwrite_matches"] = args.get("Overwrite") is True
     observed["write_description_bounded"] = bounded_text(args.get("Description"))
     observed["write_keys_exact"] = set(args) in (write_keys, modern_write_keys)
-    observed["mcp_empty_args"] = category == "mcp_native_fixture_canary" and args == {}
+    observed["mcp_empty_args"] = (
+        category == "mcp_native_fixture_canary" and args == {}
+        or category == "call_mcp_tool" and args.get("Arguments") == {}
+    )
     observed["subagent_request_matches"] = category == "invoke_subagent" and args in (SUBAGENT_REQUEST, CLASSIC_SUBAGENT_REQUEST)
     return observed
 
@@ -293,6 +300,12 @@ def fixture_approval(call, workspace_paths):
     ):
         return "arithmetic_edit"
     if name == "mcp_native_fixture_canary" and args == {}:
+        return "mcp_canary"
+    if (
+        name == "call_mcp_tool" and set(args) == {"ServerName", "ToolName", "Arguments"}
+        and args.get("ServerName") == "native_fixture" and args.get("ToolName") == "canary"
+        and args.get("Arguments") == {}
+    ):
         return "mcp_canary"
     if name == "invoke_subagent" and args in (SUBAGENT_REQUEST, CLASSIC_SUBAGENT_REQUEST):
         return "subagent"

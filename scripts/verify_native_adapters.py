@@ -49,6 +49,7 @@ from scripts.native_agy_fixture import (  # noqa: E402
     observe_agy_stream,
 )
 from scripts.native_codex_fixture import CAPABILITY_PROMPT as CODEX_CAPABILITY_PROMPT  # noqa: E402
+from scripts.native_codex_fixture import PERMISSION_COMMAND as CODEX_PERMISSION_COMMAND  # noqa: E402
 from scripts.native_codex_fixture import PERMISSION_PROMPT as CODEX_PERMISSION_PROMPT  # noqa: E402
 from scripts.native_codex_fixture import (  # noqa: E402
     codex_fixture_gaps,
@@ -59,6 +60,7 @@ from scripts.native_codex_fixture import (  # noqa: E402
 from scripts.native_codex_trust import CLEANUP_ERROR_CODES as CODEX_CONTROL_CLEANUP_ERRORS  # noqa: E402
 from scripts.native_codex_trust import ERROR_CODES as CODEX_TRUST_ERROR_CODES  # noqa: E402
 from scripts.native_codex_trust import NativeRpc, TrustError, TrustScope, approved_binding  # noqa: E402
+from scripts.native_denial_diagnostics import native_denial_diagnostic, valid_native_denial_diagnostic  # noqa: E402
 from scripts.native_diagnostics import exception_diagnostic, valid_exception_diagnostic  # noqa: E402
 from scripts.native_fixture_trust import grok_fixture_trust  # noqa: E402
 from scripts.native_mcp_fixture import MCP_SERVER, mcp_environment_observed  # noqa: E402
@@ -541,6 +543,7 @@ def load_history(previous: Path | None, adapter: str) -> tuple[list[dict[str, An
         "cleanup_observation_exception",
         "native_parser_failure_code",
         "native_parser_shape",
+        "native_denial_diagnostic",
     }
     for ordinal, entry in enumerate(ledger, 1):
         if (
@@ -583,6 +586,10 @@ def load_history(previous: Path | None, adapter: str) -> tuple[list[dict[str, An
         if any(key in entry for key in ("native_parser_failure_code", "native_parser_shape")):
             if adapter != "agy" or not valid_agy_parser_diagnostic(entry):
                 raise ValueError("Prior evidence contains an invalid technical native parser diagnostic")
+        if "native_denial_diagnostic" in entry and not valid_native_denial_diagnostic(
+            entry["native_denial_diagnostic"], adapter
+        ):
+            raise ValueError("Prior evidence contains an invalid technical native denial diagnostic")
     if receipt.get("submissions_consumed_total") != len(ledger):
         raise ValueError("Prior evidence submission count does not match its ledger")
     return json.loads(json.dumps(ledger)), allowance, digest(previous.read_bytes())
@@ -686,6 +693,14 @@ class VerificationPool(ProcessPool):
                 "stderr_bytes": output.stderr_bytes,
             }
         )
+        adapter = self.evidence.get("adapter")
+        if adapter in {"agy", "codex"}:
+            entry["native_denial_diagnostic"] = native_denial_diagnostic(
+                adapter,
+                output.stdout,
+                test_command=fixture_command() if adapter == "codex" else None,
+                permission_command=CODEX_PERMISSION_COMMAND if adapter == "codex" else None,
+            )
         if self.evidence.get("adapter") == "agy":
             entry.update(agy_parser_diagnostic(output.stdout, output.stderr))
             if self.fixture_root is not None:
@@ -1247,7 +1262,12 @@ async def verify(args: argparse.Namespace) -> dict[str, Any]:
     if args.trust_codex_fixture:
         if args.adapter != "codex" or args.fixture_root is None or args.prior_evidence is None or args.prepare_only:
             raise ValueError("Codex trust requires its live exact existing fixture and prior evidence")
-        codex_binding = approved_binding()
+        try:
+            codex_binding = approved_binding(args.fixture_root.expanduser())
+        except TrustError as exc:
+            if exc.code == "fixture_root_not_registered":
+                raise ValueError("Codex trust is limited to the explicitly approved existing fixture") from None
+            raise
         if args.fixture_root.expanduser().resolve(strict=True) != codex_binding.root:
             raise ValueError("Codex trust is limited to the explicitly approved existing fixture")
     path = verification_path(args.evidence)

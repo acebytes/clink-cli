@@ -2,6 +2,16 @@
 
 This extension adds Grok, Antigravity, and Codex to the existing native task manager. **Grok native execution is now admitted for its exact recorded macOS arm64 binary and recipe.** Antigravity and native Codex remain disabled candidates pending their live verification gates. The accepted Claude native profile and Codex consultation profile retain their existing recipes and admission records.
 
+## Reopened verification
+
+The user's subsequent permission reopened the two stopped investigations. Bounded, read-only inspection of the exact synthetic native artifacts identified their MCP refusals without changing earlier receipts. The [Antigravity diagnosis](native-agy-attempt6-diagnosis.md) correlates the failed generic `call_mcp_tool` step with an `allow` hook decision, which left native policy to decide; the fixture had no exact dispatcher approval match. The [Codex diagnosis](native-codex-attempt3-diagnosis.md) correlates its canary invocation with native MCP approval being unavailable under `never`. Its unannotated canary lacked the metadata used by native automatic approval.
+
+The scoped repairs add an exact Antigravity server/tool/empty-arguments dispatcher match and a Codex-only additive, create-once canary with truthful capability annotations. Neither changes production permission modes or overrides explicit native policy. New verifier diagnostics retain fixed refusal categories from bounded structured output without exporting raw sessions or commands. The [new Agy preparation](verification/native-agy-1.4.12-attempt7-prepare.json) and [new Codex preparation](verification/native-codex-0.166.0-attempt4-prepare.json) made zero model submissions or trust writes. The recorded allowances are now nine and five cumulative calls respectively, preserving five and one consumed calls. Fresh lifecycle verification and independent admission review remain required. Historical stop statements below describe the preceding checkpoints.
+
+[Candidate 11](verification/native-adapters-candidate11/) recorded **2,117 passed, 16 subtests passed, and one failed**. The failure was a synthetic trust-helper stub that still accepted zero arguments after exact-root selection gained a requested-root argument. It occurred before fixture execution; the verification helper contract was unchanged by the test repair. Preserve this result separately from the subsequent corrected suite.
+
+[Candidate 12](verification/native-adapters-candidate12/) passed **2,118 tests and 16 subtests** with network and unrelated-home-file isolation. Independent review cleared the scoped fixture corrections, bounded diagnostics, exact replacement trust bindings, and corrected test stub. Formatting and lint checks passed. This establishes the repaired test harness; live capability evidence is still separate.
+
 ## Implemented contracts
 
 | Adapter | Input and private continuation | Native outcome handling |

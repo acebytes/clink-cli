@@ -68,6 +68,30 @@ HOOK_HASHES = dict(
         strict=True,
     )
 )
+# A separately prepared replacement; never repoint the original packet's pins.
+REVISED_FIXTURE = PROJECT / "test_output/native-adapters/native-codex-0.166.0-attempt4-prepare.fixture"
+REVISED_FILE_HASHES = {
+    ".clink-native-verification-fixture": "e8c6a171e39f6736e0bed5b83d33b58bcaffdc1d56052363d109806173cbcace",
+    ".codex/agents/fixture-specialist.toml": "a0d77681e4ae0747a14ecdc3bc804ca228cf46b14bb8287762a0c590278456f3",
+    ".codex/config.toml": "df848231abf2c8bae80aef10c33a93c09872687a33b88f902608a9dd8e2c98ce",
+    ".codex/hooks.json": "4aef088952536f0847667d4ea41defbc9ca854e084e3c0642bfb7673ea6a24e1",
+    ".codex/rules/native-fixture.rules": "5e14c4ce793a0e520faf405ee6119955c5e84e549671c0d7ef2c170404843c08",
+    "AGENTS.md": "6ced3b1036ddbc48cc3cdff4f8b09ca60cad1eeb03b07f6fe678c7ab3cfb7894",
+    "codex-specialist.txt": "4a8bbf39966ea35435f35bf23c227b229d10c7dcb6e2e8a64e1fbf0b27072447",
+    "codex_hook.py": "943f26e6fd756b9984749c5fe4b53ecdcbc8ae56a060a8f4f24810200e0f3a42",
+    "codex_mcp_server.py": "45844bad6648e9fb01a0ae32f0662dca15dc36efc907410c0a2582299319d2ee",
+    "fixture.py": "0edd97897e42fe440575383ef21c3b026a94bb339b2d7919c05e58243920e4cc",
+    "mcp_server.py": "2424778ea57b8a9f8c3ef42b417074801a0ba4ac499c04df01d6a93aeca3cdcd",
+    "native-role.txt": "15f69b23c897e02f43c30dcb2a117830b18e012f9c321fdb65315682a129dac0",
+}
+REVISED_AGGREGATE = "6d5b6637b4bcf88de20375b2de2417625f0aedaf3e045b4f7cb34d888b220f36"
+REVISED_HOOK_HASHES = {
+    "session_start": "c4db559651e7f5160654f0539ba01245065dc1cb646f43f20b7403d82b1bc020",
+    "pre_tool_use": "5fd023035dc0be87d1c956192e51c6c211d969bc6fd4211c6a8cc8038eddc3dc",
+    "post_tool_use": "c6dc7017f9b85cf66802028280844bceebc0a8fdb37af62b1c046c8625d10c48",
+    "subagent_start": "ef657018c507d0c8f243d9612e0c2a09be608bd0d643f7d273bf21145cc7f484",
+    "subagent_stop": "cfb71cc0bff905295ece329a10d3c97192a4333f5b63d79342fc07e30375b40c",
+}
 _MISSING = object()
 _HASH = re.compile(r"sha256:[0-9a-f]{64}\Z")
 CLEANUP_ERROR_CODES = frozenset(
@@ -98,6 +122,7 @@ ERROR_CODES = frozenset(
         "fixture_file_changed",
         "fixture_marker_changed",
         "fixture_path_changed",
+        "fixture_root_not_registered",
         "fixture_unavailable",
         "hook_binding_invalid",
         "hook_inventory_binding_mismatch",
@@ -220,14 +245,22 @@ class PreparedBinding:
             raise TrustError("hook_binding_invalid")
 
 
-def approved_binding() -> PreparedBinding:
-    """Bind only the exact existing packet; never regenerate its files."""
+def approved_binding(requested_root: Path | None = None) -> PreparedBinding:
+    """Select an exact prepared packet; retain the historical default and pins."""
+    selected_root = FIXTURE if requested_root is None else requested_root
+    if selected_root == FIXTURE:
+        root, files, hooks, aggregate = FIXTURE, FILE_HASHES, HOOK_HASHES, PREPARED_AGGREGATE
+    elif selected_root == REVISED_FIXTURE:
+        root, files, hooks, aggregate = REVISED_FIXTURE, REVISED_FILE_HASHES, REVISED_HOOK_HASHES, REVISED_AGGREGATE
+    else:
+        # Reject aliases and new roots before opening any of their contents.
+        raise TrustError("fixture_root_not_registered")
     binding = PreparedBinding(
-        FIXTURE,
-        FILE_HASHES,
-        {f"{FIXTURE}/.codex/hooks.json:{event}:0:0": "sha256:" + value for event, value in HOOK_HASHES.items()},
+        root,
+        files,
+        {f"{root}/.codex/hooks.json:{event}:0:0": "sha256:" + value for event, value in hooks.items()},
         PREPARED_FILES,
-        PREPARED_AGGREGATE,
+        aggregate,
     )
     binding.validate()
     return binding

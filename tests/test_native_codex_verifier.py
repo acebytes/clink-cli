@@ -167,7 +167,12 @@ emit({"type": "turn.completed", "usage": {"input_tokens": 1, "cached_input_token
 
         monkeypatch.setattr(verifier, "NativeRpc", Control)
         monkeypatch.setattr(verifier, "TrustScope", Scope)
-        monkeypatch.setattr(verifier, "approved_binding", lambda: SimpleNamespace(root=prepared_root))
+
+        def binding(requested_root):
+            assert requested_root == prepared_root
+            return SimpleNamespace(root=prepared_root)
+
+        monkeypatch.setattr(verifier, "approved_binding", binding)
         monkeypatch.setattr(verifier, "configuration_gates", lambda *args: sorted(verifier.CONFIG_GATES))
     args = verifier.argument_parser().parse_args(
         [

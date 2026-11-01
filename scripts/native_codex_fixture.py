@@ -24,7 +24,7 @@ from typing import Any
 
 from clink.parsers.base import ParserError, load_json
 from clink.parsers.codex_native import CodexNativeParser
-from scripts.native_mcp_fixture import MCP_SERVER
+from scripts.native_mcp_fixture import mcp_server_program
 from scripts.verify_native_cli import SENTINEL_NAME
 
 SOURCE_COMMIT = "6ff1e1ca3b30fc8b914720681fcf5fe62e95f856"
@@ -45,6 +45,7 @@ CAPABILITY_PROMPT = (
 MAX_OBSERVATION_BYTES = 65536
 MAX_STREAM_BYTES = 10 * 1024 * 1024
 _STREAM_FILE = "codex-stream-observed.json"
+MCP_TOOL_ANNOTATIONS = {"readOnlyHint": False, "destructiveHint": False, "openWorldHint": False}
 
 HOOK_PROGRAM = '''"""Observe passive native lifecycle hooks; never approve or deny an operation."""
 import fcntl
@@ -146,7 +147,7 @@ def create_codex_fixture(root: Path) -> list[str]:
         "codex_hook.py": HOOK_PROGRAM.replace("@SPECIALIST@", repr(SPECIALIST_ROLE))
         .replace("@TOKEN@", repr(SPECIALIST_TOKEN))
         .replace("@PERMISSION_COMMAND@", repr(PERMISSION_COMMAND)),
-        "codex_mcp_server.py": MCP_SERVER,
+        "codex_mcp_server.py": mcp_server_program(tool_annotations=MCP_TOOL_ANNOTATIONS, create_only_observation=True),
         "codex-specialist.txt": SPECIALIST_TOKEN + "\n",
         ".codex/config.toml": config,
         ".codex/hooks.json": json.dumps(hooks, indent=2) + "\n",

@@ -72,6 +72,39 @@ while True:
 '''
 
 
+def mcp_server_program(
+    *, tool_annotations: dict[str, bool] | None = None, create_only_observation: bool = False
+) -> str:
+    """Retain default bytes or render truthful metadata for an additive canary.
+
+    MCP destructiveHint=false means additive updates only. The optional variant
+    therefore requires exclusive creation and never replaces an existing marker.
+    Every variant writes its marker, so none may claim readOnlyHint=true.
+    """
+    if type(create_only_observation) is not bool:
+        raise ValueError("Synthetic MCP observation mode must be boolean")
+    program = MCP_SERVER
+    if tool_annotations is not None:
+        if (
+            not isinstance(tool_annotations, dict)
+            or set(tool_annotations) != {"readOnlyHint", "destructiveHint", "openWorldHint"}
+            or any(type(value) is not bool for value in tool_annotations.values())
+            or tool_annotations["readOnlyHint"]
+            or (not tool_annotations["destructiveHint"] and not create_only_observation)
+        ):
+            raise ValueError("Synthetic MCP annotations must describe its actual marker writes")
+        schema = '            "inputSchema":'
+        if program.count(schema) != 1:
+            raise ValueError("Synthetic MCP canary schema anchor changed")
+        program = program.replace(schema, f'            "annotations": {tool_annotations!r},\n' + schema, 1)
+    if create_only_observation:
+        flags = "os.O_WRONLY | os.O_CREAT | os.O_NOFOLLOW"
+        if program.count(flags) != 1:
+            raise ValueError("Synthetic MCP canary observation anchor changed")
+        program = program.replace(flags, "os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW", 1)
+    return program
+
+
 def _unique_object(pairs: list[tuple[str, object]]) -> dict:
     result = {}
     for name, value in pairs:

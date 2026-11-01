@@ -304,12 +304,22 @@ async def test_reaped_control_with_cleanup_failure_is_recorded_and_gated(control
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("mode", ["wrong_adapter", "missing_root", "missing_prior", "prepare_only", "wrong_root"])
+@pytest.mark.parametrize(
+    "mode", ["wrong_adapter", "missing_root", "missing_prior", "prepare_only", "wrong_root", "alias_root"]
+)
 async def test_trust_optin_requires_the_exact_existing_packet_before_discovery(tmp_path, monkeypatch, mode):
     monkeypatch.setattr(verifier, "PROJECT", tmp_path)
     approved = tmp_path / "approved"
     approved.mkdir()
-    monkeypatch.setattr(verifier, "approved_binding", lambda: SimpleNamespace(root=approved))
+    selected = []
+
+    def binding(requested_root):
+        selected.append(requested_root)
+        if requested_root != approved:
+            raise verifier.TrustError("fixture_root_not_registered")
+        return SimpleNamespace(root=approved)
+
+    monkeypatch.setattr(verifier, "approved_binding", binding)
     monkeypatch.setattr(verifier.shutil, "which", lambda *args: pytest.fail("Invalid trust options reached discovery"))
     args = verifier.argument_parser().parse_args(
         [
@@ -333,10 +343,39 @@ async def test_trust_optin_requires_the_exact_existing_packet_before_discovery(t
         args.prior_evidence = None
     elif mode == "prepare_only":
         args.prepare_only = True
-    else:
+    elif mode == "wrong_root":
         args.fixture_root = tmp_path / "other"
         args.fixture_root.mkdir()
+    else:
+        args.fixture_root = tmp_path / "alias"
+        args.fixture_root.symlink_to(approved, target_is_directory=True)
     with pytest.raises(ValueError, match="Codex trust"):
+        await verifier.verify(args)
+    assert selected == ([args.fixture_root] if mode in {"wrong_root", "alias_root"} else [])
+
+
+@pytest.mark.asyncio
+async def test_changed_approved_binding_keeps_its_technical_failure_before_discovery(tmp_path, monkeypatch):
+    def changed_binding(requested_root):
+        raise verifier.TrustError("fixture_file_changed")
+
+    monkeypatch.setattr(verifier, "approved_binding", changed_binding)
+    monkeypatch.setattr(verifier.shutil, "which", lambda *args: pytest.fail("Changed binding reached discovery"))
+    args = verifier.argument_parser().parse_args(
+        [
+            "--live",
+            "--adapter",
+            "codex",
+            "--trust-codex-fixture",
+            "--fixture-root",
+            str(tmp_path / "approved"),
+            "--prior-evidence",
+            str(tmp_path / "prior.json"),
+            "--evidence",
+            str(tmp_path / "docs/verification/next.json"),
+        ]
+    )
+    with pytest.raises(verifier.TrustError, match="^fixture_file_changed$"):
         await verifier.verify(args)
 
 
@@ -390,7 +429,13 @@ async def test_trust_entrypoint_reuses_pinned_fixture_and_preserves_preflight_wi
     executable = tmp_path / "synthetic-codex"
     executable.write_text("Not executed; native control and model work are replaced in this test.")
     monkeypatch.setattr(verifier.shutil, "which", lambda name: str(executable))
-    monkeypatch.setattr(verifier, "approved_binding", lambda: SimpleNamespace(root=root))
+    selected = []
+
+    def binding(requested_root):
+        selected.append(requested_root)
+        return SimpleNamespace(root=root)
+
+    monkeypatch.setattr(verifier, "approved_binding", binding)
     monkeypatch.setattr(verifier, "create_fixture", lambda *args: pytest.fail("Existing fixture was regenerated"))
     monkeypatch.setattr(
         verifier,
@@ -429,6 +474,7 @@ async def test_trust_entrypoint_reuses_pinned_fixture_and_preserves_preflight_wi
         ]
     )
     evidence = await verifier.verify(args)
+    assert selected == [root]
     assert evidence["native_verified"] is True
     assert evidence["submission_allowance_total"] == evidence["submissions_consumed_total"] == 4
     assert evidence["prior_evidence_sha256"] == verifier.digest(before)
