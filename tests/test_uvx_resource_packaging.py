@@ -5,6 +5,8 @@ import json
 from importlib.resources import files
 from pathlib import Path
 
+import pytest
+
 from clink.models import CLIClientConfig
 from clink.registry import ClinkRegistry
 
@@ -55,6 +57,7 @@ def test_distribution_explicitly_excludes_provider_packages_and_catalogs():
         "clink": [
             "resources/codex-0.166.0-models-direct.json",
             "resources/native-claude-2.1.304-admission.json",
+            "resources/native-grok-1.0.70-admission.json",
             "resources/PROVENANCE.md",
             "resources/CODEX-LICENSE",
             "resources/CODEX-NOTICE",
@@ -79,16 +82,20 @@ def test_pinned_codex_runtime_resource_survives_package_installation():
     assert all(model["tool_mode"] == "direct" for model in catalog["models"])
 
 
-def test_native_admission_is_packaged_and_matches_its_pinned_receipt():
+@pytest.mark.parametrize(
+    "adapter,filename",
+    [("claude", "native-claude-2.1.304-admission.json"), ("grok", "native-grok-1.0.70-admission.json")],
+)
+def test_native_admission_is_packaged_and_matches_its_pinned_receipt(adapter, filename):
     from clink.native import _VERIFIED_NATIVE_POLICIES
     from clink.native_policy import native_recipe_digest
 
-    policy = _VERIFIED_NATIVE_POLICIES["claude"]
-    content = files("clink").joinpath("resources/native-claude-2.1.304-admission.json").read_bytes()
+    policy = _VERIFIED_NATIVE_POLICIES[adapter]
+    content = files("clink").joinpath(f"resources/{filename}").read_bytes()
     assert hashlib.sha256(content).hexdigest() == policy.evidence_sha256
-    assert policy.evidence == "clink/resources/native-claude-2.1.304-admission.json"
-    assert policy.recipe_sha256 == native_recipe_digest()
-    assert content == (ROOT / "docs/verification/native-claude-2.1.304-admission.json").read_bytes()
+    assert policy.evidence == f"clink/resources/{filename}"
+    assert policy.recipe_sha256 == native_recipe_digest(adapter)
+    assert content == (ROOT / "docs/verification" / filename).read_bytes()
 
 
 def test_codex_resource_retains_license_notice_and_modification_provenance():

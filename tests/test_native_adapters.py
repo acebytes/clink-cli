@@ -40,6 +40,7 @@ def adapter_runtime(tmp_path, monkeypatch):
 
     monkeypatch.setattr(adapters.tempfile, "mkdtemp", private_directory)
     monkeypatch.setattr(native, "__file__", str(tmp_path / "clink" / "native.py"))
+    monkeypatch.setattr(native, "_VERIFIED_NATIVE_PLATFORMS", {})
     monkeypatch.delenv("CLINK_DELEGATION_DEPTH", raising=False)
     evidence = tmp_path / "docs" / "verification" / "native.json"
     evidence.parent.mkdir(parents=True)

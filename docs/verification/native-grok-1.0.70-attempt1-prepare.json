@@ -1,0 +1,60 @@
+{
+  "adapter": "grok",
+  "additional_submission_allowance": 0,
+  "argv_recorded": false,
+  "automatic_retries": 0,
+  "candidate_admission_override": "harness_only_no_production_policy_changes",
+  "candidate_preflight_sha256": "de79f0c388aa39f81030657b9b58bb23f3318449c9273673fd858721f7c44f38",
+  "configuration_preparation_gates": [
+    "project_trust_enrolled",
+    "task_scope_controls_configured"
+  ],
+  "environment_values_recorded": false,
+  "executable_sha256": "5c8a688251bf61e35370b828b6a353b0a20fcc3f64000de8a91d426039f29cec",
+  "explicit_replacement_checks": [],
+  "fixture_config_files": [
+    ".clink-native-verification-fixture",
+    "AGENTS.md",
+    "fixture.py",
+    "mcp_server.py",
+    "native-role.txt",
+    "GROK.md",
+    "scope_hook.py",
+    ".grok/config.toml",
+    ".grok/hooks/native-fixture.json",
+    ".grok/agents/fixture-specialist.md",
+    "specialist.txt"
+  ],
+  "fixture_config_sha256": "386f22323a5ee81020473710358196b3f7781f4fc7442fe44f4d90b6a1f8a4bb",
+  "gates": [],
+  "host_configuration_changed": false,
+  "internal_native_subagent_submissions": "not_counted_by_top_level_process_bound",
+  "maximum_submissions_per_invocation": 4,
+  "native_home_and_auth_preserved": true,
+  "native_recipe_sha256": "b2e236f6490d3d00b51dac2a634c8b4f845b649ad9386c6510c6ae902f730cd3",
+  "native_session_ids_recorded": false,
+  "native_verified": false,
+  "observed_version": "grok 1.0.70 (f50904eaee6c)",
+  "prepared_controls": [
+    "native_policy_preserved",
+    "synthetic_scope_prepared"
+  ],
+  "prior_evidence_sha256": null,
+  "project_root_sha256": "37b7d42e29ef6697cd8d8b802421aa847ef8c0a2b4bf5ed6474d2f2bd2b41495",
+  "prompts_recorded": false,
+  "raw_output_retained": false,
+  "schema_version": 1,
+  "scope": "candidate_native_adapter_lifecycle",
+  "selected_checks": [
+    "edit",
+    "followup",
+    "permission",
+    "cancel"
+  ],
+  "stopped_after": "explicit_prepare_only",
+  "submission_allowance_total": 4,
+  "submission_ledger": [],
+  "submissions_consumed_total": 0,
+  "submissions_in_this_invocation": 0,
+  "timestamp_utc": "2026-11-01T10:52:39.260244+00:00"
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "scope": "offline_synthetic_process_pool_cancellation_diagnostic",
+  "related_native_observation": {
+    "receipt": "docs/verification/native-grok-1.0.70-attempt6.json",
+    "ordinal": 8,
+    "recorded_state": "uncertain",
+    "recorded_error_code": "native_failed",
+    "cause": "unknown",
+    "historical_receipt_changed": false,
+    "native_submissions_consumed_remain": 8
+  },
+  "unforced_experiment": {
+    "implementation": "VerificationPool and the real shared ProcessPool",
+    "processes": "directly spawned managed Python leader and foreground descendant",
+    "child_environment": "empty",
+    "cleanup_grace_seconds": 0.05,
+    "batches": 5,
+    "leader_modes": [
+      "wait for the foreground descendant after SIGTERM",
+      "ignore SIGTERM and require the runner's SIGKILL escalation",
+      "exit before the descendant, leaving inherited output pipes open"
+    ],
+    "cancellation_patterns": [
+      "single cancellation",
+      "initial cancellation followed by three additional cancellation requests"
+    ],
+    "attempts": 30,
+    "readiness_observed": 30,
+    "cancelled_outcomes": 30,
+    "ledger_cancelled_reasons": 30,
+    "process_groups_absent_after_cleanup": 30,
+    "process_pool_slots_released": 30,
+    "unexpected_exceptions": 0
+  },
+  "separate_fault_injection": {
+    "purpose": "Check that an unexpected cleanup exception is retained as safe technical metadata instead of an unexplained failure",
+    "injection": "Raise OSError with EIO only after real subprocess cleanup has finished",
+    "exception_class": "OSError",
+    "os_error_number": 5,
+    "ledger_reason": "unexpected_exception",
+    "cleanup_exception_retained": true,
+    "process_group_absent_after_cleanup": true,
+    "pool_slot_released": true,
+    "genuine_native_cause_evidence": false
+  },
+  "diagnostic_boundary": {
+    "retained_fields": [
+      "fixed recognized exception class or unknown",
+      "trusted relative source file and function with bounded line number",
+      "bounded numeric OS error number when present"
+    ],
+    "raw_messages_tracebacks_locals_argv_streams_recorded": false,
+    "prior_lineage_requires_strict_diagnostic_schema": true,
+    "previous_attempts_and_consumption_preserved": true
+  },
+  "model_calls": 0,
+  "native_cli_calls": 0,
+  "authentication_reads": 0,
+  "native_configuration_changes": false,
+  "production_cleanup_behavior_changed": false,
+  "production_admission_changed": false,
+  "conclusion": "The genuine Grok cancellation exception was not reproduced and remains unknown. Successful synthetic cancellations and injected-failure diagnostics do not establish native Grok cancellation admission or authorize additional native submissions."
+}

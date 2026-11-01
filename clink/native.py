@@ -7,6 +7,7 @@ import hashlib
 import json
 import math
 import os
+import platform
 import re
 import shutil
 import time
@@ -37,8 +38,22 @@ _VERIFIED_NATIVE_POLICIES: dict[str, AdapterPolicy] = {
         evidence_sha256="ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
         executable_sha256="b9ac5374839f14abf3f1f45610637c332b5daee5ce0d1634726cef87aab78e6a",
         recipe_sha256="de885baaadfdf5810321e32992c7e961f3a360dda90b903ab98ffc243564885e",
-    )
+    ),
+    "grok": AdapterPolicy(
+        adapter="grok",
+        version="grok 1.0.70 (f50904eaee6c)",
+        verified=True,
+        verification_status="verified_native_lifecycle",
+        file_references=True,
+        repository_instructions="native user/project instructions retained",
+        read_scope="native permissions; approved roots constrain supplied context only",
+        evidence="clink/resources/native-grok-1.0.70-admission.json",
+        evidence_sha256="809f49238544d7fa317110c403952ba3fa791b9627066fa51d256ad16fc46ec1",
+        executable_sha256="5c8a688251bf61e35370b828b6a353b0a20fcc3f64000de8a91d426039f29cec",
+        recipe_sha256="b2e236f6490d3d00b51dac2a634c8b4f845b649ad9386c6510c6ae902f730cd3",
+    ),
 }
+_VERIFIED_NATIVE_PLATFORMS = {"grok": ("Darwin", "arm64")}
 
 
 class NativeRuntime:
@@ -50,7 +65,11 @@ class NativeRuntime:
 
     @staticmethod
     def _policy(adapter: str) -> AdapterPolicy:
-        return _VERIFIED_NATIVE_POLICIES.get(adapter, AdapterPolicy(adapter))
+        policy = _VERIFIED_NATIVE_POLICIES.get(adapter, AdapterPolicy(adapter))
+        scope = _VERIFIED_NATIVE_PLATFORMS.get(adapter)
+        if scope is not None and (platform.system(), platform.machine()) != scope:
+            return AdapterPolicy(adapter, verification_status="platform_unverified")
+        return policy
 
     def describe(self) -> list[dict[str, Any]]:
         """Report native profiles without authentication, inference, or executable probes."""

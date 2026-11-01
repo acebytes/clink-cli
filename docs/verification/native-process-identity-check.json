@@ -1,0 +1,10 @@
+{
+  "child_ready": true,
+  "exact_child_identity_matched": true,
+  "kernel_interpreter_reference_detected": true,
+  "native_model_submissions": 0,
+  "owned_child_reaped": true,
+  "platform": "Darwin",
+  "python": "3.12.15",
+  "scope": "synthetic_process_identity_diagnostic"
+}

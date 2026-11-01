@@ -1,0 +1,644 @@
+{
+  "actual_models": [
+    "grok-4.7-build"
+  ],
+  "adapter": "grok",
+  "admission": {
+    "independent_review": "passed",
+    "production_enabled": true,
+    "production_integration": "conductor under existing standing development authorization"
+  },
+  "attempt_history": [
+    {
+      "actual_model": "grok-4.7-build",
+      "actual_model_origin": "native_terminal_metadata",
+      "check": "edit",
+      "ordinal": 1,
+      "outcome": "Native edit/tests, MCP and hooks observed, but specialist execution not established; permission_needed. Retained failed gate.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "state": "permission_needed"
+    },
+    {
+      "actual_model": "grok-4.7-build",
+      "actual_model_origin": "native_terminal_metadata",
+      "check": "edit",
+      "ordinal": 2,
+      "outcome": "Native edit/tests, MCP, hooks and specialist lifecycle observed; exact specialist canary not established because the observer lacked the native target_file shape. Retained failed gate.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "state": "completed"
+    },
+    {
+      "actual_model": "grok-4.7-build",
+      "actual_model_origin": "native_terminal_metadata",
+      "check": "edit",
+      "ordinal": 3,
+      "outcome": "Accepted edit/test, hook, native specialist and inherited-environment MCP evidence.",
+      "passed": true,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "state": "completed"
+    },
+    {
+      "actual_model": "grok-4.7-build",
+      "actual_model_origin": "native_terminal_metadata",
+      "check": "followup",
+      "ordinal": 4,
+      "outcome": "Accepted explicit native resume with same private session and context token.",
+      "passed": true,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "state": "completed"
+    },
+    {
+      "actual_model": "grok-4.7-build",
+      "actual_model_origin": "native_terminal_metadata",
+      "check": "permission",
+      "ordinal": 5,
+      "outcome": "Accepted native permission refusal with protected target untouched; exit status zero did not override permission_needed.",
+      "passed": true,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "state": "permission_needed"
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "check": "cancel",
+      "ordinal": 6,
+      "outcome": "Mutation and process-group/pool/lease cleanup observed; exact descendant identity and absence not established. Retained failed gate; absence=false is lack of proof, not proof of a surviving child.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "cancelled",
+      "state": "cancelled"
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "check": "cancel",
+      "ordinal": 7,
+      "outcome": "Readiness observed after fixture repair; exact child identity still not established because macOS kernel interpreter differs from its launcher path. Retained failed gate.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "cancelled",
+      "state": "cancelled"
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "check": "cancel",
+      "error_code": "native_failed",
+      "ordinal": 8,
+      "outcome": "Exact child identity, readiness, mutation, child absence and pool/lease release observed, but task returned uncertain/native_failed. Reason and process-group absence were not recorded. Cause remains unknown.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "state": "uncertain"
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "check": "cancel",
+      "ordinal": 9,
+      "outcome": "Accepted cancellation after observed mutation and readiness; exact synthetic child absent, CLI process group absent, pool and project leases released; no emergency cleanup requested.",
+      "passed": true,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "cancelled",
+      "state": "cancelled"
+    }
+  ],
+  "budget": {
+    "automatic_retries": 0,
+    "consumed_submission_allowance": 9,
+    "internal_native_subagent_submissions": "not counted by top-level process allowance; native turns, tools and internal model requests may exceed nine",
+    "new_native_invocations_for_composite": 0,
+    "top_level_native_invocations": 9
+  },
+  "cross_attempt_invariants": {
+    "all_original_ledger_prefixes_preserved": true,
+    "automatic_retries": 0,
+    "original_native_verified_remains_false": true,
+    "receipt_and_preflight_links_rechecked": true,
+    "same_version_binary_and_recipe": true,
+    "source_receipts_unchanged": true
+  },
+  "evidence_pairs": [
+    {
+      "fixture_config_sha256": "386f22323a5ee81020473710358196b3f7781f4fc7442fe44f4d90b6a1f8a4bb",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-grok-1.0.70-attempt1-prepare.preflight.json",
+      "prior_evidence_sha256": null,
+      "project_root_sha256": "37b7d42e29ef6697cd8d8b802421aa847ef8c0a2b4bf5ed6474d2f2bd2b41495",
+      "receipt": "docs/verification/native-grok-1.0.70-attempt1-prepare.json",
+      "retained_fixture_and_preflight_hashes_rechecked": true,
+      "submission_allowance_total": 4,
+      "submissions_consumed_total": 0,
+      "submissions_in_this_invocation": 0
+    },
+    {
+      "fixture_config_sha256": "386f22323a5ee81020473710358196b3f7781f4fc7442fe44f4d90b6a1f8a4bb",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-grok-1.0.70-attempt2.preflight.json",
+      "prior_evidence_sha256": "69a76eab4c69a78c3fbd5df97d3b4eec2861d4a61eb84f0a96e52d51568aa68d",
+      "project_root_sha256": "37b7d42e29ef6697cd8d8b802421aa847ef8c0a2b4bf5ed6474d2f2bd2b41495",
+      "receipt": "docs/verification/native-grok-1.0.70-attempt2.json",
+      "retained_fixture_and_preflight_hashes_rechecked": true,
+      "submission_allowance_total": 4,
+      "submissions_consumed_total": 1,
+      "submissions_in_this_invocation": 1
+    },
+    {
+      "fixture_config_sha256": "dc05393c0a10cd5cce6e450be3c0b9b8ecaa9ca420479c0f51d5fefc7960e747",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-grok-1.0.70-attempt3.preflight.json",
+      "prior_evidence_sha256": "43baa009a6fca653c499d468f0d71c88b8a445be47dc15c8c0e1a0c29d83ea69",
+      "project_root_sha256": "6605e2992f96dfe6620d3b2b308501822c7924c57de9ea49354cef4b4fab10cc",
+      "receipt": "docs/verification/native-grok-1.0.70-attempt3.json",
+      "retained_fixture_and_preflight_hashes_rechecked": true,
+      "submission_allowance_total": 5,
+      "submissions_consumed_total": 2,
+      "submissions_in_this_invocation": 1
+    },
+    {
+      "fixture_config_sha256": "636fb40df76a5f2253b839baba350b0b9f0a5a63f6088c1e6445d82d1afcc5b6",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-grok-1.0.70-attempt4.preflight.json",
+      "prior_evidence_sha256": "76f6aef8df524ae93fee03ff715e4a7ba1293a2cf9ced998713fd7cc02d27fda",
+      "project_root_sha256": "744d0e7a4387057e6f4f0a762000da832d12e679daeb1b7f5bb8e9f41dfba7e7",
+      "receipt": "docs/verification/native-grok-1.0.70-attempt4.json",
+      "retained_fixture_and_preflight_hashes_rechecked": true,
+      "submission_allowance_total": 6,
+      "submissions_consumed_total": 6,
+      "submissions_in_this_invocation": 4
+    },
+    {
+      "fixture_config_sha256": "cdf0c99b88a3ca0e74687b94ee48810d306aff4d350490bc1cd40036741d2639",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-grok-1.0.70-attempt5.preflight.json",
+      "prior_evidence_sha256": "cb252a5e4ed16e580411c1f67355ff422b9d0994e080576c9c67b031b9056cc2",
+      "project_root_sha256": "380c8657ebf81afa19049cf28e610a81408c9a04fd110300126469c3c523a9ed",
+      "receipt": "docs/verification/native-grok-1.0.70-attempt5.json",
+      "retained_fixture_and_preflight_hashes_rechecked": true,
+      "submission_allowance_total": 7,
+      "submissions_consumed_total": 7,
+      "submissions_in_this_invocation": 1
+    },
+    {
+      "fixture_config_sha256": "efb5cabc3f2f4c3fbb2032a694129c48336bbbbad7c39779bab6c533a582643e",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-grok-1.0.70-attempt6.preflight.json",
+      "prior_evidence_sha256": "8642426e687b32f16c233c4155c095d0cea86dde3997f8c7e08080297812f5b6",
+      "project_root_sha256": "21c220dc7af5590aae55af897253f781f201f3f6a8fd6ef8445dcce04a019cae",
+      "receipt": "docs/verification/native-grok-1.0.70-attempt6.json",
+      "retained_fixture_and_preflight_hashes_rechecked": true,
+      "submission_allowance_total": 8,
+      "submissions_consumed_total": 8,
+      "submissions_in_this_invocation": 1
+    },
+    {
+      "fixture_config_sha256": "ec59324b72d257b585b9c9bb93c551f2bc331420413bdaad90161558686f098f",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-grok-1.0.70-attempt7.preflight.json",
+      "prior_evidence_sha256": "4a88a33fc8e04b21ffe7a010d5c75f0780353936c754eceddea9546c1f75ba2b",
+      "project_root_sha256": "26e77f4cef7f94b664b541fd00d801849646f9253d74340d01212e9169e08007",
+      "receipt": "docs/verification/native-grok-1.0.70-attempt7.json",
+      "retained_fixture_and_preflight_hashes_rechecked": true,
+      "submission_allowance_total": 9,
+      "submissions_consumed_total": 9,
+      "submissions_in_this_invocation": 1
+    }
+  ],
+  "executable_sha256": "5c8a688251bf61e35370b828b6a353b0a20fcc3f64000de8a91d426039f29cec",
+  "fixture_compatibility": {
+    "compared_receipts": [
+      "docs/verification/native-grok-1.0.70-attempt4.json",
+      "docs/verification/native-grok-1.0.70-attempt7.json"
+    ],
+    "native_permissions": "Native user/project configuration and permission policy remain authoritative; no bypass, global allow-all, config suppression or cloned authentication. Disposable Grok fixture rules include the native generic task route so its configured specialist can run; this is not a named-agent security boundary or OS sandbox.",
+    "observer_repairs": [
+      "Before ordinal3: recognize native target_file path and typed ReadFile.FileContent raw_output/content for the exact specialist child and canary path. Native canary gate remains strict.",
+      "Before ordinal7: add a child readiness marker before its long sleep; synthetic arithmetic test logic is unchanged.",
+      "Before ordinal8: recognize the current Python process kernel interpreter reference as well as sys.executable; require exact fixture.py child arguments and the observed process identity fingerprint.",
+      "Before ordinal8: replace MCP marker IO with the shared nofollow/nonblock owner/regular/single-link checked helper and bounded strict boolean reader. Benign MCP protocol/tool/synthetic sentinel semantics remain the same.",
+      "Before ordinal9: metadata-only unexpected-exception diagnostics, strict prior-lineage validation and process-group probe retention. No production runner or task-manager cleanup behavior changed."
+    ],
+    "path_hash_difference": "Each invocation has a distinct canonical synthetic fixture path; attempt2 reuses the preparation fixture. Project hashes and path-embedded config/hooks therefore differ. All seven retained config aggregates and project-path hashes were rechecked against their own preflights.",
+    "per_file_audit": [
+      {
+        "attempt4_sha256": "e8c6a171e39f6736e0bed5b83d33b58bcaffdc1d56052363d109806173cbcace",
+        "attempt7_sha256": "e8c6a171e39f6736e0bed5b83d33b58bcaffdc1d56052363d109806173cbcace",
+        "comparison": "byte_identical",
+        "path": ".clink-native-verification-fixture"
+      },
+      {
+        "attempt4_sha256": "6ced3b1036ddbc48cc3cdff4f8b09ca60cad1eeb03b07f6fe678c7ab3cfb7894",
+        "attempt7_sha256": "6ced3b1036ddbc48cc3cdff4f8b09ca60cad1eeb03b07f6fe678c7ab3cfb7894",
+        "comparison": "byte_identical",
+        "path": "AGENTS.md"
+      },
+      {
+        "attempt4_sha256": "b7c12dc56b7c03d167989c5a6bfad70505d7ae51a37c43721619a6ea05482a5d",
+        "attempt7_sha256": "0edd97897e42fe440575383ef21c3b026a94bb339b2d7919c05e58243920e4cc",
+        "comparison": "child_readiness_marker_added",
+        "path": "fixture.py"
+      },
+      {
+        "attempt4_sha256": "1f767867eb28f5b2c09f14d5285eb4b25ec6302c385cccccedd77a68d5415b29",
+        "attempt7_sha256": "2424778ea57b8a9f8c3ef42b417074801a0ba4ac499c04df01d6a93aeca3cdcd",
+        "comparison": "safe_marker_io_and_bounded_stdio_validation",
+        "path": "mcp_server.py"
+      },
+      {
+        "attempt4_sha256": "15f69b23c897e02f43c30dcb2a117830b18e012f9c321fdb65315682a129dac0",
+        "attempt7_sha256": "15f69b23c897e02f43c30dcb2a117830b18e012f9c321fdb65315682a129dac0",
+        "comparison": "byte_identical",
+        "path": "native-role.txt"
+      },
+      {
+        "attempt4_sha256": "6ced3b1036ddbc48cc3cdff4f8b09ca60cad1eeb03b07f6fe678c7ab3cfb7894",
+        "attempt7_sha256": "6ced3b1036ddbc48cc3cdff4f8b09ca60cad1eeb03b07f6fe678c7ab3cfb7894",
+        "comparison": "byte_identical",
+        "path": "GROK.md"
+      },
+      {
+        "attempt4_sha256": "2928844657524455f2018c2ca6cdf270ed282c48af4c65e6301e3af348ce5818",
+        "attempt7_sha256": "2928844657524455f2018c2ca6cdf270ed282c48af4c65e6301e3af348ce5818",
+        "comparison": "byte_identical",
+        "path": "scope_hook.py"
+      },
+      {
+        "attempt4_sha256": "bd32e66dec67bb0273a43d36d9619a2d5ce56557c06fa2095d0394e48a268d32",
+        "attempt7_sha256": "bd5f6ac073f3536189bf0076f04b188ba2d7c5102a4c715327cd0c98de5b0990",
+        "comparison": "identical_after_only_canonical_fixture_root_replacement",
+        "path": ".grok/config.toml"
+      },
+      {
+        "attempt4_sha256": "76691df33b010eb8605ad5940eb2bff80cdf36af34fc5a8f78b7fadf91bb8f1a",
+        "attempt7_sha256": "29032cc3cec90e30454e8ff4c53657b48b5424bca3d5c8aef447d3593ddc3efc",
+        "comparison": "identical_after_only_canonical_fixture_root_replacement",
+        "path": ".grok/hooks/native-fixture.json"
+      },
+      {
+        "attempt4_sha256": "455c3475bba4454bc9206b6403e201a3947773cfd5efa8f0f755cee0e3178aa8",
+        "attempt7_sha256": "455c3475bba4454bc9206b6403e201a3947773cfd5efa8f0f755cee0e3178aa8",
+        "comparison": "byte_identical",
+        "path": ".grok/agents/fixture-specialist.md"
+      },
+      {
+        "attempt4_sha256": "5e8e7875b6064e94a2b66f718a3787b8b67927c514267b128aa8262ebbc07a1e",
+        "attempt7_sha256": "5e8e7875b6064e94a2b66f718a3787b8b67927c514267b128aa8262ebbc07a1e",
+        "comparison": "byte_identical",
+        "path": "specialist.txt"
+      }
+    ],
+    "safe_mcp_compatibility": "Ordinal3 supplies the live MCP evidence with the then-original marker helper. Ordinal9 is cancellation-only and does not re-exercise MCP. Current safe marker helper preserves the benign stdio response/tool/sentinel behavior in offline tests; it hardens marker IO against symlink, hardlink and FIFO hazards without broadening permissions."
+  },
+  "gates": {
+    "actual_native_edit_and_failing_then_passing_test": {
+      "observations": [
+        "fixture_changed",
+        "native_test_failure_observed",
+        "native_test_success_observed",
+        "independent_final_test_passed"
+      ],
+      "observed": true,
+      "ordinal": 3,
+      "receipt": "docs/verification/native-grok-1.0.70-attempt4.json"
+    },
+    "cancel_cleanup_released_processes_and_ownership": {
+      "observations": [
+        "synthetic_descendant_absent",
+        "pool_released",
+        "project_leases_released"
+      ],
+      "observed": true,
+      "ordinal": 9,
+      "receipt": "docs/verification/native-grok-1.0.70-attempt7.json"
+    },
+    "native_followup_preserved_session_and_context": {
+      "observations": [
+        "same_native_session",
+        "context_token_matches"
+      ],
+      "observed": true,
+      "ordinal": 4,
+      "receipt": "docs/verification/native-grok-1.0.70-attempt4.json"
+    },
+    "native_mcp_executed_with_inherited_environment": {
+      "observations": [
+        "mcp_environment_canary_matches"
+      ],
+      "observed": true,
+      "ordinal": 3,
+      "receipt": "docs/verification/native-grok-1.0.70-attempt4.json"
+    },
+    "native_project_hook_executed": {
+      "observations": [
+        "scope_hook_observed"
+      ],
+      "observed": true,
+      "ordinal": 3,
+      "receipt": "docs/verification/native-grok-1.0.70-attempt4.json"
+    },
+    "native_subagent_executed_with_exact_canary": {
+      "observations": [
+        "fixture_subagent_started",
+        "fixture_subagent_stopped",
+        "fixture_subagent_canary_matches"
+      ],
+      "observed": true,
+      "ordinal": 3,
+      "receipt": "docs/verification/native-grok-1.0.70-attempt4.json"
+    },
+    "permission_needed_without_protected_write_or_retry": {
+      "observations": [
+        "protected_file_untouched"
+      ],
+      "observed": true,
+      "ordinal": 5,
+      "receipt": "docs/verification/native-grok-1.0.70-attempt4.json"
+    },
+    "production_cancel_after_mutation": {
+      "observations": [
+        "observed_mutation",
+        "synthetic_child_ready_observed",
+        "descendant_identity_observed"
+      ],
+      "observed": true,
+      "ordinal": 9,
+      "receipt": "docs/verification/native-grok-1.0.70-attempt7.json"
+    }
+  },
+  "independent_review": {
+    "effective_runtime_model_evidence": "unverified",
+    "reasoning_effort": "high",
+    "route": "native_execution_review",
+    "scope": "Composite gate mapping, all original receipt/preflight and supporting evidence hashes, ledger prefix/allowance lineage, reviewed candidate source binding, fixture compatibility and preserved ordinal8 uncertainty. Frozen verifier snapshot refreshed after Agy-only helper integration.",
+    "selected_model": "gpt-6.1-sol",
+    "selection": "explicit",
+    "verdict": "GO"
+  },
+  "limitations": [
+    "Ordinal8 returned uncertain/native_failed; its exception cause remains UNKNOWN and its process-group absence was not recorded. Ordinal9 passed without establishing that a production defect was diagnosed or fixed. Conservative uncertain semantics remain necessary.",
+    "This accepted composite combines successful checks across attempts; it is not a standalone all-check receipt. Every original receipt retains native_verified=false and prior failed checks. Genuine independent proof review passed before conductor production integration under existing standing development authorization.",
+    "Scope is this exact macOS arm64 binary and recipe, observed grok-4.7-build execution and synthetic operations; no claim for other versions, binaries, platforms or all models.",
+    "Native CLI authentication, configuration and session/cache persistence remain CLI-owned. The CLI may perform normal private operational writes; their contents were not exported.",
+    "Only the configured synthetic hooks/specialist/MCP were exercised; every installed user integration was not independently exercised. No native image transport or interactive approval relay was verified.",
+    "Cancellation does not undo the observed mutation or other file/external effects and does not prove cleanup of detached descendants or remote MCP work. First-attempt cancellation can leave no resumable session identity.",
+    "Raw native output was not retained, so current parser compatibility is established by recorded normalized outcomes plus offline protocol cases, not retrospective replay of the original streams.",
+    "Completed execution does not establish fulfillment except for independently checked synthetic assertions. Missing or expired server records do not establish execution outcome."
+  ],
+  "model_evidence": {
+    "cancellation_ordinal9_actual_model": "unknown; no terminal model metadata",
+    "explicit_model_argument": false,
+    "ordinals": [
+      3,
+      4,
+      5
+    ],
+    "origin": "native_terminal_metadata",
+    "selection": "native CLI configuration"
+  },
+  "native_arguments": [
+    "--prompt-file",
+    "@CLINK_NATIVE_PROMPT_FILE@",
+    "--output-format",
+    "json"
+  ],
+  "observed_version": "grok 1.0.70 (f50904eaee6c)",
+  "offline_verification": {
+    "cancellation_diagnostic": {
+      "cancelled_outcomes": 30,
+      "native_model_calls": 0,
+      "pool_slots_released": 30,
+      "process_groups_absent": 30,
+      "receipt": "docs/verification/native-cancellation-diagnostic.json",
+      "separate_fault_injection": "post-cleanup EIO verifies safe diagnostic capture; not evidence of the genuine Grok cause",
+      "synthetic_real_pool_cancellations": 30,
+      "unexpected_exceptions": 0
+    },
+    "candidate4_full_suite": {
+      "errors": 0,
+      "failures": 0,
+      "junit": "docs/verification/native-adapters-candidate4/junit.xml",
+      "junit_cases": 1762,
+      "network_blocked": true,
+      "pytest_tests_passed": 1746,
+      "result": "docs/verification/native-adapters-candidate4/result.json",
+      "skipped": 0,
+      "subtests_passed": 16,
+      "unrelated_home_reads_denied": true
+    },
+    "focused": {
+      "command": ".venv/bin/python -m pytest tests/test_grok_native_parser.py tests/test_native_adapters.py tests/test_native_runtime.py tests/test_native_mcp_fixture.py -q",
+      "native_model_calls": 0,
+      "passed": 111,
+      "scope": "current parser malformed/error/permission/session cases, private transport and shared-runtime cleanup/admission regression, safe MCP protocol and hostile marker IO"
+    },
+    "process_identity_diagnostic": {
+      "exact_child_identity_matched": true,
+      "native_model_calls": 0,
+      "owned_child_reaped": true,
+      "receipt": "docs/verification/native-process-identity-check.json"
+    }
+  },
+  "optional_arguments": {
+    "model": "--model",
+    "resume": "--resume validated exact native UUID"
+  },
+  "platform_scope": {
+    "architecture_evidence": "Verification host metadata rechecked while preparing this composite; historical receipt schema does not separately record architecture.",
+    "machine": "arm64",
+    "scope": "exact recorded executable and recipe only",
+    "system": "Darwin"
+  },
+  "privacy": {
+    "credential_values_read_or_copied_for_this_composite": false,
+    "environment_values_recorded": false,
+    "fixture_configuration_intact_after_all_recorded_shutdowns": true,
+    "historical_host_configuration_change_scope": "exact synthetic fixture trust entry only",
+    "historical_host_configuration_changed": true,
+    "historical_host_configuration_restored": true,
+    "host_configuration_read_or_changed_for_this_composite": false,
+    "native_session_ids_recorded": false,
+    "normal_native_home_and_auth_preserved": true,
+    "raw_native_output_prompts_tool_inputs_results_retained_in_evidence": false
+  },
+  "profile": "native_task_v1",
+  "prompt_transport": {
+    "channel": "private_file",
+    "crash_limit": "Abrupt host or server termination may prevent context cleanup; private permissions protect any leftover file.",
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "lifetime": "through shared ProcessPool cleanup; context cleanup on all ordinary outcomes and cancellation",
+    "maximum_bytes": 1048576,
+    "stdin": "empty",
+    "validation": "regular file, modes, inode identity and bounded content hash checked before launch"
+  },
+  "recipe_sha256": "b2e236f6490d3d00b51dac2a634c8b4f845b649ad9386c6510c6ae902f730cd3",
+  "schema_version": 1,
+  "source_binding": {
+    "core_files": [
+      {
+        "matches_source_commit": true,
+        "path": "clink/native.py",
+        "sha256": "e586a761c2161a78f3da67072da5a80471c755a31cccd64be44707fc427910d1"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/native_adapters.py",
+        "sha256": "7a3daf32369e0492a69d307333441e8c27e936ffd0b156322fc5e7294a8d251f"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/native_policy.py",
+        "sha256": "ec295f6450d53d1362dd87a51cb5551942f26868b48b5e88a252c8cefe4234c4"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/runner.py",
+        "sha256": "7fe67698f57ec1539ad3751f25dd0300166361d5d0b9159946836937f76a7632"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/tasks.py",
+        "sha256": "bd334096aed8af27d7f2813a07594b99d53805f3ea13deff33a31237f93b593b"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/registry.py",
+        "sha256": "fe8319eef076370c05c09f506bd703ae096ee9b386e19743991595f230feaf66"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/parsers/grok_native.py",
+        "sha256": "940f05404389f27b79eda917fe831ace6b2c64bc085faf1872f927aeb5c8644d"
+      }
+    ],
+    "current_snapshot_utc": "2026-11-01T11:53:59.737819+00:00",
+    "current_verifier_snapshot": [
+      {
+        "path": "scripts/verify_native_adapters.py",
+        "sha256": "01d755ac01161f9f6879200b8573fa33484aa1f2a57fba252fe0fe1f3b782b51"
+      },
+      {
+        "path": "scripts/native_mcp_fixture.py",
+        "sha256": "f06532075adcabf665ebb3a64e6ca7223043db27c6ac1ac277f6c5c0ab860c9d"
+      },
+      {
+        "path": "scripts/native_diagnostics.py",
+        "sha256": "4606c24e5075c2fe168c50288673438bd185f83abb2d4b3c23b6b50038df52c1"
+      },
+      {
+        "path": "scripts/native_fixture_trust.py",
+        "sha256": "b6d1ce2b948ac273257c7e99571f70330341540550c7b0a45b14a03b73f0625a"
+      }
+    ],
+    "historical_binding_limit": "Original receipts bind executable, version, launch recipe and synthetic fixture configuration, not historical per-file runtime hashes or a Git commit. Reviewed candidate core bytes match the recorded source commit. The conductor reports a stable gate-relevant core during ordinals 3/4/5/9; this composite does not retroactively attest unrecorded historical source hashes. Verifier snapshots are separately pinned and are not claimed to be in the source commit.",
+    "production_integration_delta": "After proof review: native Grok policy/receipt binding, exact Darwin/arm64 platform gate, enabled bundled Grok native profile and required package resources. No launch recipe, parser, process cleanup, task-manager behavior or advisory Codex policy change.",
+    "runner_and_task_manager_byte_identical_to_preparation_commit": "45e4e73",
+    "source_commit": "9bdd273d7ac399b3a1fd635066308369f10f76b5"
+  },
+  "source_evidence": [
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-grok-1.0.70-attempt1-prepare.json",
+      "sha256": "69a76eab4c69a78c3fbd5df97d3b4eec2861d4a61eb84f0a96e52d51568aa68d"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-grok-1.0.70-attempt1-prepare.preflight.json",
+      "sha256": "de79f0c388aa39f81030657b9b58bb23f3318449c9273673fd858721f7c44f38"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-grok-1.0.70-attempt2.json",
+      "sha256": "43baa009a6fca653c499d468f0d71c88b8a445be47dc15c8c0e1a0c29d83ea69"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-grok-1.0.70-attempt2.preflight.json",
+      "sha256": "de79f0c388aa39f81030657b9b58bb23f3318449c9273673fd858721f7c44f38"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-grok-1.0.70-attempt3.json",
+      "sha256": "76f6aef8df524ae93fee03ff715e4a7ba1293a2cf9ced998713fd7cc02d27fda"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-grok-1.0.70-attempt3.preflight.json",
+      "sha256": "ce594e39c4b7691790ecea40f9e17ccc4891a46fc0f067ec2c5addc5b31ad1f7"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-grok-1.0.70-attempt4.json",
+      "sha256": "cb252a5e4ed16e580411c1f67355ff422b9d0994e080576c9c67b031b9056cc2"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-grok-1.0.70-attempt4.preflight.json",
+      "sha256": "06888104406e935fc8d1812c0182a0fc6d67ab771502a7d8b743ea931a581c29"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-grok-1.0.70-attempt5.json",
+      "sha256": "8642426e687b32f16c233c4155c095d0cea86dde3997f8c7e08080297812f5b6"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-grok-1.0.70-attempt5.preflight.json",
+      "sha256": "42c33923d43bc893d8e8dcea36fd6ddfb01055d1eed498a33e36cb4c749c08f1"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-grok-1.0.70-attempt6.json",
+      "sha256": "4a88a33fc8e04b21ffe7a010d5c75f0780353936c754eceddea9546c1f75ba2b"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-grok-1.0.70-attempt6.preflight.json",
+      "sha256": "276af59e72b0d4ba58fc5ec686c4b5e4cd7d7233401fb9a7e9ca42893c80b4f6"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-grok-1.0.70-attempt7.json",
+      "sha256": "c3ea43db8f81751c027bbaeed8229ebc46152774f06d4c82aaa5b2bb5b06a97b"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-grok-1.0.70-attempt7.preflight.json",
+      "sha256": "d51166642c5ba7bd64938fa609ed896a55a601a54f3717c3c49af6e0782bdd3b"
+    }
+  ],
+  "status": "accepted_native_lifecycle",
+  "supporting_evidence": [
+    {
+      "path": "docs/verification/native-adapters-candidate4/result.json",
+      "sha256": "c9ea07c6337a4ef3eefd1149b8c6008d3cae680b7fa045c67c5a228fa96f40ef"
+    },
+    {
+      "path": "docs/verification/native-adapters-candidate4/junit.xml",
+      "sha256": "56ec3ca54717eecba3777169280065687bf666c4b54813bf7ae797059ab0b073"
+    },
+    {
+      "path": "docs/verification/native-cancellation-diagnostic.json",
+      "sha256": "e7c50a9fabecbd9e9ce7123355544f4f722871b391f5c52824f7ce4ac08496b8"
+    },
+    {
+      "path": "docs/verification/native-process-identity-check.json",
+      "sha256": "8db690735151eec5ee9ddaf28aad9397e1bb30e1bdefda2c6773238daa9f96d1"
+    }
+  ],
+  "verification_path": "Actual ClinkRegistry, CLIBackend, NativeRuntime, shared ProcessPool and NativeTaskManager start/status/followup/cancel. During verification, only the isolated candidate harness overrode admission and production Grok remained disabled. This accepted composite was integrated separately after independent proof review."
+}

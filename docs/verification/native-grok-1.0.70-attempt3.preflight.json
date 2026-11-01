@@ -1,0 +1,9 @@
+{
+  "adapter": "grok",
+  "executable_sha256": "5c8a688251bf61e35370b828b6a353b0a20fcc3f64000de8a91d426039f29cec",
+  "fixture_config_sha256": "dc05393c0a10cd5cce6e450be3c0b9b8ecaa9ca420479c0f51d5fefc7960e747",
+  "native_recipe_sha256": "b2e236f6490d3d00b51dac2a634c8b4f845b649ad9386c6510c6ae902f730cd3",
+  "observed_version": "grok 1.0.70 (f50904eaee6c)",
+  "project_root_sha256": "6605e2992f96dfe6620d3b2b308501822c7924c57de9ea49354cef4b4fab10cc",
+  "scope": "native_adapter_candidate_preflight"
+}

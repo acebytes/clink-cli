@@ -6,6 +6,7 @@ import json
 import sys
 import time
 from dataclasses import replace
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -299,3 +300,80 @@ def test_registry_native_profiles_require_explicit_native_role_prompts(tmp_path,
     else:
         with pytest.raises(RegistryLoadError):
             registry._resolve_config(raw, source_path=tmp_path / "client.json")
+
+
+@pytest.mark.parametrize(
+    "system,machine,admitted",
+    [("Darwin", "arm64", True), ("Darwin", "x86_64", False), ("Linux", "aarch64", False)],
+)
+def test_production_grok_admission_requires_exact_verified_platform(monkeypatch, system, machine, admitted):
+    monkeypatch.setattr(native.platform, "system", lambda: system)
+    monkeypatch.setattr(native.platform, "machine", lambda: machine)
+    policy = NativeRuntime._policy("grok")
+    assert policy.verified is admitted
+    if admitted:
+        assert policy.version == "grok 1.0.70 (f50904eaee6c)"
+        assert policy.recipe_sha256 == native_recipe_digest("grok")
+    else:
+        assert policy.verification_status == "platform_unverified"
+    assert NativeRuntime._policy("claude").verified
+    assert not NativeRuntime._policy("agy").verified
+    assert not NativeRuntime._policy("codex").verified
+
+
+@pytest.fixture
+def production_grok_runtime(tmp_path, monkeypatch):
+    """Use the real admission with a deliberately different, never-launched executable."""
+    receipt = Path(native.__file__).parent / "resources/native-grok-1.0.70-admission.json"
+    packaged = tmp_path / "clink/resources/native-grok-1.0.70-admission.json"
+    packaged.parent.mkdir(parents=True)
+    packaged.write_bytes(receipt.read_bytes())
+    executable = tmp_path / "fake-grok"
+    executable.write_text("#!" + sys.executable + "\nraise RuntimeError('must never launch')\n")
+    executable.chmod(0o755)
+    role = ResolvedCLIRole(name="default", prompt_path=tmp_path / "role.txt", prompt_text="Native role")
+    client = ResolvedCLIClient(
+        name="grok",
+        adapter="grok",
+        executable=(str(executable),),
+        working_dir=tmp_path,
+        allowed_roots=(tmp_path,),
+        timeout_seconds=10,
+        parser="grok_json",
+        roles={"default": role},
+        native_task=ResolvedNativeTask(enabled=True, roles={"default": role}),
+    )
+    registry = SimpleNamespace(get_client={"grok": client}.__getitem__, list_clients=lambda: ["grok"])
+    monkeypatch.setattr(native, "__file__", str(tmp_path / "clink/native.py"))
+    monkeypatch.setattr(native.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(native.platform, "machine", lambda: "arm64")
+    monkeypatch.delenv("CLINK_DELEGATION_DEPTH", raising=False)
+    monkeypatch.setenv("CLINK_DEFAULT_CLI", "grok")
+    return NativeRuntime(CLIBackend(registry)), packaged
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("changed", ["binary", "receipt", "recipe", "platform"])
+async def test_production_grok_binding_changes_fail_before_spawn(production_grok_runtime, monkeypatch, changed):
+    runtime, receipt = production_grok_runtime
+    context = runtime.prepare("grok", None, None, str(receipt.parents[2]))
+    runtime._validate_admission(context)
+    if changed == "receipt":
+        receipt.write_text("changed")
+    elif changed == "recipe":
+        monkeypatch.setattr(native, "native_recipe_digest", lambda adapter: "changed")
+    elif changed == "platform":
+        monkeypatch.setattr(native.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", lambda *a, **kw: pytest.fail("launched"))
+    with pytest.raises(BackendError) as caught:
+        await runtime.run(context, "synthetic task", attempt_id="rejected-binding")
+    assert caught.value.code == "policy_unverified"
+    assert runtime.pool.running == 0
+    assert not runtime.pool._children
+
+
+def test_bundled_grok_native_profile_enabled_without_admitting_other_candidates():
+    directory = Path(__file__).resolve().parent.parent / "conf/cli_clients"
+    for adapter in ("claude", "grok", "agy", "codex"):
+        config = json.loads((directory / f"{adapter}.json").read_text())
+        assert config["native_task"]["enabled"] is (adapter in {"claude", "grok"})

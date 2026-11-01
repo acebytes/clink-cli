@@ -16,6 +16,7 @@ CATALOG_SHA256 = "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e
 REQUIRED_RESOURCES = (
     CATALOG,
     "clink/resources/native-claude-2.1.304-admission.json",
+    "clink/resources/native-grok-1.0.70-admission.json",
     "clink/resources/CODEX-LICENSE",
     "clink/resources/CODEX-NOTICE",
     "clink/resources/PROVENANCE.md",
