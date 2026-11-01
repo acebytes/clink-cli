@@ -1,0 +1,29 @@
+{
+  "additional_v2_wording_correction": "Image recognition was directly observed on v1; v2 inherited that observation. The old verified_observations wording calling it exact-current-recipe evidence was too broad. A replacement record must state each probe recipe explicitly.",
+  "historical_facts_retained": [
+    "Native authentication succeeded on completed requests.",
+    "Recorded content hashes remained unchanged.",
+    "Direct native read-only OS sandbox denied real fixture writes.",
+    "Local cancellation and image recognition observations remain scoped facts."
+  ],
+  "known_native_error_categories": [
+    "unstable_feature_warning",
+    "code_mode_unavailable"
+  ],
+  "reason": "The initial harness accepted exit 0 plus turn.completed without applying the production parser; native item.error warnings preceded otherwise successful responses, so those records did not establish usable backend responses. Strict parser rejection remains unchanged.",
+  "recorded_at_utc": "2026-11-01T01:54:24.134105+00:00",
+  "replacement_evidence": "codex-0.166.0-attempt13-direct-text.json",
+  "replacement_requires": "SHA-bound direct native catalog plus clean exact-production-parser text proof and explicit capability evidence.",
+  "schema_version": 1,
+  "status": "invalidated_for_backend_usability",
+  "superseded_records": [
+    {
+      "path": "codex-0.166.0-admission-v1.json",
+      "sha256": "6a13e93bed373a1a227fa1a72d2a9a0b276f9f1add0774f2a93afb899f6b08c5"
+    },
+    {
+      "path": "codex-0.166.0-admission-v2.json",
+      "sha256": "7176650e8e525c10770e9de3d4148bd8beaf82ab02a7d16f6caea260bb4fdcbe"
+    }
+  ]
+}

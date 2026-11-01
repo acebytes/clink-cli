@@ -1,0 +1,254 @@
+{
+  "actual_provider_model_identity": "not_verified",
+  "adapter": "codex",
+  "admission": {
+    "scope": "version-bound advisory text, explicit images and structured native web search",
+    "status": "verified"
+  },
+  "capabilities": {
+    "images": true,
+    "native_file_read": false,
+    "native_web_search": true,
+    "read_scope": "inline context and explicit admitted images",
+    "text": true
+  },
+  "default_origin": "pinned_native_catalog",
+  "delegation_receipt": {
+    "effective_runtime_metadata": "unverified",
+    "execution_requested": "gpt-6.1-sol/ultra",
+    "review_requested": "gpt-6.1-sol/high"
+  },
+  "evidence": [
+    {
+      "path": "codex-0.166.0-admission-history-invalidated.json",
+      "sha256": "9624a603d914fe159f2e0856d1cf32c271cd947ff58779da4662e003a64315a6"
+    },
+    {
+      "path": "codex-0.166.0-catalog-provenance.json",
+      "sha256": "168dc40c709425f27518c99ef470cdc4296aaf75896c304dd9ba52bad939f171"
+    },
+    {
+      "path": "codex-0.166.0-attempt12-direct-preflight.json",
+      "sha256": "526fc33ef79f2c61fd69a9578cd38be0347b9bba30e7e4d92ad3c819c410ea7c"
+    },
+    {
+      "path": "codex-0.166.0-attempt13-direct-text.json",
+      "sha256": "23dc3beb25a21be666a2539332025138d6ac65c38a7435cb2365857b9b426b09"
+    },
+    {
+      "path": "codex-0.166.0-attempt14-direct-search.json",
+      "sha256": "48447472c84f1e024755ec72793cfc477fae6a18fec6a749d9eafcc87f5f5fed"
+    },
+    {
+      "path": "codex-0.166.0-attempt15-direct-image.json",
+      "sha256": "907f21e86c46e01188726202a80b0fea5948d253d469bc6eca53994855eb3bbc"
+    },
+    {
+      "path": "codex-0.166.0-attempt5-cancellation.json",
+      "sha256": "a00cab182bde093390984a4cbee0634f8db2928f19258193581346c330a8a48f"
+    },
+    {
+      "path": "../native-search-1/result.json",
+      "sha256": "0c1e199bdf3a2d48dacee0725502a41617052bd8b19d2203cb61d6688089c458"
+    },
+    {
+      "path": "../../../tests/fixtures/clink/codex-0.166.0-web-search-source-shape.provenance.json",
+      "sha256": "1b502046aa16550786547ac01c53450275488364202f6b664c22b7393a0b97af"
+    }
+  ],
+  "executable": "/opt/homebrew/Caskroom/codex/0.166.0/bin/codex",
+  "executable_sha256": "39acf979729dd290f9a24ee38b2914e036c91b65952872e28ae2a6b88a7db7c1",
+  "limitations": [
+    "The twelve exact model records are policy-bound; only gpt-6.1-sol was exercised live. Native prefix/namespace alias lookup is broader and must be rejected by the wrapper.",
+    "Catalog defaults/visibility are frozen to the genuine bundled snapshot. Effective models must be explicit and report default_origin=pinned_native_catalog; no remote refresh or synthetic descriptor fallback.",
+    "Native apply_patch definitions may be present; acceptance concerns inaccessible mutation authority, supported by the read-only guard and direct native OS write-denial probe, not a claim that all write-tool definitions are absent.",
+    "Native read-only profiles permit reads beyond the workspace; shell/read tools are disabled, while server context and explicit image paths require their own admission.",
+    "Authentication success does not identify its credential store/account/token; requested model identity is not provider-reported actual model identity.",
+    "The earlier separate cancellation probe proved local active-group termination only. It was not repeated under the new catalog, and never guaranteed cancellation of already submitted remote work or reversal of usage.",
+    "Native internal inference calls/retries cannot be counted by this wrapper.",
+    "Historical v1/v2 admissions were invalidated for backend usability; their completed-turn observations alone did not establish parser success.",
+    "The successful native search call used its recorded parser hashes. Later hostname/Unicode and literal-is_error hardening was verified offline with source-shaped synthetic fixtures and the captured source URLs, not by retaining/replaying native raw output.",
+    "Observed native search capability does not guarantee every future query returns recognized results. Empty recognized results are no_results; missing/unrecognized shapes and open-page intent alone remain unsupported; genuine error/failed items remain rejected."
+  ],
+  "live_model_checked": "gpt-6.1-sol",
+  "native_default_model": "gpt-6.1-sol",
+  "native_search_observation": {
+    "actual_model": null,
+    "backend_success": true,
+    "mandatory_controls_unchanged": true,
+    "requested_model": "gpt-6.1-sol",
+    "search_performed": true,
+    "structured_returned_source_url_count": 20,
+    "verification_only_capability_override": true
+  },
+  "observed_version": "codex-cli 0.166.0",
+  "parser_provenance": {
+    "final_offline_parser_sha256": {
+      "base.py": "8ca1b793199ee4e21b1e2bd3e2997bc07e18accb25b8eecb40bd24f2cbb905d9",
+      "codex.py": "994a46698c51a12d443a86ae374a4fab37d8acdcd384b130098444313901d9a9"
+    },
+    "native_search_call_parser_sha256": {
+      "clink/parsers/base.py": "58b844ac99cefeb8297613b80352a97de7b3dd144d205cb70ef62baf13298086",
+      "clink/parsers/codex.py": "bfea486db130f30653e7f73f3a8dfa0f4bfb0e46dded3e240138debaf990e74f"
+    },
+    "native_search_raw_output_replayed": false,
+    "native_search_raw_output_retained": false,
+    "offline_actual_returned_source_urls_revalidated": 20,
+    "offline_source_shaped_parser_tests_passed": 225
+  },
+  "policy_recipe": {
+    "adapter": "codex",
+    "argv": [
+      "--no-daemon",
+      "--ask-for-approval",
+      "never",
+      "exec",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--ephemeral",
+      "--strict-config",
+      "--sandbox",
+      "read-only",
+      "--disable",
+      "hooks",
+      "--disable",
+      "plugin_hooks",
+      "--disable",
+      "plugins",
+      "--disable",
+      "apps",
+      "--disable",
+      "multi_agent",
+      "--disable",
+      "multi_agent_v2",
+      "--disable",
+      "shell_tool",
+      "--disable",
+      "unified_exec",
+      "--disable",
+      "code_mode",
+      "--disable",
+      "code_mode_only",
+      "--disable",
+      "code_mode_host",
+      "--disable",
+      "deferred_executor",
+      "--disable",
+      "browser_use",
+      "--disable",
+      "browser_use_external",
+      "--disable",
+      "computer_use",
+      "--disable",
+      "in_app_browser",
+      "--disable",
+      "image_generation",
+      "--disable",
+      "remote_plugin",
+      "--disable",
+      "plugin_discovery_prefetch",
+      "--disable",
+      "skill_search",
+      "--disable",
+      "skill_mcp_dependency_install",
+      "--disable",
+      "workspace_dependencies",
+      "--disable",
+      "request_permissions_tool",
+      "--enable",
+      "skip_host_skill_discovery",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "sandbox_mode=\"read-only\"",
+      "-c",
+      "agents.enabled=false",
+      "-c",
+      "orchestrator.mcp.enabled=false",
+      "-c",
+      "skills.bundled.enabled=false",
+      "-c",
+      "skills.include_instructions=false",
+      "-c",
+      "cloud.skills.enabled=false",
+      "-c",
+      "project_doc_max_bytes=0",
+      "-c",
+      "web_search=\"live\"",
+      "-c",
+      "suppress_unstable_features_warning=true",
+      "-c",
+      "model_catalog_json=\"@CLINK_CODEX_MODEL_CATALOG@\"",
+      "-c",
+      "notify=[]",
+      "--skip-git-repo-check",
+      "--json",
+      "-"
+    ],
+    "environment_allowlist": [
+      "PATH",
+      "HOME",
+      "USER",
+      "LOGNAME",
+      "TMPDIR",
+      "TMP",
+      "TEMP",
+      "LANG",
+      "LC_ALL",
+      "LC_CTYPE",
+      "TZ",
+      "CODEX_HOME",
+      "CLAUDE_CONFIG_DIR"
+    ],
+    "fixed_environment": {
+      "CLINK_DELEGATION_DEPTH": "1"
+    },
+    "native_auth_location_preserved": true,
+    "prompt_channel": "stdin",
+    "resources": [
+      {
+        "path": "clink/resources/codex-0.166.0-models-direct.json",
+        "sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12"
+      }
+    ]
+  },
+  "policy_recipe_sha256": "4bf9a7fe0491e12965d5c36dd7ccc9d197dd271cdf57df378c68fc1b9e0dae16",
+  "previous_admission": {
+    "path": "codex-0.166.0-admission-v4-direct.json",
+    "sha256": "dde71d9ab47bdcb37405b151ae16240643e01065278cb570f16afeaedf5439c2"
+  },
+  "production_parser_source_sha256": {
+    "base.py": "8ca1b793199ee4e21b1e2bd3e2997bc07e18accb25b8eecb40bd24f2cbb905d9",
+    "codex.py": "994a46698c51a12d443a86ae374a4fab37d8acdcd384b130098444313901d9a9"
+  },
+  "recorded_at_utc": "2026-11-01T02:04:33.712078+00:00",
+  "resource_files": [
+    {
+      "path": "clink/resources/codex-0.166.0-models-direct.json",
+      "sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12"
+    }
+  ],
+  "schema_version": 1,
+  "supported_model_records": [
+    "gpt-6-astra",
+    "gpt-6.1-sol",
+    "gpt-6.1-terra",
+    "gpt-6-sol",
+    "gpt-6-luna",
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna",
+    "gpt-daybreak-blue-latest",
+    "gpt-daybreak-red-latest",
+    "gpt-5.5",
+    "codex-auto-review"
+  ],
+  "verified_observations": [
+    "The exact current recipe, bundled catalog SHA and executable/version passed no-inference effective-config controls before model use.",
+    "The current native read-only sandbox read a synthetic sentinel and denied an actual write with EPERM/EACCES; forbidden file absent and content hashes unchanged.",
+    "The exact current recipe completed the controlled text probe with exit 0, zero native error items, unchanged content and a pass from the unmodified production parser.",
+    "The exact current recipe completed the explicit synthetic black-triangle image probe with exit 0, zero native error items, correct image classification, unchanged content and a pass from the same production parser.",
+    "The genuine bundled model snapshot preserves all IDs/order/default metadata/instructions and unknown fields; only tool_mode changed to direct, while code-mode host and every forbidden execution/delegation control remain disabled.",
+    "A separate real backend apilookup under the same mandatory policy/binary/catalog returned success, search_performed=true and twenty structured returned source URLs; final stricter URL validation accepted all twenty offline."
+  ]
+}

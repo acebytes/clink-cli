@@ -1,24 +1,22 @@
 {
+  "schema_version": 1,
   "name": "codex",
+  "adapter": "codex",
   "command": "codex",
-  "additional_args": [
-    "--json",
-    "--dangerously-bypass-approvals-and-sandbox",
-    "--enable",
-    "web_search_request"
-  ],
+  "default_model": null,
+  "additional_args": [],
   "env": {},
   "roles": {
     "default": {
-      "prompt_path": "systemprompts/clink/default.txt",
+      "prompt_path": "../../systemprompts/clink/default.txt",
       "role_args": []
     },
     "planner": {
-      "prompt_path": "systemprompts/clink/default_planner.txt",
+      "prompt_path": "../../systemprompts/clink/default_planner.txt",
       "role_args": []
     },
     "codereviewer": {
-      "prompt_path": "systemprompts/clink/codex_codereviewer.txt",
+      "prompt_path": "../../systemprompts/clink/codex_codereviewer.txt",
       "role_args": []
     }
   }

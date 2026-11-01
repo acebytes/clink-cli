@@ -1,0 +1,110 @@
+{
+  "capture_mode": "installed_binary_bundled_no_refresh_no_inference",
+  "captured_at_utc": "2026-11-01T01:50:33.110954+00:00",
+  "changed_fields": [
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "gpt-6-astra"
+    },
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "gpt-6.1-sol"
+    },
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "gpt-6.1-terra"
+    },
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "gpt-6-sol"
+    },
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "gpt-6-luna"
+    },
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "gpt-5.6-sol"
+    },
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "gpt-5.6-terra"
+    },
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "gpt-5.6-luna"
+    },
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "gpt-daybreak-blue-latest"
+    },
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "gpt-daybreak-red-latest"
+    },
+    {
+      "original_field_present": false,
+      "original_tool_mode": null,
+      "projected_tool_mode": "direct",
+      "slug": "gpt-5.5"
+    },
+    {
+      "original_field_present": true,
+      "original_tool_mode": "code_mode_only",
+      "projected_tool_mode": "direct",
+      "slug": "codex-auto-review"
+    }
+  ],
+  "executable_sha256": "39acf979729dd290f9a24ee38b2914e036c91b65952872e28ae2a6b88a7db7c1",
+  "model_count": 12,
+  "model_requests_submitted": 0,
+  "native_default_api": "gpt-6.1-sol",
+  "native_default_chatgpt": "gpt-6.1-sol",
+  "native_default_limitation": "Captured genuine bundled default frozen; no future remote catalog refresh. Exact model IDs require wrapper admission; native aliases are broader.",
+  "observed_version": "codex-cli 0.166.0",
+  "original_path": "docs/verification/cli-policy/codex-0.166.0-model-catalog-original.json",
+  "original_sha256": "9e01cd50ec8c4ba6d782413d1154cb2dbe1da63e014d622631b0603bc19659d6",
+  "other_fields_unchanged": true,
+  "projected_bytes": 757141,
+  "resource_path": "clink/resources/codex-0.166.0-models-direct.json",
+  "resource_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+  "schema_version": 1,
+  "source_bytes": 745260,
+  "supported_models": [
+    "gpt-6-astra",
+    "gpt-6.1-sol",
+    "gpt-6.1-terra",
+    "gpt-6-sol",
+    "gpt-6-luna",
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna",
+    "gpt-daybreak-blue-latest",
+    "gpt-daybreak-red-latest",
+    "gpt-5.5",
+    "codex-auto-review"
+  ],
+  "top_level_keys": [
+    "models"
+  ]
+}

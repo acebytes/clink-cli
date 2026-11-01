@@ -15,9 +15,9 @@ _PARSER_CLASSES: dict[str, type[BaseParser]] = {
 
 
 def get_parser(name: str) -> BaseParser:
-    normalized = (name or "").lower()
+    normalized = name.lower() if isinstance(name, str) else ""
     if normalized not in _PARSER_CLASSES:
-        raise ParserError(f"No parser registered for '{name}'")
+        raise ParserError("No parser registered for the requested format")
     parser_cls = _PARSER_CLASSES[normalized]
     return parser_cls()
 

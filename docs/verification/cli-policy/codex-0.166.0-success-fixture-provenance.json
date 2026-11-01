@@ -1,0 +1,16 @@
+{
+  "additional_model_request": false,
+  "fixture_path": "tests/fixtures/clink/codex-0.166.0-direct-success.jsonl",
+  "fixture_sha256": "6e54cd94587f48937d7bc883ef7f6d455790ec922556b95702d4c7cd35ba53cf",
+  "normalization": "Reconstructed normalized replay of the actually observed thread.started, turn.started, agent_message item.completed, turn.completed four-event shape. Original stream was memory-only and is not claimed to be retained.",
+  "replacement_fields": [
+    "Thread/item identifiers are fixed synthetic values.",
+    "Response text is a controlled placeholder matching the requested marker; original content was not retained.",
+    "Usage counts are zero placeholders, not measured provider usage."
+  ],
+  "schema_version": 1,
+  "source_observation": {
+    "path": "codex-0.166.0-attempt13-direct-text.json",
+    "sha256": "23dc3beb25a21be666a2539332025138d6ac65c38a7435cb2365857b9b426b09"
+  }
+}

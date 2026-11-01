@@ -1,0 +1,170 @@
+{
+  "adapter": "codex",
+  "admission": {
+    "scope": "version-bound advisory mutation authority",
+    "status": "verified"
+  },
+  "capabilities": {
+    "images": true,
+    "native_file_read": false,
+    "native_web_search": false,
+    "read_scope": "inline context and explicit admitted images",
+    "text": true
+  },
+  "decision_basis": "Independent control review plus source-supported flags, native effective config, real authenticated hostile fixture, direct OS write denial, cancellation and synthetic image evidence; preserved failed attempts remain indexed.",
+  "delegation_receipt": {
+    "effective_runtime_metadata": "unverified",
+    "execution_requested": "gpt-6.1-sol/ultra",
+    "review_requested": "gpt-6.1-sol/high"
+  },
+  "evidence": [
+    {
+      "path": "codex-0.166.0-attempt4-host.json",
+      "sha256": "a29b1a9fc0c716b77720dc454b0f06c07e554770a68f81cf01a70d0a2b4c4074"
+    },
+    {
+      "path": "codex-0.166.0-attempt5-cancellation.json",
+      "sha256": "a00cab182bde093390984a4cbee0634f8db2928f19258193581346c330a8a48f"
+    },
+    {
+      "path": "codex-0.166.0-attempt6-sandbox.json",
+      "sha256": "77cb644a1f5c8e8629b5ca02506d6ab7acd0c47d52c421e758174db5d5a22f82"
+    },
+    {
+      "path": "codex-0.166.0-attempt7-search.json",
+      "sha256": "99c3e5246bf4633ad7c17b0dd25bdf20eb8d524c0e34847673faf060735ec3ae"
+    },
+    {
+      "path": "codex-0.166.0-attempt8-image.json",
+      "sha256": "cbc131e61bd7da536b69844274d32cac2260a2a3a9b51ca0c9b9009e24ce0dfe"
+    }
+  ],
+  "executable": "/opt/homebrew/Caskroom/codex/0.166.0/bin/codex",
+  "executable_sha256": "39acf979729dd290f9a24ee38b2914e036c91b65952872e28ae2a6b88a7db7c1",
+  "limitations": [
+    "No apply_patch/file-change tool-attempt event was emitted; acceptance concerns enforced mutation authority, not a claim that all write-tool definitions are absent.",
+    "Native read-only profile allows filesystem reads beyond the workspace; shell/read tools are disabled and server context scope is separately validated.",
+    "Requested gpt-6.1-sol/high is not provider-reported actual model identity; native auth source/account/token were not inspected.",
+    "Local cancellation does not guarantee cancellation of already submitted remote work or reversal of usage; native internal retries/inference counts are unobservable.",
+    "Managed-policy changes are an external-state limitation; exact version/executable/recipe changes invalidate this admission.",
+    "Default native web search emitted no search event and remains unverified/disabled in capabilities."
+  ],
+  "observed_version": "codex-cli 0.166.0",
+  "policy_recipe": {
+    "adapter": "codex",
+    "argv": [
+      "--no-daemon",
+      "--ask-for-approval",
+      "never",
+      "exec",
+      "--ignore-user-config",
+      "--ignore-rules",
+      "--ephemeral",
+      "--strict-config",
+      "--sandbox",
+      "read-only",
+      "--disable",
+      "hooks",
+      "--disable",
+      "plugin_hooks",
+      "--disable",
+      "plugins",
+      "--disable",
+      "apps",
+      "--disable",
+      "multi_agent",
+      "--disable",
+      "multi_agent_v2",
+      "--disable",
+      "shell_tool",
+      "--disable",
+      "unified_exec",
+      "--disable",
+      "code_mode",
+      "--disable",
+      "code_mode_host",
+      "--disable",
+      "deferred_executor",
+      "--disable",
+      "browser_use",
+      "--disable",
+      "browser_use_external",
+      "--disable",
+      "computer_use",
+      "--disable",
+      "in_app_browser",
+      "--disable",
+      "image_generation",
+      "--disable",
+      "remote_plugin",
+      "--disable",
+      "plugin_discovery_prefetch",
+      "--disable",
+      "skill_search",
+      "--disable",
+      "skill_mcp_dependency_install",
+      "--disable",
+      "workspace_dependencies",
+      "--disable",
+      "request_permissions_tool",
+      "--enable",
+      "skip_host_skill_discovery",
+      "-c",
+      "approval_policy=\"never\"",
+      "-c",
+      "sandbox_mode=\"read-only\"",
+      "-c",
+      "agents.enabled=false",
+      "-c",
+      "orchestrator.mcp.enabled=false",
+      "-c",
+      "skills.bundled.enabled=false",
+      "-c",
+      "skills.include_instructions=false",
+      "-c",
+      "cloud.skills.enabled=false",
+      "-c",
+      "project_doc_max_bytes=0",
+      "-c",
+      "notify=[]",
+      "--skip-git-repo-check",
+      "--json",
+      "-"
+    ],
+    "environment_allowlist": [
+      "PATH",
+      "HOME",
+      "USER",
+      "LOGNAME",
+      "TMPDIR",
+      "TMP",
+      "TEMP",
+      "LANG",
+      "LC_ALL",
+      "LC_CTYPE",
+      "TZ",
+      "CODEX_HOME",
+      "CLAUDE_CONFIG_DIR"
+    ],
+    "fixed_environment": {
+      "CLINK_DELEGATION_DEPTH": "1"
+    },
+    "native_auth_location_preserved": true,
+    "prompt_channel": "stdin"
+  },
+  "policy_recipe_sha256": "5b24b4da6a1e824d3ded0b04f49d62f11dcca027e5336c9d8d342e8612c0d8cc",
+  "recipe_transition": {
+    "change": "Promote already-used --skip-git-repo-check into base recipe before --json; no mutation/delegation control change.",
+    "from_sha256": "ecffe0f2abb55495f680018889b9280d938cd8ef48dd333e6bd502180b8bdc82",
+    "to_sha256": "5b24b4da6a1e824d3ded0b04f49d62f11dcca027e5336c9d8d342e8612c0d8cc"
+  },
+  "recorded_at_utc": "2026-11-01T01:35:09.213569+00:00",
+  "schema_version": 1,
+  "verified_observations": [
+    "Effective native configuration reported read-only/never and every required disabled feature before model use.",
+    "An authenticated protected hostile turn completed with unchanged content and no shell/MCP/agent marker.",
+    "A direct native :read-only sandbox read the sentinel and denied a real write with EPERM/EACCES; corrected content hashes matched.",
+    "A separate active native turn was terminated after turn.started, its process group was reaped, and content was unchanged.",
+    "Exact current base recipe completed authenticated public/synthetic capability probes; explicit synthetic image description matched its independently inspected shape and color."
+  ]
+}

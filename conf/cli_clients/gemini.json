@@ -1,21 +1,22 @@
 {
+  "schema_version": 1,
   "name": "gemini",
+  "adapter": "gemini",
   "command": "gemini",
-  "additional_args": [
-    "--yolo"
-  ],
+  "default_model": null,
+  "additional_args": [],
   "env": {},
   "roles": {
     "default": {
-      "prompt_path": "systemprompts/clink/default.txt",
+      "prompt_path": "../../systemprompts/clink/default.txt",
       "role_args": []
     },
     "planner": {
-      "prompt_path": "systemprompts/clink/default_planner.txt",
+      "prompt_path": "../../systemprompts/clink/default_planner.txt",
       "role_args": []
     },
     "codereviewer": {
-      "prompt_path": "systemprompts/clink/default_codereviewer.txt",
+      "prompt_path": "../../systemprompts/clink/default_codereviewer.txt",
       "role_args": []
     }
   }

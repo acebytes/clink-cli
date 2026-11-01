@@ -1,0 +1,111 @@
+{
+  "adapter": "claude",
+  "admission": {
+    "missing_gates": [
+      "exact_exec_runtime_controls",
+      "user_project_mcp_excluded",
+      "all_hooks_disabled",
+      "plugins_disabled",
+      "subagent_tools_excluded",
+      "read_only_enforced",
+      "managed_policy_cannot_weaken_controls",
+      "authentication",
+      "malicious_no_write",
+      "file_scope",
+      "live_cancellation"
+    ],
+    "status": "policy_unverified"
+  },
+  "authentication_outcome": "not_tested_no_model_request",
+  "environment_values_recorded": false,
+  "executable": "/opt/homebrew/Caskroom/claude-code/2.1.304/claude",
+  "executable_sha256": "b9ac5374839f14abf3f1f45610637c332b5daee5ce0d1634726cef87aab78e6a",
+  "expected_version": "2.1.304 (Claude Code)",
+  "gates": {
+    "all_hooks_disabled": "unverified",
+    "authentication": "unverified",
+    "exact_exec_runtime_controls": "unverified",
+    "file_scope": "unverified",
+    "live_cancellation": "unverified",
+    "malicious_no_write": "unverified",
+    "managed_policy_cannot_weaken_controls": "unverified",
+    "plugins_disabled": "unverified",
+    "read_only_enforced": "unverified",
+    "subagent_tools_excluded": "unverified",
+    "user_project_mcp_excluded": "unverified"
+  },
+  "live_request": "blocked_before_inference",
+  "model_requests_submitted": 0,
+  "observed_version": "2.1.304 (Claude Code)",
+  "policy_recipe": {
+    "adapter": "claude",
+    "argv": [
+      "--restricted",
+      "--safe-mode",
+      "--no-chrome",
+      "--disable-slash-commands",
+      "--tools",
+      "Read,Glob,Grep,WebSearch,WebFetch",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--permission-prompts",
+      "none",
+      "--no-session-persistence",
+      "--settings",
+      "{\"disableAllHooks\":true}",
+      "--print",
+      "--output-format",
+      "json"
+    ],
+    "environment_allowlist": [
+      "PATH",
+      "HOME",
+      "USER",
+      "LOGNAME",
+      "TMPDIR",
+      "TMP",
+      "TEMP",
+      "LANG",
+      "LC_ALL",
+      "LC_CTYPE",
+      "TZ",
+      "CODEX_HOME",
+      "CLAUDE_CONFIG_DIR"
+    ],
+    "fixed_environment": {
+      "CLINK_DELEGATION_DEPTH": "1"
+    },
+    "native_auth_location_preserved": true,
+    "prompt_channel": "stdin"
+  },
+  "policy_recipe_sha256": "c551ec390535a11cf1042d703326a9d295746f6a1887f4fd269fb7c49afc0a43",
+  "runtime_preflight": {
+    "auth_material_copied": false,
+    "canary_executed": false,
+    "captured_bytes": 4417,
+    "controls": {
+      "agent_definition_count": 4,
+      "agent_definitions_are_not_tool_availability_evidence": true,
+      "initialized": true,
+      "mcp_servers_empty": true,
+      "mcp_status_success": true,
+      "runtime_version": "2.1.304"
+    },
+    "limitations": [
+      "No turn was submitted; tool execution, file scope and live no-write behavior are untested.",
+      "Synthetic-profile observations do not establish production native-auth or managed-policy behavior.",
+      "A canary not executing before a turn does not prove that turn-time hooks or MCP cannot execute."
+    ],
+    "probe_process_group_stopped": true,
+    "production_authentication_tested": false,
+    "raw_output_retained": false,
+    "scope": "synthetic_profile_no_model_request",
+    "status": "observed",
+    "workspace_sha256_after": "3b156597470c001ec27c228bb82b6123fc1aee4b1b806db428d6bd07fd91dce9",
+    "workspace_sha256_before": "3b156597470c001ec27c228bb82b6123fc1aee4b1b806db428d6bd07fd91dce9",
+    "workspace_unchanged": true
+  },
+  "schema_version": 1,
+  "version_matches": true
+}

@@ -1,0 +1,31 @@
+{
+  "fixture_kind": "synthetic_pinned_source_shape_not_captured_native_output",
+  "fixture_path": "tests/fixtures/clink/codex-0.166.0-web-search-source-shape.jsonl",
+  "fixture_sha256": "a3dbe7cc9f0dfc1538f8901caf7449ef4da0a355bf901f65b4f48abb5613202f",
+  "limitation": "The native call used its recorded parser hashes. Later hostname/Unicode and literal-is_error hardening was tested offline against synthetic source-shaped fixtures; native raw output was not retained or replayed.",
+  "native_call_evidence_path": "docs/verification/native-search-1/result.json",
+  "native_call_parser_sha256": {
+    "clink/parsers/base.py": "58b844ac99cefeb8297613b80352a97de7b3dd144d205cb70ef62baf13298086",
+    "clink/parsers/codex.py": "bfea486db130f30653e7f73f3a8dfa0f4bfb0e46dded3e240138debaf990e74f"
+  },
+  "native_call_raw_output_retained": false,
+  "native_call_replayed": false,
+  "offline_checks": [
+    "ruff",
+    "black --check",
+    "isort --check-only"
+  ],
+  "offline_parser_sha256": {
+    "base.py": "8ca1b793199ee4e21b1e2bd3e2997bc07e18accb25b8eecb40bd24f2cbb905d9",
+    "codex.py": "994a46698c51a12d443a86ae374a4fab37d8acdcd384b130098444313901d9a9"
+  },
+  "offline_parser_tests_passed": 225,
+  "schema_version": 1,
+  "source_commit": "6ff1e1ca3b30fc8b914720681fcf5fe62e95f856",
+  "source_files": [
+    "https://github.com/openai/codex/blob/rust-v0.166.0/codex-rs/exec/src/exec_events.rs",
+    "https://github.com/openai/codex/blob/rust-v0.166.0/codex-rs/exec/src/event_processor_with_jsonl_output.rs",
+    "https://github.com/openai/codex/blob/rust-v0.166.0/codex-rs/codex-api/src/endpoint/search.rs"
+  ],
+  "source_tag": "rust-v0.166.0"
+}
