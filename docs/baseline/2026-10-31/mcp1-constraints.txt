@@ -1,0 +1,2 @@
+# Audit-only installation constraint; product manifests remain unchanged.
+mcp<2

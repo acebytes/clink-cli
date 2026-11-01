@@ -1,0 +1,21 @@
+{
+  "source_commit": "7afc7c1cc96e23992c8f105f960132c657883bb1",
+  "source_tree": "28b81ef0320ad27b054e3755d1387033cc89d0f3",
+  "branch": "dex/clink-only-design",
+  "origin_fetch": "https://github.com/acebytes/clink-mcp-server.git",
+  "origin_push": "https://github.com/acebytes/clink-mcp-server.git",
+  "upstream_fetch": "https://github.com/BeehiveInnovations/pal-mcp-server.git",
+  "upstream_push": "DISABLED",
+  "push_default": "origin",
+  "original_pal_status": [
+    " M conf/gemini_models.json",
+    " M conf/openai_models.json",
+    " M conf/openrouter_models.json",
+    " M conf/xai_models.json",
+    " M pyproject.toml",
+    " M requirements.txt"
+  ],
+  "original_pal_diff_sha256_at_phase2": "87161dde0f327e82cd9245680323e895544f9618aadacf5ce05a76e1ac53dc0b",
+  "target_product_diff_empty": true,
+  "target_dotenv_present": false
+}

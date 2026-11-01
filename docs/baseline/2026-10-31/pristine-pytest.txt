@@ -1,0 +1,120 @@
+/Users/d/Tools/clink-mcp-server/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:300: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the "fixture" caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to "function" scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.2.0, pluggy-1.7.0 -- /Users/d/Tools/clink-mcp-server/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/d/Tools/clink-mcp-server
+configfile: pytest.ini
+plugins: mock-3.17.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 830 items / 7 errors / 16 deselected / 814 selected
+
+==================================== ERRORS ====================================
+__________ ERROR collecting tests/test_conversation_field_mapping.py ___________
+tests/test_conversation_field_mapping.py:10: in <module>
+    from server import reconstruct_thread_context
+server.py:630: in <module>
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'
+------------------------------- Captured stderr --------------------------------
+2026-10-31 17:56:30,788 - root - INFO - Logging to: /Users/d/Tools/clink-mcp-server/logs/mcp_server.log
+2026-10-31 17:56:30,788 - root - INFO - Process PID: 7200
+2026-10-31 17:56:30,788 - server - DEBUG - PAL_MCP_FORCE_ENV_OVERRIDE disabled - system environment variables take precedence
+2026-10-31 17:56:30,788 - mcp.server.lowlevel.server - DEBUG - Initializing server 'pal-server'
+2026-10-31 17:56:30,789 - clink.registry - DEBUG - Loaded CLI configuration for 'claude' from /Users/d/Tools/clink-mcp-server/conf/cli_clients/claude.json
+2026-10-31 17:56:30,789 - clink.registry - DEBUG - Loaded CLI configuration for 'codex' from /Users/d/Tools/clink-mcp-server/conf/cli_clients/codex.json
+2026-10-31 17:56:30,789 - clink.registry - DEBUG - Loaded CLI configuration for 'gemini' from /Users/d/Tools/clink-mcp-server/conf/cli_clients/gemini.json
+2026-10-31 17:56:30,789 - clink.registry - DEBUG - Configuration path does not exist: /Users/d/.pal/cli_clients
+2026-10-31 17:56:30,789 - server - INFO - All tools enabled (DISABLED_TOOLS not set)
+______________ ERROR collecting tests/test_conversation_memory.py ______________
+tests/test_conversation_memory.py:13: in <module>
+    from server import get_follow_up_instructions
+server.py:630: in <module>
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'
+------------------------------- Captured stderr --------------------------------
+2026-10-31 17:56:30,903 - root - INFO - Logging to: /Users/d/Tools/clink-mcp-server/logs/mcp_server.log
+2026-10-31 17:56:30,903 - root - INFO - Process PID: 7200
+2026-10-31 17:56:30,903 - server - DEBUG - PAL_MCP_FORCE_ENV_OVERRIDE disabled - system environment variables take precedence
+2026-10-31 17:56:30,903 - mcp.server.lowlevel.server - DEBUG - Initializing server 'pal-server'
+2026-10-31 17:56:30,904 - server - INFO - All tools enabled (DISABLED_TOOLS not set)
+________________ ERROR collecting tests/test_disabled_tools.py _________________
+tests/test_disabled_tools.py:9: in <module>
+    from server import (
+server.py:630: in <module>
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'
+------------------------------- Captured stderr --------------------------------
+2026-10-31 17:56:30,979 - root - INFO - Logging to: /Users/d/Tools/clink-mcp-server/logs/mcp_server.log
+2026-10-31 17:56:30,980 - root - INFO - Process PID: 7200
+2026-10-31 17:56:30,980 - server - DEBUG - PAL_MCP_FORCE_ENV_OVERRIDE disabled - system environment variables take precedence
+2026-10-31 17:56:30,980 - mcp.server.lowlevel.server - DEBUG - Initializing server 'pal-server'
+2026-10-31 17:56:30,980 - server - INFO - All tools enabled (DISABLED_TOOLS not set)
+______________ ERROR collecting tests/test_mcp_error_handling.py _______________
+tests/test_mcp_error_handling.py:8: in <module>
+    from server import server as mcp_server
+server.py:630: in <module>
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'
+------------------------------- Captured stderr --------------------------------
+2026-10-31 17:56:31,154 - root - INFO - Logging to: /Users/d/Tools/clink-mcp-server/logs/mcp_server.log
+2026-10-31 17:56:31,154 - root - INFO - Process PID: 7200
+2026-10-31 17:56:31,154 - server - DEBUG - PAL_MCP_FORCE_ENV_OVERRIDE disabled - system environment variables take precedence
+2026-10-31 17:56:31,154 - mcp.server.lowlevel.server - DEBUG - Initializing server 'pal-server'
+2026-10-31 17:56:31,154 - server - INFO - All tools enabled (DISABLED_TOOLS not set)
+__________ ERROR collecting tests/test_model_metadata_continuation.py __________
+tests/test_model_metadata_continuation.py:15: in <module>
+    from server import reconstruct_thread_context
+server.py:630: in <module>
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'
+------------------------------- Captured stderr --------------------------------
+2026-10-31 17:56:31,182 - root - INFO - Logging to: /Users/d/Tools/clink-mcp-server/logs/mcp_server.log
+2026-10-31 17:56:31,182 - root - INFO - Process PID: 7200
+2026-10-31 17:56:31,182 - server - DEBUG - PAL_MCP_FORCE_ENV_OVERRIDE disabled - system environment variables take precedence
+2026-10-31 17:56:31,182 - mcp.server.lowlevel.server - DEBUG - Initializing server 'pal-server'
+2026-10-31 17:56:31,182 - server - INFO - All tools enabled (DISABLED_TOOLS not set)
+______________ ERROR collecting tests/test_parse_model_option.py _______________
+tests/test_parse_model_option.py:3: in <module>
+    from server import parse_model_option
+server.py:630: in <module>
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'
+------------------------------- Captured stderr --------------------------------
+2026-10-31 17:56:31,350 - root - INFO - Logging to: /Users/d/Tools/clink-mcp-server/logs/mcp_server.log
+2026-10-31 17:56:31,350 - root - INFO - Process PID: 7200
+2026-10-31 17:56:31,350 - server - DEBUG - PAL_MCP_FORCE_ENV_OVERRIDE disabled - system environment variables take precedence
+2026-10-31 17:56:31,350 - mcp.server.lowlevel.server - DEBUG - Initializing server 'pal-server'
+2026-10-31 17:56:31,350 - server - INFO - All tools enabled (DISABLED_TOOLS not set)
+____________________ ERROR collecting tests/test_server.py _____________________
+tests/test_server.py:7: in <module>
+    from server import handle_call_tool
+server.py:630: in <module>
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'
+------------------------------- Captured stderr --------------------------------
+2026-10-31 17:56:31,566 - root - INFO - Logging to: /Users/d/Tools/clink-mcp-server/logs/mcp_server.log
+2026-10-31 17:56:31,566 - root - INFO - Process PID: 7200
+2026-10-31 17:56:31,566 - server - DEBUG - PAL_MCP_FORCE_ENV_OVERRIDE disabled - system environment variables take precedence
+2026-10-31 17:56:31,566 - mcp.server.lowlevel.server - DEBUG - Initializing server 'pal-server'
+2026-10-31 17:56:31,566 - server - INFO - All tools enabled (DISABLED_TOOLS not set)
+- generated xml file: /Users/d/Tools/clink-mcp-server/docs/baseline/2026-10-31/pristine-junit.xml -
+=========================== short test summary info ============================
+ERROR tests/test_conversation_field_mapping.py - AttributeError: 'Server' object has no attribute 'list_tools'
+ERROR tests/test_conversation_memory.py - AttributeError: 'Server' object has no attribute 'list_tools'
+ERROR tests/test_disabled_tools.py - AttributeError: 'Server' object has no attribute 'list_tools'
+ERROR tests/test_mcp_error_handling.py - AttributeError: 'Server' object has no attribute 'list_tools'
+ERROR tests/test_model_metadata_continuation.py - AttributeError: 'Server' object has no attribute 'list_tools'
+ERROR tests/test_parse_model_option.py - AttributeError: 'Server' object has no attribute 'list_tools'
+ERROR tests/test_server.py - AttributeError: 'Server' object has no attribute 'list_tools'
+!!!!!!!!!!!!!!!!!!! Interrupted: 7 errors during collection !!!!!!!!!!!!!!!!!!!!
+======================= 16 deselected, 7 errors in 1.84s =======================

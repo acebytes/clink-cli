@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="7" failures="0" skipped="0" tests="7" time="1.842" timestamp="2026-10-31T17:56:29.932318-07:00" hostname="studio192.local"><testcase classname="" name="tests.test_conversation_field_mapping" time="0.000"><error message="collection failure">tests/test_conversation_field_mapping.py:10: in &lt;module&gt;
+    from server import reconstruct_thread_context
+server.py:630: in &lt;module&gt;
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'</error></testcase><testcase classname="" name="tests.test_conversation_memory" time="0.000"><error message="collection failure">tests/test_conversation_memory.py:13: in &lt;module&gt;
+    from server import get_follow_up_instructions
+server.py:630: in &lt;module&gt;
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'</error></testcase><testcase classname="" name="tests.test_disabled_tools" time="0.000"><error message="collection failure">tests/test_disabled_tools.py:9: in &lt;module&gt;
+    from server import (
+server.py:630: in &lt;module&gt;
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'</error></testcase><testcase classname="" name="tests.test_mcp_error_handling" time="0.000"><error message="collection failure">tests/test_mcp_error_handling.py:8: in &lt;module&gt;
+    from server import server as mcp_server
+server.py:630: in &lt;module&gt;
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'</error></testcase><testcase classname="" name="tests.test_model_metadata_continuation" time="0.000"><error message="collection failure">tests/test_model_metadata_continuation.py:15: in &lt;module&gt;
+    from server import reconstruct_thread_context
+server.py:630: in &lt;module&gt;
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'</error></testcase><testcase classname="" name="tests.test_parse_model_option" time="0.000"><error message="collection failure">tests/test_parse_model_option.py:3: in &lt;module&gt;
+    from server import parse_model_option
+server.py:630: in &lt;module&gt;
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'</error></testcase><testcase classname="" name="tests.test_server" time="0.000"><error message="collection failure">tests/test_server.py:7: in &lt;module&gt;
+    from server import handle_call_tool
+server.py:630: in &lt;module&gt;
+    @server.list_tools()
+     ^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Server' object has no attribute 'list_tools'</error></testcase></testsuite></testsuites>

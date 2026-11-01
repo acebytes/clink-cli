@@ -1,0 +1,1 @@
+{"checkout_readable": true, "network_denied": true, "outside_home_read_denied": true}

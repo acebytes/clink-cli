@@ -1,0 +1,1 @@
+python: realpath: /Users/d/Tools/clink-mcp-server/.venv/bin/: Operation not permitted
