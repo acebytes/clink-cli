@@ -19,5 +19,22 @@
       "prompt_path": "../../systemprompts/clink/default_codereviewer.txt",
       "role_args": []
     }
+  },
+  "native_task": {
+    "enabled": false,
+    "inherit_env": [],
+    "required_env": [],
+    "default_model": null,
+    "roles": {
+      "default": {
+        "prompt_path": "../../systemprompts/clink/native_default.txt"
+      },
+      "planner": {
+        "prompt_path": "../../systemprompts/clink/native_planner.txt"
+      },
+      "codereviewer": {
+        "prompt_path": "../../systemprompts/clink/native_codereviewer.txt"
+      }
+    }
   }
 }

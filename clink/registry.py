@@ -19,6 +19,7 @@ from clink.constants import (
     CLIInternalDefaults,
 )
 from clink.models import CLIClientConfig, CLIRoleConfig, ResolvedCLIClient, ResolvedCLIRole, ResolvedNativeTask
+from clink.native_policy import NATIVE_ADAPTERS
 from utils.env import get_env
 
 logger = logging.getLogger("clink.registry")
@@ -177,8 +178,8 @@ class ClinkRegistry:
             raise RegistryLoadError(f"working_dir is outside allowed_roots in {source_path}")
         native_task = None
         if raw.native_task is not None:
-            if adapter != "claude":
-                raise RegistryLoadError(f"Native task profiles currently require the claude adapter in {source_path}")
+            if adapter not in NATIVE_ADAPTERS:
+                raise RegistryLoadError(f"This adapter has no native task profile contract in {source_path}")
             native_roles = raw.native_task.roles
             if raw.native_task.enabled and "default" not in native_roles:
                 raise RegistryLoadError(f"An enabled native task profile requires a default role in {source_path}")

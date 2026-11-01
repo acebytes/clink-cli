@@ -16,10 +16,10 @@ from typing import Any
 
 from clink.backend import CLIBackend, _directory, _model, get_backend
 from clink.contracts import AdapterPolicy, BackendError, BackendTarget, ClientSnapshot, CLIRequest, RoleSnapshot
+from clink.native_adapters import get_native_adapter, prepare_native_launch
 from clink.native_contracts import FrozenNativeContext, NativeRunOutcome
-from clink.native_policy import NATIVE_ENVIRONMENT_KEYS, native_arguments, native_recipe_digest
+from clink.native_policy import native_environment_names, native_recipe_digest
 from clink.parsers.base import ParserError
-from clink.parsers.claude_native import ClaudeNativeParser, validate_session_id
 from clink.policy import executable_digest
 
 PROMPT_BYTES = 1024 * 1024
@@ -61,6 +61,7 @@ class NativeRuntime:
             if profile is None:
                 continue
             policy = self._policy(client.adapter)
+            adapter = get_native_adapter(client.adapter)
             installed = bool(client.executable and shutil.which(client.executable[0]))
             descriptions.append(
                 {
@@ -79,7 +80,8 @@ class NativeRuntime:
                     "default_model_origin": "native_profile" if profile.default_model else "native_cli_configuration",
                     "environment_names": list(profile.inherit_env),
                     "required_environment_names": list(profile.required_env),
-                    "permission_handling": "native policy; unattended prompts denied and reported",
+                    "permission_handling": adapter.permission_handling,
+                    "prompt_transport": adapter.prompt_channel,
                     "read_scope": "native policy; approved roots only constrain server-supplied context",
                 }
             )
@@ -129,8 +131,7 @@ class NativeRuntime:
         profile = client.native_task
         if profile is None or not profile.enabled:
             raise BackendError("unsupported_capability", "This client has no enabled native task profile.")
-        if client.adapter != "claude":
-            raise BackendError("unsupported_capability", "Only the Claude native task adapter is implemented.")
+        adapter = get_native_adapter(client.adapter)
         selected_role = profile.roles.get(role or "default")
         if selected_role is None:
             raise BackendError("invalid_config", "The requested role is not configured in the native task profile.")
@@ -159,7 +160,7 @@ class NativeRuntime:
                 config_args=tuple(client.config_args),
                 env=tuple(sorted(client.env.items())),
                 timeout_seconds=client.timeout_seconds,
-                parser="claude_native",
+                parser=f"{adapter.name}_native",
                 default_model=profile.default_model,
             ),
             role=RoleSnapshot(selected_role.name, selected_role.prompt_text, model=selected_role.model),
@@ -232,25 +233,18 @@ class NativeRuntime:
         return content
 
     @staticmethod
-    def _command(context: FrozenNativeContext, session_id: str | None) -> tuple[str, ...]:
-        validate_session_id(session_id)
-        target = context.target
-        arguments = native_arguments(target.client.adapter)
-        if not arguments:
-            raise BackendError("policy_unverified", "This adapter has no native launch recipe.")
-        command = [*target.client.executable, *arguments, *target.client.config_args]
-        if target.effective_model is not None:
-            command.extend(("--model", target.effective_model))
-        if session_id is not None:
-            command.extend(("--resume", session_id))
-        return tuple(command)
+    def _command(
+        context: FrozenNativeContext, session_id: str | None, prompt_path: str | None = None
+    ) -> tuple[str, ...]:
+        return get_native_adapter(context.target.client.adapter).command(context, session_id, prompt_path)
 
     @staticmethod
     def _environment(context: FrozenNativeContext) -> dict[str, str]:
-        names = frozenset((*NATIVE_ENVIRONMENT_KEYS, *context.environment_names))
+        baseline_names = native_environment_names(context.target.client.adapter)
+        names = frozenset((*baseline_names, *context.environment_names))
         result = {name: value for name, value in os.environ.items() if name in names}
         additions = dict(context.target.client.env)
-        if any(name not in NATIVE_ENVIRONMENT_KEYS for name in additions):
+        if any(name not in baseline_names for name in additions):
             raise BackendError("invalid_config", "Native static environment additions must use baseline names.")
         result.update(additions)
         result["CLINK_DELEGATION_DEPTH"] = "1"
@@ -297,44 +291,48 @@ class NativeRuntime:
         self._check_environment_names(context)
         self._validate_admission(context)
         content = self._compose(context, prompt)
-        command = self._command(context, session_id)
-        try:
-            observed = await asyncio.wait_for(
-                asyncio.to_thread(executable_digest, command[0]), max(0.0, deadline - time.monotonic())
+        adapter = get_native_adapter(context.target.client.adapter)
+        with prepare_native_launch(adapter, context, content, session_id) as launch:
+            try:
+                observed = await asyncio.wait_for(
+                    asyncio.to_thread(executable_digest, launch.command[0]), max(0.0, deadline - time.monotonic())
+                )
+            except asyncio.TimeoutError as exc:
+                raise BackendError(
+                    "timeout", "The native attempt deadline expired during executable verification."
+                ) from exc
+            except OSError as exc:
+                raise BackendError("cli_missing", "The admitted native executable is unavailable.") from exc
+            if observed != context.target.policy.executable_sha256:
+                raise BackendError(
+                    "policy_unverified", "The installed native binary differs from its admission evidence."
+                )
+            environment: dict[str, str] = {}
+
+            def prelaunch() -> None:
+                self._check_depth()
+                self._check_environment_names(context)
+                self._validate_admission(context)
+                if executable_digest(launch.command[0]) != context.target.policy.executable_sha256:
+                    raise BackendError("policy_unverified", "The admitted native executable changed before launch.")
+                cwd = _directory(context.target.working_directory, context.target.client.allowed_roots)
+                if cwd != context.target.working_directory:
+                    raise BackendError("path_not_allowed", "The native project changed before launch.")
+                self.validate_context(context.target, context.files, context.images)
+                launch.validate_input()
+                environment.update(self._environment(context))
+
+            output = await self.pool.execute(
+                launch.command,
+                content=launch.stdin,
+                cwd=str(context.target.working_directory),
+                env=environment,
+                deadline=deadline,
+                request_id=attempt_id,
+                metadata={"client": context.target.cli_name, "role": context.target.role.name, "tool": "clink"},
+                prelaunch=prelaunch,
+                on_started=started,
             )
-        except asyncio.TimeoutError as exc:
-            raise BackendError(
-                "timeout", "The native attempt deadline expired during executable verification."
-            ) from exc
-        except OSError as exc:
-            raise BackendError("cli_missing", "The admitted native executable is unavailable.") from exc
-        if observed != context.target.policy.executable_sha256:
-            raise BackendError("policy_unverified", "The installed native binary differs from its admission evidence.")
-        environment: dict[str, str] = {}
-
-        def prelaunch() -> None:
-            self._check_depth()
-            self._check_environment_names(context)
-            self._validate_admission(context)
-            if executable_digest(command[0]) != context.target.policy.executable_sha256:
-                raise BackendError("policy_unverified", "The admitted native executable changed before launch.")
-            cwd = _directory(context.target.working_directory, context.target.client.allowed_roots)
-            if cwd != context.target.working_directory:
-                raise BackendError("path_not_allowed", "The native project changed before launch.")
-            self.validate_context(context.target, context.files, context.images)
-            environment.update(self._environment(context))
-
-        output = await self.pool.execute(
-            command,
-            content=content,
-            cwd=str(context.target.working_directory),
-            env=environment,
-            deadline=deadline,
-            request_id=attempt_id,
-            metadata={"client": context.target.cli_name, "role": context.target.role.name, "tool": "clink"},
-            prelaunch=prelaunch,
-            on_started=started,
-        )
         metadata: dict[str, Any] = {
             "exit_status": output.returncode,
             "stdout_bytes": output.stdout_bytes,
@@ -346,7 +344,7 @@ class NativeRuntime:
             "verification_status": context.target.policy.verification_status,
         }
         try:
-            parsed = ClaudeNativeParser().parse(output.stdout, output.stderr)
+            parsed = adapter.parse(output.stdout, output.stderr)
         except ParserError as exc:
             state = (
                 "failed"

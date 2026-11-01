@@ -238,6 +238,7 @@ async def test_queued_environment_values_resolve_only_at_actual_prelaunch(runtim
 
 def test_codex_recipe_is_unchanged():
     assert recipe_digest("codex") == "4bf9a7fe0491e12965d5c36dd7ccc9d197dd271cdf57df378c68fc1b9e0dae16"
+    assert native_recipe_digest("claude") == "de885baaadfdf5810321e32992c7e961f3a360dda90b903ab98ffc243564885e"
 
 
 @pytest.mark.asyncio
@@ -271,7 +272,10 @@ async def test_shorter_configured_timeout_caps_long_attempt_deadline(runtime, mo
             "claude",
             False,
         ),
-        ({"enabled": False, "roles": {}}, "codex", False),
+        ({"enabled": True, "roles": {"default": {"prompt_path": "native.txt"}}}, "codex", True),
+        ({"enabled": True, "roles": {"default": {"prompt_path": "native.txt"}}}, "grok", True),
+        ({"enabled": True, "roles": {"default": {"prompt_path": "native.txt"}}}, "agy", True),
+        ({"enabled": False, "roles": {}}, "gemini", False),
     ],
 )
 def test_registry_native_profiles_require_explicit_native_role_prompts(tmp_path, profile, adapter, accepted):
