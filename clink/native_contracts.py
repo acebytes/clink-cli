@@ -10,6 +10,16 @@ from clink.contracts import BackendTarget
 
 
 @dataclass(frozen=True)
+class ParsedNativeResponse:
+    """Keep private session identity separate from bounded public metadata."""
+
+    state: str
+    content: str = ""
+    session_id: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
 class FrozenNativeContext:
     """Pin native identity and names, without caller text or resolved environment values."""
 

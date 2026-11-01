@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
 from typing import Any
 
+from clink.native_contracts import ParsedNativeResponse
 from clink.parsers.base import ParserError, bounded_counts, bounded_number, cli_failure, load_json, model_identifier
 
 RESULT_CHARACTERS = 20000
@@ -19,16 +19,6 @@ def validate_session_id(value: str | None) -> str | None:
     if value is not None and (not isinstance(value, str) or not _SESSION.fullmatch(value)):
         raise ParserError("Claude native session identity is invalid")
     return value
-
-
-@dataclass(frozen=True)
-class ParsedNativeResponse:
-    """Private session identity is deliberately separate from public metadata."""
-
-    state: str
-    content: str = ""
-    session_id: str | None = None
-    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ClaudeNativeParser:
