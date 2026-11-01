@@ -1,0 +1,1568 @@
+{
+  "artifacts": [
+    {
+      "artifact": "clink_mcp_server-0.1.0-py3-none-any.whl",
+      "compared_source_members": 109,
+      "core_modules_sha256": {
+        "clink/__init__.py": "e929f4569db5f9062cc3bbfb6bdb614e28854d06bb19ceaa57fddd12bdc21557",
+        "clink/agents/__init__.py": "6d046292852c7ce097a4759ea8ea58358ae055293c3a513c39f16bb36edb5627",
+        "clink/agents/base.py": "3a34737baf6eadad6f05bae0eae48c6dfa6f52084364a2b3995551ee29a6fc0f",
+        "clink/agents/claude.py": "4c0b06a00c6cb1c500ff03cee8ab60a3f234e8b3b9b52ef05d0a46d8a9eda359",
+        "clink/agents/codex.py": "a41b52fd8592b6166a590b6da5a05e1afa051d5550bc98738e9437248afbd909",
+        "clink/agents/gemini.py": "2ba03d24d4639b61fca69623f9d9f07eb63faade3ee76dfb825c6cee529a67fc",
+        "clink/backend.py": "4a058f61ad58d227e06729fa8444762171566e7af72ac43b9aa0fb6ac2f9f11d",
+        "clink/constants.py": "2b34da469263b1c8db46c3790b72bc3aca00cc6c1e21013163e3c7da912e0bc1",
+        "clink/contracts.py": "59b1da6271ff9f4ee6879ecf91ac7123e25babf6cbf78a6780774ed06f1561db",
+        "clink/files.py": "02b1f3f86bc0926f14da673fb2669a06b8d28ea28f9e3238bc7944819ec2d19d",
+        "clink/models.py": "446b70e2eaceea1a6370e833011190a6722c10f75dc42fa144339cb1deb3b4bd",
+        "clink/native.py": "83137ac3cec3dbd88cd574b11bdbf2b138782ab5a7ae27eea2c7c15819cfc2fd",
+        "clink/native_adapters.py": "7a3daf32369e0492a69d307333441e8c27e936ffd0b156322fc5e7294a8d251f",
+        "clink/native_contracts.py": "4b62bee1167e4026526f34b4890b3aee81948644031679691c4535990ee9745c",
+        "clink/native_policy.py": "ec295f6450d53d1362dd87a51cb5551942f26868b48b5e88a252c8cefe4234c4",
+        "clink/parsers/__init__.py": "827dad23d8a5f619a07c634158099cab1ac8fb8b1477fa99cf9943bc8e5746cd",
+        "clink/parsers/agy.py": "35e1a75b765b668cb6f420583988534c3285278abc136f927883b8b2aff58d3c",
+        "clink/parsers/agy_native.py": "53090e591d518f18a65a9c4dfbf39d975e9072f65c9a1e687f56cf4e0489960e",
+        "clink/parsers/base.py": "8ca1b793199ee4e21b1e2bd3e2997bc07e18accb25b8eecb40bd24f2cbb905d9",
+        "clink/parsers/claude.py": "d536fd0315c306a489ae54357e42acd3200c217c13e543066a6f9002f69cd7e2",
+        "clink/parsers/claude_native.py": "621248359cced3782525d03716b4f64c55547b6dbc32eaedda168adf1e5cae06",
+        "clink/parsers/codex.py": "994a46698c51a12d443a86ae374a4fab37d8acdcd384b130098444313901d9a9",
+        "clink/parsers/codex_native.py": "b552f3b087351f9cdca1b53b1635f6f6f34f3e5f417be174c3aa057ca006b77b",
+        "clink/parsers/gemini.py": "88d0ec327ebf716ec84ce9488bacc46c9636e27fe500ca362f0c118cc390acc1",
+        "clink/parsers/grok.py": "09bb69ef0d631ff423a7f81cef24a8a0ac91cfcb065b01efa366504401d1328c",
+        "clink/parsers/grok_native.py": "940f05404389f27b79eda917fe831ace6b2c64bc085faf1872f927aeb5c8644d",
+        "clink/policy.py": "ebf24596bd7ce98e23a2abc7d1821196117b50d89dd8937ce2a79baabffec35a",
+        "clink/registry.py": "fe8319eef076370c05c09f506bd703ae096ee9b386e19743991595f230feaf66",
+        "clink/runner.py": "7fe67698f57ec1539ad3751f25dd0300166361d5d0b9159946836937f76a7632",
+        "clink/tasks.py": "bd334096aed8af27d7f2813a07594b99d53805f3ea13deff33a31237f93b593b",
+        "config.py": "45ea38d9edf8f499599fdb85a8a0c044cb4634465893e5a40bc6fd57373a32fd",
+        "server.py": "ecad938b16221ede3f82402250a9c51517762b9fc331a0ad6355dd8a6c1b3d45"
+      },
+      "member_count": 117,
+      "members": [
+        "clink/__init__.py",
+        "clink/agents/__init__.py",
+        "clink/agents/base.py",
+        "clink/agents/claude.py",
+        "clink/agents/codex.py",
+        "clink/agents/gemini.py",
+        "clink/backend.py",
+        "clink/constants.py",
+        "clink/contracts.py",
+        "clink/files.py",
+        "clink/models.py",
+        "clink/native.py",
+        "clink/native_adapters.py",
+        "clink/native_contracts.py",
+        "clink/native_policy.py",
+        "clink/parsers/__init__.py",
+        "clink/parsers/agy.py",
+        "clink/parsers/agy_native.py",
+        "clink/parsers/base.py",
+        "clink/parsers/claude.py",
+        "clink/parsers/claude_native.py",
+        "clink/parsers/codex.py",
+        "clink/parsers/codex_native.py",
+        "clink/parsers/gemini.py",
+        "clink/parsers/grok.py",
+        "clink/parsers/grok_native.py",
+        "clink/policy.py",
+        "clink/registry.py",
+        "clink/resources/CODEX-LICENSE",
+        "clink/resources/CODEX-NOTICE",
+        "clink/resources/PROVENANCE.md",
+        "clink/resources/codex-0.166.0-models-direct.json",
+        "clink/resources/native-claude-2.1.304-admission.json",
+        "clink/resources/native-grok-1.0.70-admission.json",
+        "clink/runner.py",
+        "clink/tasks.py",
+        "clink_mcp_server-0.1.0.dist-info/METADATA",
+        "clink_mcp_server-0.1.0.dist-info/RECORD",
+        "clink_mcp_server-0.1.0.dist-info/WHEEL",
+        "clink_mcp_server-0.1.0.dist-info/entry_points.txt",
+        "clink_mcp_server-0.1.0.dist-info/licenses/LICENSE",
+        "clink_mcp_server-0.1.0.dist-info/licenses/clink/resources/CODEX-LICENSE",
+        "clink_mcp_server-0.1.0.dist-info/licenses/clink/resources/CODEX-NOTICE",
+        "clink_mcp_server-0.1.0.dist-info/top_level.txt",
+        "conf/__init__.py",
+        "conf/cli_clients/agy.json",
+        "conf/cli_clients/claude.json",
+        "conf/cli_clients/codex.json",
+        "conf/cli_clients/gemini.json",
+        "conf/cli_clients/grok.json",
+        "config.py",
+        "server.py",
+        "systemprompts/__init__.py",
+        "systemprompts/analyze_prompt.py",
+        "systemprompts/chat_prompt.py",
+        "systemprompts/clink/codex_codereviewer.txt",
+        "systemprompts/clink/default.txt",
+        "systemprompts/clink/default_codereviewer.txt",
+        "systemprompts/clink/default_planner.txt",
+        "systemprompts/clink/native_codereviewer.txt",
+        "systemprompts/clink/native_default.txt",
+        "systemprompts/clink/native_planner.txt",
+        "systemprompts/codereview_prompt.py",
+        "systemprompts/consensus_prompt.py",
+        "systemprompts/debug_prompt.py",
+        "systemprompts/docgen_prompt.py",
+        "systemprompts/generate_code_prompt.py",
+        "systemprompts/planner_prompt.py",
+        "systemprompts/precommit_prompt.py",
+        "systemprompts/refactor_prompt.py",
+        "systemprompts/secaudit_prompt.py",
+        "systemprompts/testgen_prompt.py",
+        "systemprompts/thinkdeep_prompt.py",
+        "systemprompts/tracer_prompt.py",
+        "tools/__init__.py",
+        "tools/analyze.py",
+        "tools/apilookup.py",
+        "tools/challenge.py",
+        "tools/chat.py",
+        "tools/clink.py",
+        "tools/codereview.py",
+        "tools/consensus.py",
+        "tools/debug.py",
+        "tools/docgen.py",
+        "tools/listmodels.py",
+        "tools/models.py",
+        "tools/planner.py",
+        "tools/precommit.py",
+        "tools/refactor.py",
+        "tools/secaudit.py",
+        "tools/shared/__init__.py",
+        "tools/shared/base_models.py",
+        "tools/shared/base_tool.py",
+        "tools/shared/exceptions.py",
+        "tools/shared/schema_builders.py",
+        "tools/simple/__init__.py",
+        "tools/simple/base.py",
+        "tools/testgen.py",
+        "tools/thinkdeep.py",
+        "tools/tracer.py",
+        "tools/version.py",
+        "tools/workflow/__init__.py",
+        "tools/workflow/base.py",
+        "tools/workflow/schema_builders.py",
+        "tools/workflow/workflow_mixin.py",
+        "utils/__init__.py",
+        "utils/call_state.py",
+        "utils/client_info.py",
+        "utils/consensus_manifest.py",
+        "utils/conversation_memory.py",
+        "utils/env.py",
+        "utils/file_types.py",
+        "utils/file_utils.py",
+        "utils/image_utils.py",
+        "utils/security_config.py",
+        "utils/storage_backend.py",
+        "utils/token_utils.py"
+      ],
+      "native_receipts": [
+        "clink/resources/native-claude-2.1.304-admission.json",
+        "clink/resources/native-grok-1.0.70-admission.json"
+      ],
+      "required_native_modules": [
+        "clink/native_adapters.py",
+        "clink/parsers/agy_native.py",
+        "clink/parsers/codex_native.py",
+        "clink/parsers/grok_native.py"
+      ],
+      "resources_sha256": {
+        "clink/resources/CODEX-LICENSE": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+        "clink/resources/CODEX-NOTICE": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+        "clink/resources/PROVENANCE.md": "d31f3f3f303b304daf82c6b48e51ed12c99ddf5cd33d3788981a41dc74db0101",
+        "clink/resources/codex-0.166.0-models-direct.json": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+        "clink/resources/native-claude-2.1.304-admission.json": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
+        "clink/resources/native-grok-1.0.70-admission.json": "809f49238544d7fa317110c403952ba3fa791b9627066fa51d256ad16fc46ec1"
+      },
+      "sha256": "25446d927beec3ae2a3d8459eaea8d078275f300efe0c65c5eb9845991bb5652"
+    },
+    {
+      "artifact": "clink_mcp_server-0.1.0.tar.gz",
+      "compared_source_members": 114,
+      "core_modules_sha256": {
+        "clink/__init__.py": "e929f4569db5f9062cc3bbfb6bdb614e28854d06bb19ceaa57fddd12bdc21557",
+        "clink/agents/__init__.py": "6d046292852c7ce097a4759ea8ea58358ae055293c3a513c39f16bb36edb5627",
+        "clink/agents/base.py": "3a34737baf6eadad6f05bae0eae48c6dfa6f52084364a2b3995551ee29a6fc0f",
+        "clink/agents/claude.py": "4c0b06a00c6cb1c500ff03cee8ab60a3f234e8b3b9b52ef05d0a46d8a9eda359",
+        "clink/agents/codex.py": "a41b52fd8592b6166a590b6da5a05e1afa051d5550bc98738e9437248afbd909",
+        "clink/agents/gemini.py": "2ba03d24d4639b61fca69623f9d9f07eb63faade3ee76dfb825c6cee529a67fc",
+        "clink/backend.py": "4a058f61ad58d227e06729fa8444762171566e7af72ac43b9aa0fb6ac2f9f11d",
+        "clink/constants.py": "2b34da469263b1c8db46c3790b72bc3aca00cc6c1e21013163e3c7da912e0bc1",
+        "clink/contracts.py": "59b1da6271ff9f4ee6879ecf91ac7123e25babf6cbf78a6780774ed06f1561db",
+        "clink/files.py": "02b1f3f86bc0926f14da673fb2669a06b8d28ea28f9e3238bc7944819ec2d19d",
+        "clink/models.py": "446b70e2eaceea1a6370e833011190a6722c10f75dc42fa144339cb1deb3b4bd",
+        "clink/native.py": "83137ac3cec3dbd88cd574b11bdbf2b138782ab5a7ae27eea2c7c15819cfc2fd",
+        "clink/native_adapters.py": "7a3daf32369e0492a69d307333441e8c27e936ffd0b156322fc5e7294a8d251f",
+        "clink/native_contracts.py": "4b62bee1167e4026526f34b4890b3aee81948644031679691c4535990ee9745c",
+        "clink/native_policy.py": "ec295f6450d53d1362dd87a51cb5551942f26868b48b5e88a252c8cefe4234c4",
+        "clink/parsers/__init__.py": "827dad23d8a5f619a07c634158099cab1ac8fb8b1477fa99cf9943bc8e5746cd",
+        "clink/parsers/agy.py": "35e1a75b765b668cb6f420583988534c3285278abc136f927883b8b2aff58d3c",
+        "clink/parsers/agy_native.py": "53090e591d518f18a65a9c4dfbf39d975e9072f65c9a1e687f56cf4e0489960e",
+        "clink/parsers/base.py": "8ca1b793199ee4e21b1e2bd3e2997bc07e18accb25b8eecb40bd24f2cbb905d9",
+        "clink/parsers/claude.py": "d536fd0315c306a489ae54357e42acd3200c217c13e543066a6f9002f69cd7e2",
+        "clink/parsers/claude_native.py": "621248359cced3782525d03716b4f64c55547b6dbc32eaedda168adf1e5cae06",
+        "clink/parsers/codex.py": "994a46698c51a12d443a86ae374a4fab37d8acdcd384b130098444313901d9a9",
+        "clink/parsers/codex_native.py": "b552f3b087351f9cdca1b53b1635f6f6f34f3e5f417be174c3aa057ca006b77b",
+        "clink/parsers/gemini.py": "88d0ec327ebf716ec84ce9488bacc46c9636e27fe500ca362f0c118cc390acc1",
+        "clink/parsers/grok.py": "09bb69ef0d631ff423a7f81cef24a8a0ac91cfcb065b01efa366504401d1328c",
+        "clink/parsers/grok_native.py": "940f05404389f27b79eda917fe831ace6b2c64bc085faf1872f927aeb5c8644d",
+        "clink/policy.py": "ebf24596bd7ce98e23a2abc7d1821196117b50d89dd8937ce2a79baabffec35a",
+        "clink/registry.py": "fe8319eef076370c05c09f506bd703ae096ee9b386e19743991595f230feaf66",
+        "clink/runner.py": "7fe67698f57ec1539ad3751f25dd0300166361d5d0b9159946836937f76a7632",
+        "clink/tasks.py": "bd334096aed8af27d7f2813a07594b99d53805f3ea13deff33a31237f93b593b",
+        "config.py": "45ea38d9edf8f499599fdb85a8a0c044cb4634465893e5a40bc6fd57373a32fd",
+        "server.py": "ecad938b16221ede3f82402250a9c51517762b9fc331a0ad6355dd8a6c1b3d45"
+      },
+      "member_count": 122,
+      "members": [
+        "LICENSE",
+        "MANIFEST.in",
+        "PKG-INFO",
+        "README.md",
+        "clink/__init__.py",
+        "clink/agents/__init__.py",
+        "clink/agents/base.py",
+        "clink/agents/claude.py",
+        "clink/agents/codex.py",
+        "clink/agents/gemini.py",
+        "clink/backend.py",
+        "clink/constants.py",
+        "clink/contracts.py",
+        "clink/files.py",
+        "clink/models.py",
+        "clink/native.py",
+        "clink/native_adapters.py",
+        "clink/native_contracts.py",
+        "clink/native_policy.py",
+        "clink/parsers/__init__.py",
+        "clink/parsers/agy.py",
+        "clink/parsers/agy_native.py",
+        "clink/parsers/base.py",
+        "clink/parsers/claude.py",
+        "clink/parsers/claude_native.py",
+        "clink/parsers/codex.py",
+        "clink/parsers/codex_native.py",
+        "clink/parsers/gemini.py",
+        "clink/parsers/grok.py",
+        "clink/parsers/grok_native.py",
+        "clink/policy.py",
+        "clink/registry.py",
+        "clink/resources/CODEX-LICENSE",
+        "clink/resources/CODEX-NOTICE",
+        "clink/resources/PROVENANCE.md",
+        "clink/resources/codex-0.166.0-models-direct.json",
+        "clink/resources/native-claude-2.1.304-admission.json",
+        "clink/resources/native-grok-1.0.70-admission.json",
+        "clink/runner.py",
+        "clink/tasks.py",
+        "clink_mcp_server.egg-info/PKG-INFO",
+        "clink_mcp_server.egg-info/SOURCES.txt",
+        "clink_mcp_server.egg-info/dependency_links.txt",
+        "clink_mcp_server.egg-info/entry_points.txt",
+        "clink_mcp_server.egg-info/requires.txt",
+        "clink_mcp_server.egg-info/top_level.txt",
+        "conf/__init__.py",
+        "conf/cli_clients/agy.json",
+        "conf/cli_clients/claude.json",
+        "conf/cli_clients/codex.json",
+        "conf/cli_clients/gemini.json",
+        "conf/cli_clients/grok.json",
+        "config.py",
+        "pyproject.toml",
+        "requirements.txt",
+        "server.py",
+        "setup.cfg",
+        "systemprompts/__init__.py",
+        "systemprompts/analyze_prompt.py",
+        "systemprompts/chat_prompt.py",
+        "systemprompts/clink/codex_codereviewer.txt",
+        "systemprompts/clink/default.txt",
+        "systemprompts/clink/default_codereviewer.txt",
+        "systemprompts/clink/default_planner.txt",
+        "systemprompts/clink/native_codereviewer.txt",
+        "systemprompts/clink/native_default.txt",
+        "systemprompts/clink/native_planner.txt",
+        "systemprompts/codereview_prompt.py",
+        "systemprompts/consensus_prompt.py",
+        "systemprompts/debug_prompt.py",
+        "systemprompts/docgen_prompt.py",
+        "systemprompts/generate_code_prompt.py",
+        "systemprompts/planner_prompt.py",
+        "systemprompts/precommit_prompt.py",
+        "systemprompts/refactor_prompt.py",
+        "systemprompts/secaudit_prompt.py",
+        "systemprompts/testgen_prompt.py",
+        "systemprompts/thinkdeep_prompt.py",
+        "systemprompts/tracer_prompt.py",
+        "tools/__init__.py",
+        "tools/analyze.py",
+        "tools/apilookup.py",
+        "tools/challenge.py",
+        "tools/chat.py",
+        "tools/clink.py",
+        "tools/codereview.py",
+        "tools/consensus.py",
+        "tools/debug.py",
+        "tools/docgen.py",
+        "tools/listmodels.py",
+        "tools/models.py",
+        "tools/planner.py",
+        "tools/precommit.py",
+        "tools/refactor.py",
+        "tools/secaudit.py",
+        "tools/shared/__init__.py",
+        "tools/shared/base_models.py",
+        "tools/shared/base_tool.py",
+        "tools/shared/exceptions.py",
+        "tools/shared/schema_builders.py",
+        "tools/simple/__init__.py",
+        "tools/simple/base.py",
+        "tools/testgen.py",
+        "tools/thinkdeep.py",
+        "tools/tracer.py",
+        "tools/version.py",
+        "tools/workflow/__init__.py",
+        "tools/workflow/base.py",
+        "tools/workflow/schema_builders.py",
+        "tools/workflow/workflow_mixin.py",
+        "utils/__init__.py",
+        "utils/call_state.py",
+        "utils/client_info.py",
+        "utils/consensus_manifest.py",
+        "utils/conversation_memory.py",
+        "utils/env.py",
+        "utils/file_types.py",
+        "utils/file_utils.py",
+        "utils/image_utils.py",
+        "utils/security_config.py",
+        "utils/storage_backend.py",
+        "utils/token_utils.py"
+      ],
+      "native_receipts": [
+        "clink/resources/native-claude-2.1.304-admission.json",
+        "clink/resources/native-grok-1.0.70-admission.json"
+      ],
+      "required_native_modules": [
+        "clink/native_adapters.py",
+        "clink/parsers/agy_native.py",
+        "clink/parsers/codex_native.py",
+        "clink/parsers/grok_native.py"
+      ],
+      "resources_sha256": {
+        "clink/resources/CODEX-LICENSE": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+        "clink/resources/CODEX-NOTICE": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+        "clink/resources/PROVENANCE.md": "d31f3f3f303b304daf82c6b48e51ed12c99ddf5cd33d3788981a41dc74db0101",
+        "clink/resources/codex-0.166.0-models-direct.json": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+        "clink/resources/native-claude-2.1.304-admission.json": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
+        "clink/resources/native-grok-1.0.70-admission.json": "809f49238544d7fa317110c403952ba3fa791b9627066fa51d256ad16fc46ec1"
+      },
+      "sha256": "8a2e731b59c1c1b71470dee5ddcef208c650c20b0faa25179eb256e03b5c2abd"
+    }
+  ],
+  "artifacts_disposable_and_recreatable": true,
+  "authentication_probes": 0,
+  "build_environment": {
+    "build": "1.6.1",
+    "mcp": "1.30.0",
+    "pydantic": "2.14.2",
+    "python-dotenv": "1.2.4",
+    "setuptools": "84.2.1",
+    "wheel": "0.48.0"
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/d/Tools/clink-mcp-server",
+      "exit_code": 0,
+      "step": "source-commit"
+    },
+    {
+      "argv": [
+        "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+        "-I",
+        "-B",
+        "$CLINK_PACKAGE_SCRATCH/admission_integrity.py",
+        "--root",
+        "/Users/d/Tools/clink-mcp-server"
+      ],
+      "cwd": "/Users/d/Tools/clink-mcp-server",
+      "exit_code": 0,
+      "step": "prior-admission-integrity"
+    },
+    {
+      "argv": [
+        "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+        "-m",
+        "build",
+        "--no-isolation",
+        "--outdir",
+        "$CLINK_PACKAGE_SCRATCH/dist",
+        "$CLINK_PACKAGE_SCRATCH/source"
+      ],
+      "cwd": "/Users/d/Tools/clink-mcp-server",
+      "exit_code": 0,
+      "step": "build"
+    },
+    {
+      "argv": [
+        "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+        "/Users/d/Tools/clink-mcp-server/scripts/verify_distribution.py",
+        "$CLINK_PACKAGE_SCRATCH/dist"
+      ],
+      "cwd": "/Users/d/Tools/clink-mcp-server",
+      "exit_code": 0,
+      "step": "distribution-verifier"
+    },
+    {
+      "argv": [
+        "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-deps",
+        "--no-index",
+        "--no-compile",
+        "--target",
+        "$CLINK_PACKAGE_SCRATCH/install",
+        "$CLINK_PACKAGE_SCRATCH/dist/clink_mcp_server-0.1.0-py3-none-any.whl"
+      ],
+      "cwd": "/Users/d/Tools/clink-mcp-server",
+      "exit_code": 0,
+      "step": "install-wheel"
+    },
+    {
+      "argv": [
+        "/Users/d/Tools/clink-mcp-server/.venv/bin/python",
+        "-I",
+        "-B",
+        "$CLINK_PACKAGE_SCRATCH/smoke.py",
+        "$CLINK_PACKAGE_SCRATCH/install",
+        "$CLINK_PACKAGE_SCRATCH/work"
+      ],
+      "cwd": "$CLINK_PACKAGE_SCRATCH/work",
+      "exit_code": 0,
+      "step": "installed-wheel-smoke"
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/d/Tools/clink-mcp-server",
+      "exit_code": 0,
+      "step": "final-source-commit"
+    }
+  ],
+  "completed_at": "2026-11-01T11:55:53.133550+00:00",
+  "full_test_suite_run": false,
+  "installed_wheel": {
+    "advisory_admissions": [
+      "codex"
+    ],
+    "catalog_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+    "claude_receipt_sha256": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
+    "claude_recipe_sha256": "de885baaadfdf5810321e32992c7e961f3a360dda90b903ab98ffc243564885e",
+    "client_count": 5,
+    "clients": [
+      {
+        "adapter": "agy",
+        "authentication": "unknown",
+        "available": false,
+        "cli_name": "agy",
+        "verification_status": "unverified"
+      },
+      {
+        "adapter": "claude",
+        "authentication": "unknown",
+        "available": false,
+        "cli_name": "claude",
+        "verification_status": "unverified"
+      },
+      {
+        "adapter": "codex",
+        "authentication": "unknown",
+        "available": false,
+        "cli_name": "codex",
+        "verification_status": "verified"
+      },
+      {
+        "adapter": "gemini",
+        "authentication": "unknown",
+        "available": false,
+        "cli_name": "gemini",
+        "verification_status": "unverified"
+      },
+      {
+        "adapter": "grok",
+        "authentication": "unknown",
+        "available": false,
+        "cli_name": "grok",
+        "verification_status": "unverified"
+      }
+    ],
+    "codex_receipt_sha256": "43e1700703aba5b3034612eceed2ee04c5d135be45c99ca17458dbec909ceb69",
+    "codex_recipe_sha256": "4bf9a7fe0491e12965d5c36dd7ccc9d197dd271cdf57df378c68fc1b9e0dae16",
+    "grok_executable_sha256": "5c8a688251bf61e35370b828b6a353b0a20fcc3f64000de8a91d426039f29cec",
+    "grok_receipt_sha256": "809f49238544d7fa317110c403952ba3fa791b9627066fa51d256ad16fc46ec1",
+    "grok_recipe_sha256": "b2e236f6490d3d00b51dac2a634c8b4f845b649ad9386c6510c6ae902f730cd3",
+    "grok_resource": "clink/resources/native-grok-1.0.70-admission.json",
+    "grok_version": "grok 1.0.70 (f50904eaee6c)",
+    "installed_clis": 0,
+    "local_calls": [
+      "listmodels",
+      "version"
+    ],
+    "modules_from_installed_wheel": [
+      "clink.native_adapters",
+      "clink.parsers.grok_native",
+      "clink.parsers.agy_native",
+      "clink.parsers.codex_native"
+    ],
+    "native_admissions": [
+      "claude",
+      "grok"
+    ],
+    "native_cli_calls": 0,
+    "native_profile_count": 4,
+    "native_profiles": {
+      "agy": {
+        "authentication": "unknown",
+        "available": false,
+        "enabled": false,
+        "installed": false,
+        "verification_status": "unverified"
+      },
+      "claude": {
+        "authentication": "unknown",
+        "available": false,
+        "enabled": true,
+        "installed": false,
+        "verification_status": "verified_native_lifecycle"
+      },
+      "codex": {
+        "authentication": "unknown",
+        "available": false,
+        "enabled": false,
+        "installed": false,
+        "verification_status": "unverified"
+      },
+      "grok": {
+        "authentication": "unknown",
+        "available": false,
+        "enabled": true,
+        "installed": false,
+        "verification_status": "verified_native_lifecycle"
+      }
+    },
+    "network_calls": 0,
+    "provider_credentials_supplied": false,
+    "runtime": "installed_wheel_target_with_managed_dependencies",
+    "tool_count": 18,
+    "tools": [
+      "analyze",
+      "apilookup",
+      "challenge",
+      "chat",
+      "clink",
+      "codereview",
+      "consensus",
+      "debug",
+      "docgen",
+      "listmodels",
+      "planner",
+      "precommit",
+      "refactor",
+      "secaudit",
+      "testgen",
+      "thinkdeep",
+      "tracer",
+      "version"
+    ]
+  },
+  "limitations": [
+    "Runtime dependencies reused from the managed environment; no fresh dependency resolution.",
+    "Discovery used actual MCP tool-list and local-call handlers from installed wheel modules, not another live inference probe.",
+    "This packaging verification grants no new execution admission.",
+    "Installed smoke uses sanitized environment, absent user configuration directories, an empty executable PATH, and audit guards against subprocess/network actions."
+  ],
+  "model_calls": 0,
+  "native_cli_calls": 0,
+  "network_calls": 0,
+  "prior_admission_integrity": {
+    "allowed_packaging_exceptions": [
+      "MANIFEST.in",
+      "pyproject.toml",
+      "scripts/verify_distribution.py"
+    ],
+    "baseline_commit": "9bdd273d7ac399b3a1fd635066308369f10f76b5",
+    "catalog": {
+      "model_count": 12,
+      "path": "clink/resources/codex-0.166.0-models-direct.json",
+      "sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12"
+    },
+    "changed_expected_exceptions": [
+      {
+        "allowed_packaging_exception": true,
+        "baseline_sha256": "6110bf1024d57dd4052dab1ec30644e7ba2f4b6e39076574578d3334ebe6f83b",
+        "matches_baseline": false,
+        "path": "MANIFEST.in",
+        "sha256": "e6d0d02ba551b440068f90d9b8ebed8b3124893d6b0eafa088399909fafcb3b9"
+      },
+      {
+        "allowed_packaging_exception": true,
+        "baseline_sha256": "dda0a98f427ba8ce249e842029d2aba18dac502f340269712bc3b938153de03f",
+        "matches_baseline": false,
+        "path": "pyproject.toml",
+        "sha256": "5b230cf344c8fa0794b0b408ff605a2fc75a847b12bbc089caa8458f6add4d2c"
+      },
+      {
+        "allowed_packaging_exception": true,
+        "baseline_sha256": "d367cae719ed4aaf1428dbf7886ac9fe2700da7d6f13bb9eb4f84154dc7a3df2",
+        "matches_baseline": false,
+        "path": "scripts/verify_distribution.py",
+        "sha256": "d472ae66990022b5053616a1fbd372498ebed63615f50da9bf7434a4dd79caf3"
+      }
+    ],
+    "checked_files": [
+      {
+        "allowed_packaging_exception": true,
+        "baseline_sha256": "6110bf1024d57dd4052dab1ec30644e7ba2f4b6e39076574578d3334ebe6f83b",
+        "matches_baseline": false,
+        "path": "MANIFEST.in",
+        "sha256": "e6d0d02ba551b440068f90d9b8ebed8b3124893d6b0eafa088399909fafcb3b9"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "6d046292852c7ce097a4759ea8ea58358ae055293c3a513c39f16bb36edb5627",
+        "matches_baseline": true,
+        "path": "clink/agents/__init__.py",
+        "sha256": "6d046292852c7ce097a4759ea8ea58358ae055293c3a513c39f16bb36edb5627"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "3a34737baf6eadad6f05bae0eae48c6dfa6f52084364a2b3995551ee29a6fc0f",
+        "matches_baseline": true,
+        "path": "clink/agents/base.py",
+        "sha256": "3a34737baf6eadad6f05bae0eae48c6dfa6f52084364a2b3995551ee29a6fc0f"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "4c0b06a00c6cb1c500ff03cee8ab60a3f234e8b3b9b52ef05d0a46d8a9eda359",
+        "matches_baseline": true,
+        "path": "clink/agents/claude.py",
+        "sha256": "4c0b06a00c6cb1c500ff03cee8ab60a3f234e8b3b9b52ef05d0a46d8a9eda359"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "a41b52fd8592b6166a590b6da5a05e1afa051d5550bc98738e9437248afbd909",
+        "matches_baseline": true,
+        "path": "clink/agents/codex.py",
+        "sha256": "a41b52fd8592b6166a590b6da5a05e1afa051d5550bc98738e9437248afbd909"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "2ba03d24d4639b61fca69623f9d9f07eb63faade3ee76dfb825c6cee529a67fc",
+        "matches_baseline": true,
+        "path": "clink/agents/gemini.py",
+        "sha256": "2ba03d24d4639b61fca69623f9d9f07eb63faade3ee76dfb825c6cee529a67fc"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "4a058f61ad58d227e06729fa8444762171566e7af72ac43b9aa0fb6ac2f9f11d",
+        "matches_baseline": true,
+        "path": "clink/backend.py",
+        "sha256": "4a058f61ad58d227e06729fa8444762171566e7af72ac43b9aa0fb6ac2f9f11d"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "994a46698c51a12d443a86ae374a4fab37d8acdcd384b130098444313901d9a9",
+        "matches_baseline": true,
+        "path": "clink/parsers/codex.py",
+        "sha256": "994a46698c51a12d443a86ae374a4fab37d8acdcd384b130098444313901d9a9"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "ebf24596bd7ce98e23a2abc7d1821196117b50d89dd8937ce2a79baabffec35a",
+        "matches_baseline": true,
+        "path": "clink/policy.py",
+        "sha256": "ebf24596bd7ce98e23a2abc7d1821196117b50d89dd8937ce2a79baabffec35a"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+        "matches_baseline": true,
+        "path": "clink/resources/CODEX-LICENSE",
+        "sha256": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+        "matches_baseline": true,
+        "path": "clink/resources/CODEX-NOTICE",
+        "sha256": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "d31f3f3f303b304daf82c6b48e51ed12c99ddf5cd33d3788981a41dc74db0101",
+        "matches_baseline": true,
+        "path": "clink/resources/PROVENANCE.md",
+        "sha256": "d31f3f3f303b304daf82c6b48e51ed12c99ddf5cd33d3788981a41dc74db0101"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+        "matches_baseline": true,
+        "path": "clink/resources/codex-0.166.0-models-direct.json",
+        "sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
+        "matches_baseline": true,
+        "path": "clink/resources/native-claude-2.1.304-admission.json",
+        "sha256": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "66fb721bae54dbd57aa90b97fcb7b47297cbbfe71a1e565373f7a84c806a4317",
+        "matches_baseline": true,
+        "path": "conf/cli_clients/claude.json",
+        "sha256": "66fb721bae54dbd57aa90b97fcb7b47297cbbfe71a1e565373f7a84c806a4317"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "e3794f48f1ae205ba679891da9a483a11eb193421ddaf1681d5771386e7fa053",
+        "matches_baseline": true,
+        "path": "docs/native-lifecycle-results.md",
+        "sha256": "e3794f48f1ae205ba679891da9a483a11eb193421ddaf1681d5771386e7fa053"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "481b9948b8e12dc95293abeb21e00c6a8e3f51b65aa681763c06ccaba0167ec3",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/README.md",
+        "sha256": "481b9948b8e12dc95293abeb21e00c6a8e3f51b65aa681763c06ccaba0167ec3"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "170e09d76b65c5ad4f9186c7fbee6e32bc5dbaacb8162b2ba846ed77100ab7ef",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/claude-2.1.304-attempt1.json",
+        "sha256": "170e09d76b65c5ad4f9186c7fbee6e32bc5dbaacb8162b2ba846ed77100ab7ef"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "9624a603d914fe159f2e0856d1cf32c271cd947ff58779da4662e003a64315a6",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-admission-history-invalidated.json",
+        "sha256": "9624a603d914fe159f2e0856d1cf32c271cd947ff58779da4662e003a64315a6"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "6a13e93bed373a1a227fa1a72d2a9a0b276f9f1add0774f2a93afb899f6b08c5",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-admission-v1.json",
+        "sha256": "6a13e93bed373a1a227fa1a72d2a9a0b276f9f1add0774f2a93afb899f6b08c5"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "7176650e8e525c10770e9de3d4148bd8beaf82ab02a7d16f6caea260bb4fdcbe",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-admission-v2.json",
+        "sha256": "7176650e8e525c10770e9de3d4148bd8beaf82ab02a7d16f6caea260bb4fdcbe"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "dde71d9ab47bdcb37405b151ae16240643e01065278cb570f16afeaedf5439c2",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-admission-v4-direct.json",
+        "sha256": "dde71d9ab47bdcb37405b151ae16240643e01065278cb570f16afeaedf5439c2"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "43e1700703aba5b3034612eceed2ee04c5d135be45c99ca17458dbec909ceb69",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-admission-v5-search.json",
+        "sha256": "43e1700703aba5b3034612eceed2ee04c5d135be45c99ca17458dbec909ceb69"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "7e9e56551ce3634a684e2b329fe74e66b924055cd1a8b9f647c9f39eeb1ce8ba",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt1.json",
+        "sha256": "7e9e56551ce3634a684e2b329fe74e66b924055cd1a8b9f647c9f39eeb1ce8ba"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "5116cf454fff8e417443d579ebfd9e11bf6684b871bc2ea7cb1fed90b70e27d3",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt10-v2-search.json",
+        "sha256": "5116cf454fff8e417443d579ebfd9e11bf6684b871bc2ea7cb1fed90b70e27d3"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "3b65984c3b7eff5f5d38792096de6f0c64536a4ec9226824ad23e051152dea10",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt11-v3-search.json",
+        "sha256": "3b65984c3b7eff5f5d38792096de6f0c64536a4ec9226824ad23e051152dea10"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "526fc33ef79f2c61fd69a9578cd38be0347b9bba30e7e4d92ad3c819c410ea7c",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt12-direct-preflight.json",
+        "sha256": "526fc33ef79f2c61fd69a9578cd38be0347b9bba30e7e4d92ad3c819c410ea7c"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "23dc3beb25a21be666a2539332025138d6ac65c38a7435cb2365857b9b426b09",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt13-direct-text.json",
+        "sha256": "23dc3beb25a21be666a2539332025138d6ac65c38a7435cb2365857b9b426b09"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "48447472c84f1e024755ec72793cfc477fae6a18fec6a749d9eafcc87f5f5fed",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt14-direct-search.json",
+        "sha256": "48447472c84f1e024755ec72793cfc477fae6a18fec6a749d9eafcc87f5f5fed"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "907f21e86c46e01188726202a80b0fea5948d253d469bc6eca53994855eb3bbc",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt15-direct-image.json",
+        "sha256": "907f21e86c46e01188726202a80b0fea5948d253d469bc6eca53994855eb3bbc"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "3d1cf29b3073342ed6d1239d7d059929a7fc7dac34ebd40f5dda4fea5b2303db",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt2.json",
+        "sha256": "3d1cf29b3073342ed6d1239d7d059929a7fc7dac34ebd40f5dda4fea5b2303db"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "6b0d2fdc0251c33a5ae1b9f506690afb27565371f9f7621920166530b05d3bdf",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt3-diagnostic.json",
+        "sha256": "6b0d2fdc0251c33a5ae1b9f506690afb27565371f9f7621920166530b05d3bdf"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "a29b1a9fc0c716b77720dc454b0f06c07e554770a68f81cf01a70d0a2b4c4074",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt4-host.json",
+        "sha256": "a29b1a9fc0c716b77720dc454b0f06c07e554770a68f81cf01a70d0a2b4c4074"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "a00cab182bde093390984a4cbee0634f8db2928f19258193581346c330a8a48f",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt5-cancellation.json",
+        "sha256": "a00cab182bde093390984a4cbee0634f8db2928f19258193581346c330a8a48f"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "77cb644a1f5c8e8629b5ca02506d6ab7acd0c47d52c421e758174db5d5a22f82",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt6-sandbox.json",
+        "sha256": "77cb644a1f5c8e8629b5ca02506d6ab7acd0c47d52c421e758174db5d5a22f82"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "99c3e5246bf4633ad7c17b0dd25bdf20eb8d524c0e34847673faf060735ec3ae",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt7-search.json",
+        "sha256": "99c3e5246bf4633ad7c17b0dd25bdf20eb8d524c0e34847673faf060735ec3ae"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "cbc131e61bd7da536b69844274d32cac2260a2a3a9b51ca0c9b9009e24ce0dfe",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt8-image.json",
+        "sha256": "cbc131e61bd7da536b69844274d32cac2260a2a3a9b51ca0c9b9009e24ce0dfe"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "272292fedb9d5d57144530acf101894591dfa33f86eee8c8db1944474697dfdf",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-attempt9-v2-preflight.json",
+        "sha256": "272292fedb9d5d57144530acf101894591dfa33f86eee8c8db1944474697dfdf"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "168dc40c709425f27518c99ef470cdc4296aaf75896c304dd9ba52bad939f171",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-catalog-provenance.json",
+        "sha256": "168dc40c709425f27518c99ef470cdc4296aaf75896c304dd9ba52bad939f171"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "9e01cd50ec8c4ba6d782413d1154cb2dbe1da63e014d622631b0603bc19659d6",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-model-catalog-original.json",
+        "sha256": "9e01cd50ec8c4ba6d782413d1154cb2dbe1da63e014d622631b0603bc19659d6"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "18482244e2f84445ed48cfeab0f648df5825af0b705415de8b02a4c00e777391",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/codex-0.166.0-success-fixture-provenance.json",
+        "sha256": "18482244e2f84445ed48cfeab0f648df5825af0b705415de8b02a4c00e777391"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "ea69732632e845c8b6bfeccf2cd384777afbcae5cea8f3342d7b648636afe98c",
+        "matches_baseline": true,
+        "path": "docs/verification/cli-policy/verification-results.json",
+        "sha256": "ea69732632e845c8b6bfeccf2cd384777afbcae5cea8f3342d7b648636afe98c"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
+        "matches_baseline": true,
+        "path": "docs/verification/native-claude-2.1.304-admission.json",
+        "sha256": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "6096bb4b0a473826e87d6159d4759bf384979cd51a873a5df4b1d663b1561e5e",
+        "matches_baseline": true,
+        "path": "docs/verification/native-claude-2.1.304-attempt1.json",
+        "sha256": "6096bb4b0a473826e87d6159d4759bf384979cd51a873a5df4b1d663b1561e5e"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "e1ae1184b60ade8f0eced4b7dd01faab46adec89f9345b67b836b56f010522fe",
+        "matches_baseline": true,
+        "path": "docs/verification/native-claude-2.1.304-attempt2.json",
+        "sha256": "e1ae1184b60ade8f0eced4b7dd01faab46adec89f9345b67b836b56f010522fe"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "7fde0a7b620454dacac05413abf397e11db0402f463b2ea8484f44e65b47f68f",
+        "matches_baseline": true,
+        "path": "docs/verification/native-claude-2.1.304-attempt3.json",
+        "sha256": "7fde0a7b620454dacac05413abf397e11db0402f463b2ea8484f44e65b47f68f"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "3d0791aa9582308b4b9b901c5fd7e8ec86a9f3d43d38153eda14ceff0bbb4a09",
+        "matches_baseline": true,
+        "path": "docs/verification/native-claude-README.md",
+        "sha256": "3d0791aa9582308b4b9b901c5fd7e8ec86a9f3d43d38153eda14ceff0bbb4a09"
+      },
+      {
+        "allowed_packaging_exception": true,
+        "baseline_sha256": "dda0a98f427ba8ce249e842029d2aba18dac502f340269712bc3b938153de03f",
+        "matches_baseline": false,
+        "path": "pyproject.toml",
+        "sha256": "5b230cf344c8fa0794b0b408ff605a2fc75a847b12bbc089caa8458f6add4d2c"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "7dbbfa6d0b7131844e4a3ca84824ac0f035060474d890e3021a6f7a7ae665535",
+        "matches_baseline": true,
+        "path": "scripts/verify_cli_policy.py",
+        "sha256": "7dbbfa6d0b7131844e4a3ca84824ac0f035060474d890e3021a6f7a7ae665535"
+      },
+      {
+        "allowed_packaging_exception": true,
+        "baseline_sha256": "d367cae719ed4aaf1428dbf7886ac9fe2700da7d6f13bb9eb4f84154dc7a3df2",
+        "matches_baseline": false,
+        "path": "scripts/verify_distribution.py",
+        "sha256": "d472ae66990022b5053616a1fbd372498ebed63615f50da9bf7434a4dd79caf3"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "e53126c539354cf1adac5559c3ec4ad685eca0949fcbdf3096e84549fafb0569",
+        "matches_baseline": true,
+        "path": "systemprompts/clink/codex_codereviewer.txt",
+        "sha256": "e53126c539354cf1adac5559c3ec4ad685eca0949fcbdf3096e84549fafb0569"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "dd5393212b90378c4287a82be0ad9cc0cc346851cd3406550061a14c4e203afd",
+        "matches_baseline": true,
+        "path": "systemprompts/clink/default.txt",
+        "sha256": "dd5393212b90378c4287a82be0ad9cc0cc346851cd3406550061a14c4e203afd"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "e53126c539354cf1adac5559c3ec4ad685eca0949fcbdf3096e84549fafb0569",
+        "matches_baseline": true,
+        "path": "systemprompts/clink/default_codereviewer.txt",
+        "sha256": "e53126c539354cf1adac5559c3ec4ad685eca0949fcbdf3096e84549fafb0569"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "7ffacd5965cc85b56c658b85a07747bb5ccc9ac7774e0317a6bf080158cef98a",
+        "matches_baseline": true,
+        "path": "systemprompts/clink/default_planner.txt",
+        "sha256": "7ffacd5965cc85b56c658b85a07747bb5ccc9ac7774e0317a6bf080158cef98a"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "007849216cc3c1e3927416836ecc9561a32f9e63e80f104414e6f948afb5cf91",
+        "matches_baseline": true,
+        "path": "systemprompts/clink/native_codereviewer.txt",
+        "sha256": "007849216cc3c1e3927416836ecc9561a32f9e63e80f104414e6f948afb5cf91"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "f8054076cd5a6a9ac1b8e7ce254888a9219454c4cdfbfb11447ce129baf4db45",
+        "matches_baseline": true,
+        "path": "systemprompts/clink/native_default.txt",
+        "sha256": "f8054076cd5a6a9ac1b8e7ce254888a9219454c4cdfbfb11447ce129baf4db45"
+      },
+      {
+        "allowed_packaging_exception": false,
+        "baseline_sha256": "1b498f5394ac1eb403db8dde26308231dbec2c1d6b6971d60056ef9225ceb386",
+        "matches_baseline": true,
+        "path": "systemprompts/clink/native_planner.txt",
+        "sha256": "1b498f5394ac1eb403db8dde26308231dbec2c1d6b6971d60056ef9225ceb386"
+      }
+    ],
+    "checks": [
+      {
+        "name": "baseline_commit_exists",
+        "passed": true
+      },
+      {
+        "name": "exact_57_unique_files",
+        "passed": true
+      },
+      {
+        "name": "other_54_scoped_files_unchanged",
+        "passed": true
+      },
+      {
+        "name": "baseline_native_map_claude_only",
+        "passed": true
+      },
+      {
+        "name": "claude_native_entry_unchanged",
+        "passed": true
+      },
+      {
+        "name": "only_grok_native_addition_allowed",
+        "passed": true
+      },
+      {
+        "name": "codex_advisory_map_unchanged",
+        "passed": true
+      },
+      {
+        "name": "claude_recipe_unchanged",
+        "passed": true
+      },
+      {
+        "name": "claude_recipe_pinned",
+        "passed": true
+      },
+      {
+        "name": "codex_recipe_unchanged",
+        "passed": true
+      },
+      {
+        "name": "codex_recipe_pinned",
+        "passed": true
+      },
+      {
+        "name": "codex_rendered_argv_unchanged",
+        "passed": true
+      },
+      {
+        "name": "codex_rendered_catalog_placeholder_absent",
+        "passed": true
+      },
+      {
+        "name": "claude_receipt_pinned",
+        "passed": true
+      },
+      {
+        "name": "claude_receipt_version_bound",
+        "passed": true
+      },
+      {
+        "name": "claude_receipt_executable_bound",
+        "passed": true
+      },
+      {
+        "name": "claude_receipt_recipe_bound",
+        "passed": true
+      },
+      {
+        "name": "codex_receipt_pinned",
+        "passed": true
+      },
+      {
+        "name": "codex_receipt_version_bound",
+        "passed": true
+      },
+      {
+        "name": "codex_receipt_executable_bound",
+        "passed": true
+      },
+      {
+        "name": "codex_receipt_recipe_bound",
+        "passed": true
+      },
+      {
+        "name": "claude_bundled_receipt_equals_documentation",
+        "passed": true
+      },
+      {
+        "name": "codex_receipt_verified",
+        "passed": true
+      },
+      {
+        "name": "claude_source_receipts_pinned",
+        "passed": true
+      },
+      {
+        "name": "codex_source_receipts_pinned",
+        "passed": true
+      },
+      {
+        "name": "codex_catalog_pinned",
+        "passed": true
+      },
+      {
+        "name": "codex_catalog_12_records",
+        "passed": true
+      },
+      {
+        "name": "codex_catalog_projection_preserved",
+        "passed": true
+      },
+      {
+        "name": "claude_advisory_configuration_unchanged",
+        "passed": true
+      },
+      {
+        "name": "codex_advisory_configuration_unchanged",
+        "passed": true
+      },
+      {
+        "name": "agy_advisory_configuration_unchanged",
+        "passed": true
+      },
+      {
+        "name": "grok_advisory_configuration_unchanged",
+        "passed": true
+      },
+      {
+        "name": "codex_agy_native_profiles_remain_disabled",
+        "passed": true
+      },
+      {
+        "name": "source_commit_stable_during_check",
+        "passed": true
+      }
+    ],
+    "errors": [],
+    "model_calls": 0,
+    "native_cli_calls": 0,
+    "network_calls": 0,
+    "production_maps": {
+      "advisory_adapters": [
+        "codex"
+      ],
+      "native_adapters": [
+        "claude",
+        "grok"
+      ],
+      "new_native_adapters": [
+        "grok"
+      ]
+    },
+    "profiles": {
+      "agy": {
+        "advisory_fields_unchanged": true,
+        "baseline_sha256": "d719cde96e135ba69c928c58d9f2d0465644f69b10105e0efb7ba844fb254d35",
+        "native_enabled": false,
+        "sha256": "d719cde96e135ba69c928c58d9f2d0465644f69b10105e0efb7ba844fb254d35"
+      },
+      "claude": {
+        "advisory_fields_unchanged": true,
+        "baseline_sha256": "66fb721bae54dbd57aa90b97fcb7b47297cbbfe71a1e565373f7a84c806a4317",
+        "native_enabled": true,
+        "sha256": "66fb721bae54dbd57aa90b97fcb7b47297cbbfe71a1e565373f7a84c806a4317"
+      },
+      "codex": {
+        "advisory_fields_unchanged": true,
+        "baseline_sha256": "6f7968fb14ae8be0b27f84a5c3d1df7c9091005709fba59bdab59be6a1bb5b5e",
+        "native_enabled": false,
+        "sha256": "6f7968fb14ae8be0b27f84a5c3d1df7c9091005709fba59bdab59be6a1bb5b5e"
+      },
+      "grok": {
+        "advisory_fields_unchanged": true,
+        "baseline_sha256": "65cd1a00e3756b43e7944cc7eb2a26b2303533307006cf2058e50f21e6e2da94",
+        "native_enabled": true,
+        "sha256": "d2460b1aa637336ec3095dc45bbbb8e8e037200e0e82ca0934254e31c5201301"
+      }
+    },
+    "read_file_hashes": {
+      "MANIFEST.in": "e6d0d02ba551b440068f90d9b8ebed8b3124893d6b0eafa088399909fafcb3b9",
+      "clink/agents/__init__.py": "6d046292852c7ce097a4759ea8ea58358ae055293c3a513c39f16bb36edb5627",
+      "clink/agents/base.py": "3a34737baf6eadad6f05bae0eae48c6dfa6f52084364a2b3995551ee29a6fc0f",
+      "clink/agents/claude.py": "4c0b06a00c6cb1c500ff03cee8ab60a3f234e8b3b9b52ef05d0a46d8a9eda359",
+      "clink/agents/codex.py": "a41b52fd8592b6166a590b6da5a05e1afa051d5550bc98738e9437248afbd909",
+      "clink/agents/gemini.py": "2ba03d24d4639b61fca69623f9d9f07eb63faade3ee76dfb825c6cee529a67fc",
+      "clink/backend.py": "4a058f61ad58d227e06729fa8444762171566e7af72ac43b9aa0fb6ac2f9f11d",
+      "clink/native.py": "83137ac3cec3dbd88cd574b11bdbf2b138782ab5a7ae27eea2c7c15819cfc2fd",
+      "clink/native_policy.py": "ec295f6450d53d1362dd87a51cb5551942f26868b48b5e88a252c8cefe4234c4",
+      "clink/parsers/codex.py": "994a46698c51a12d443a86ae374a4fab37d8acdcd384b130098444313901d9a9",
+      "clink/policy.py": "ebf24596bd7ce98e23a2abc7d1821196117b50d89dd8937ce2a79baabffec35a",
+      "clink/resources/CODEX-LICENSE": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+      "clink/resources/CODEX-NOTICE": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+      "clink/resources/PROVENANCE.md": "d31f3f3f303b304daf82c6b48e51ed12c99ddf5cd33d3788981a41dc74db0101",
+      "clink/resources/codex-0.166.0-models-direct.json": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+      "clink/resources/native-claude-2.1.304-admission.json": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
+      "conf/cli_clients/agy.json": "d719cde96e135ba69c928c58d9f2d0465644f69b10105e0efb7ba844fb254d35",
+      "conf/cli_clients/claude.json": "66fb721bae54dbd57aa90b97fcb7b47297cbbfe71a1e565373f7a84c806a4317",
+      "conf/cli_clients/codex.json": "6f7968fb14ae8be0b27f84a5c3d1df7c9091005709fba59bdab59be6a1bb5b5e",
+      "conf/cli_clients/grok.json": "d2460b1aa637336ec3095dc45bbbb8e8e037200e0e82ca0934254e31c5201301",
+      "docs/native-lifecycle-results.md": "e3794f48f1ae205ba679891da9a483a11eb193421ddaf1681d5771386e7fa053",
+      "docs/verification/cli-policy/README.md": "481b9948b8e12dc95293abeb21e00c6a8e3f51b65aa681763c06ccaba0167ec3",
+      "docs/verification/cli-policy/claude-2.1.304-attempt1.json": "170e09d76b65c5ad4f9186c7fbee6e32bc5dbaacb8162b2ba846ed77100ab7ef",
+      "docs/verification/cli-policy/codex-0.166.0-admission-history-invalidated.json": "9624a603d914fe159f2e0856d1cf32c271cd947ff58779da4662e003a64315a6",
+      "docs/verification/cli-policy/codex-0.166.0-admission-v1.json": "6a13e93bed373a1a227fa1a72d2a9a0b276f9f1add0774f2a93afb899f6b08c5",
+      "docs/verification/cli-policy/codex-0.166.0-admission-v2.json": "7176650e8e525c10770e9de3d4148bd8beaf82ab02a7d16f6caea260bb4fdcbe",
+      "docs/verification/cli-policy/codex-0.166.0-admission-v4-direct.json": "dde71d9ab47bdcb37405b151ae16240643e01065278cb570f16afeaedf5439c2",
+      "docs/verification/cli-policy/codex-0.166.0-admission-v5-search.json": "43e1700703aba5b3034612eceed2ee04c5d135be45c99ca17458dbec909ceb69",
+      "docs/verification/cli-policy/codex-0.166.0-attempt1.json": "7e9e56551ce3634a684e2b329fe74e66b924055cd1a8b9f647c9f39eeb1ce8ba",
+      "docs/verification/cli-policy/codex-0.166.0-attempt10-v2-search.json": "5116cf454fff8e417443d579ebfd9e11bf6684b871bc2ea7cb1fed90b70e27d3",
+      "docs/verification/cli-policy/codex-0.166.0-attempt11-v3-search.json": "3b65984c3b7eff5f5d38792096de6f0c64536a4ec9226824ad23e051152dea10",
+      "docs/verification/cli-policy/codex-0.166.0-attempt12-direct-preflight.json": "526fc33ef79f2c61fd69a9578cd38be0347b9bba30e7e4d92ad3c819c410ea7c",
+      "docs/verification/cli-policy/codex-0.166.0-attempt13-direct-text.json": "23dc3beb25a21be666a2539332025138d6ac65c38a7435cb2365857b9b426b09",
+      "docs/verification/cli-policy/codex-0.166.0-attempt14-direct-search.json": "48447472c84f1e024755ec72793cfc477fae6a18fec6a749d9eafcc87f5f5fed",
+      "docs/verification/cli-policy/codex-0.166.0-attempt15-direct-image.json": "907f21e86c46e01188726202a80b0fea5948d253d469bc6eca53994855eb3bbc",
+      "docs/verification/cli-policy/codex-0.166.0-attempt2.json": "3d1cf29b3073342ed6d1239d7d059929a7fc7dac34ebd40f5dda4fea5b2303db",
+      "docs/verification/cli-policy/codex-0.166.0-attempt3-diagnostic.json": "6b0d2fdc0251c33a5ae1b9f506690afb27565371f9f7621920166530b05d3bdf",
+      "docs/verification/cli-policy/codex-0.166.0-attempt4-host.json": "a29b1a9fc0c716b77720dc454b0f06c07e554770a68f81cf01a70d0a2b4c4074",
+      "docs/verification/cli-policy/codex-0.166.0-attempt5-cancellation.json": "a00cab182bde093390984a4cbee0634f8db2928f19258193581346c330a8a48f",
+      "docs/verification/cli-policy/codex-0.166.0-attempt6-sandbox.json": "77cb644a1f5c8e8629b5ca02506d6ab7acd0c47d52c421e758174db5d5a22f82",
+      "docs/verification/cli-policy/codex-0.166.0-attempt7-search.json": "99c3e5246bf4633ad7c17b0dd25bdf20eb8d524c0e34847673faf060735ec3ae",
+      "docs/verification/cli-policy/codex-0.166.0-attempt8-image.json": "cbc131e61bd7da536b69844274d32cac2260a2a3a9b51ca0c9b9009e24ce0dfe",
+      "docs/verification/cli-policy/codex-0.166.0-attempt9-v2-preflight.json": "272292fedb9d5d57144530acf101894591dfa33f86eee8c8db1944474697dfdf",
+      "docs/verification/cli-policy/codex-0.166.0-catalog-provenance.json": "168dc40c709425f27518c99ef470cdc4296aaf75896c304dd9ba52bad939f171",
+      "docs/verification/cli-policy/codex-0.166.0-model-catalog-original.json": "9e01cd50ec8c4ba6d782413d1154cb2dbe1da63e014d622631b0603bc19659d6",
+      "docs/verification/cli-policy/codex-0.166.0-success-fixture-provenance.json": "18482244e2f84445ed48cfeab0f648df5825af0b705415de8b02a4c00e777391",
+      "docs/verification/cli-policy/verification-results.json": "ea69732632e845c8b6bfeccf2cd384777afbcae5cea8f3342d7b648636afe98c",
+      "docs/verification/native-claude-2.1.304-admission.json": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
+      "docs/verification/native-claude-2.1.304-attempt1.json": "6096bb4b0a473826e87d6159d4759bf384979cd51a873a5df4b1d663b1561e5e",
+      "docs/verification/native-claude-2.1.304-attempt2.json": "e1ae1184b60ade8f0eced4b7dd01faab46adec89f9345b67b836b56f010522fe",
+      "docs/verification/native-claude-2.1.304-attempt3.json": "7fde0a7b620454dacac05413abf397e11db0402f463b2ea8484f44e65b47f68f",
+      "docs/verification/native-claude-README.md": "3d0791aa9582308b4b9b901c5fd7e8ec86a9f3d43d38153eda14ceff0bbb4a09",
+      "docs/verification/native-search-1/result.json": "0c1e199bdf3a2d48dacee0725502a41617052bd8b19d2203cb61d6688089c458",
+      "pyproject.toml": "5b230cf344c8fa0794b0b408ff605a2fc75a847b12bbc089caa8458f6add4d2c",
+      "scripts/verify_cli_policy.py": "7dbbfa6d0b7131844e4a3ca84824ac0f035060474d890e3021a6f7a7ae665535",
+      "scripts/verify_distribution.py": "d472ae66990022b5053616a1fbd372498ebed63615f50da9bf7434a4dd79caf3",
+      "systemprompts/clink/codex_codereviewer.txt": "e53126c539354cf1adac5559c3ec4ad685eca0949fcbdf3096e84549fafb0569",
+      "systemprompts/clink/default.txt": "dd5393212b90378c4287a82be0ad9cc0cc346851cd3406550061a14c4e203afd",
+      "systemprompts/clink/default_codereviewer.txt": "e53126c539354cf1adac5559c3ec4ad685eca0949fcbdf3096e84549fafb0569",
+      "systemprompts/clink/default_planner.txt": "7ffacd5965cc85b56c658b85a07747bb5ccc9ac7774e0317a6bf080158cef98a",
+      "systemprompts/clink/native_codereviewer.txt": "007849216cc3c1e3927416836ecc9561a32f9e63e80f104414e6f948afb5cf91",
+      "systemprompts/clink/native_default.txt": "f8054076cd5a6a9ac1b8e7ce254888a9219454c4cdfbfb11447ce129baf4db45",
+      "systemprompts/clink/native_planner.txt": "1b498f5394ac1eb403db8dde26308231dbec2c1d6b6971d60056ef9225ceb386",
+      "tests/fixtures/clink/codex-0.166.0-web-search-source-shape.provenance.json": "1b502046aa16550786547ac01c53450275488364202f6b664c22b7393a0b97af"
+    },
+    "receipts": {
+      "claude": {
+        "executable_sha256": "b9ac5374839f14abf3f1f45610637c332b5daee5ce0d1634726cef87aab78e6a",
+        "path": "clink/resources/native-claude-2.1.304-admission.json",
+        "sha256": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
+        "version": "2.1.304 (Claude Code)"
+      },
+      "codex": {
+        "executable_sha256": "39acf979729dd290f9a24ee38b2914e036c91b65952872e28ae2a6b88a7db7c1",
+        "path": "docs/verification/cli-policy/codex-0.166.0-admission-v5-search.json",
+        "sha256": "43e1700703aba5b3034612eceed2ee04c5d135be45c99ca17458dbec909ceb69",
+        "version": "codex-cli 0.166.0"
+      }
+    },
+    "recipes": {
+      "claude_sha256": "de885baaadfdf5810321e32992c7e961f3a360dda90b903ab98ffc243564885e",
+      "codex_rendered_arguments_json_sha256": "34e8afe742759bbad8a8f8ec14018a2d1f7a330684e9e11a852f8200c76aae53",
+      "codex_sha256": "4bf9a7fe0491e12965d5c36dd7ccc9d197dd271cdf57df378c68fc1b9e0dae16"
+    },
+    "root": "/Users/d/Tools/clink-mcp-server",
+    "scoped_file_count": 57,
+    "source_commit": "9bdd273d7ac399b3a1fd635066308369f10f76b5",
+    "source_receipts": {
+      "claude": [
+        {
+          "baseline_sha256": "6096bb4b0a473826e87d6159d4759bf384979cd51a873a5df4b1d663b1561e5e",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/native-claude-2.1.304-attempt1.json",
+          "recorded_sha256": "6096bb4b0a473826e87d6159d4759bf384979cd51a873a5df4b1d663b1561e5e",
+          "sha256": "6096bb4b0a473826e87d6159d4759bf384979cd51a873a5df4b1d663b1561e5e"
+        },
+        {
+          "baseline_sha256": "e1ae1184b60ade8f0eced4b7dd01faab46adec89f9345b67b836b56f010522fe",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/native-claude-2.1.304-attempt2.json",
+          "recorded_sha256": "e1ae1184b60ade8f0eced4b7dd01faab46adec89f9345b67b836b56f010522fe",
+          "sha256": "e1ae1184b60ade8f0eced4b7dd01faab46adec89f9345b67b836b56f010522fe"
+        },
+        {
+          "baseline_sha256": "7fde0a7b620454dacac05413abf397e11db0402f463b2ea8484f44e65b47f68f",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/native-claude-2.1.304-attempt3.json",
+          "recorded_sha256": "7fde0a7b620454dacac05413abf397e11db0402f463b2ea8484f44e65b47f68f",
+          "sha256": "7fde0a7b620454dacac05413abf397e11db0402f463b2ea8484f44e65b47f68f"
+        }
+      ],
+      "codex": [
+        {
+          "baseline_sha256": "9624a603d914fe159f2e0856d1cf32c271cd947ff58779da4662e003a64315a6",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/cli-policy/codex-0.166.0-admission-history-invalidated.json",
+          "recorded_sha256": "9624a603d914fe159f2e0856d1cf32c271cd947ff58779da4662e003a64315a6",
+          "sha256": "9624a603d914fe159f2e0856d1cf32c271cd947ff58779da4662e003a64315a6"
+        },
+        {
+          "baseline_sha256": "168dc40c709425f27518c99ef470cdc4296aaf75896c304dd9ba52bad939f171",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/cli-policy/codex-0.166.0-catalog-provenance.json",
+          "recorded_sha256": "168dc40c709425f27518c99ef470cdc4296aaf75896c304dd9ba52bad939f171",
+          "sha256": "168dc40c709425f27518c99ef470cdc4296aaf75896c304dd9ba52bad939f171"
+        },
+        {
+          "baseline_sha256": "526fc33ef79f2c61fd69a9578cd38be0347b9bba30e7e4d92ad3c819c410ea7c",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/cli-policy/codex-0.166.0-attempt12-direct-preflight.json",
+          "recorded_sha256": "526fc33ef79f2c61fd69a9578cd38be0347b9bba30e7e4d92ad3c819c410ea7c",
+          "sha256": "526fc33ef79f2c61fd69a9578cd38be0347b9bba30e7e4d92ad3c819c410ea7c"
+        },
+        {
+          "baseline_sha256": "23dc3beb25a21be666a2539332025138d6ac65c38a7435cb2365857b9b426b09",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/cli-policy/codex-0.166.0-attempt13-direct-text.json",
+          "recorded_sha256": "23dc3beb25a21be666a2539332025138d6ac65c38a7435cb2365857b9b426b09",
+          "sha256": "23dc3beb25a21be666a2539332025138d6ac65c38a7435cb2365857b9b426b09"
+        },
+        {
+          "baseline_sha256": "48447472c84f1e024755ec72793cfc477fae6a18fec6a749d9eafcc87f5f5fed",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/cli-policy/codex-0.166.0-attempt14-direct-search.json",
+          "recorded_sha256": "48447472c84f1e024755ec72793cfc477fae6a18fec6a749d9eafcc87f5f5fed",
+          "sha256": "48447472c84f1e024755ec72793cfc477fae6a18fec6a749d9eafcc87f5f5fed"
+        },
+        {
+          "baseline_sha256": "907f21e86c46e01188726202a80b0fea5948d253d469bc6eca53994855eb3bbc",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/cli-policy/codex-0.166.0-attempt15-direct-image.json",
+          "recorded_sha256": "907f21e86c46e01188726202a80b0fea5948d253d469bc6eca53994855eb3bbc",
+          "sha256": "907f21e86c46e01188726202a80b0fea5948d253d469bc6eca53994855eb3bbc"
+        },
+        {
+          "baseline_sha256": "a00cab182bde093390984a4cbee0634f8db2928f19258193581346c330a8a48f",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/cli-policy/codex-0.166.0-attempt5-cancellation.json",
+          "recorded_sha256": "a00cab182bde093390984a4cbee0634f8db2928f19258193581346c330a8a48f",
+          "sha256": "a00cab182bde093390984a4cbee0634f8db2928f19258193581346c330a8a48f"
+        },
+        {
+          "baseline_sha256": "0c1e199bdf3a2d48dacee0725502a41617052bd8b19d2203cb61d6688089c458",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "docs/verification/native-search-1/result.json",
+          "recorded_sha256": "0c1e199bdf3a2d48dacee0725502a41617052bd8b19d2203cb61d6688089c458",
+          "sha256": "0c1e199bdf3a2d48dacee0725502a41617052bd8b19d2203cb61d6688089c458"
+        },
+        {
+          "baseline_sha256": "1b502046aa16550786547ac01c53450275488364202f6b664c22b7393a0b97af",
+          "matches_baseline": true,
+          "matches_receipt": true,
+          "path": "tests/fixtures/clink/codex-0.166.0-web-search-source-shape.provenance.json",
+          "recorded_sha256": "1b502046aa16550786547ac01c53450275488364202f6b664c22b7393a0b97af",
+          "sha256": "1b502046aa16550786547ac01c53450275488364202f6b664c22b7393a0b97af"
+        }
+      ]
+    },
+    "status": "passed",
+    "unexpected_changed_files": [],
+    "writes": 0
+  },
+  "production_configuration_mutated_by_verification": false,
+  "purpose": "Offline distribution and installed-wheel verification after reviewed Grok native admission integration",
+  "schema_version": 1,
+  "source_commit": "9bdd273d7ac399b3a1fd635066308369f10f76b5",
+  "source_commit_describes_head_only": true,
+  "source_files_sha256": {
+    "LICENSE": "06c5302b668e8339e2fec2bc4ddd2a0b6cbc3355da4cd2ac24afeeaf08b2bd0c",
+    "MANIFEST.in": "e6d0d02ba551b440068f90d9b8ebed8b3124893d6b0eafa088399909fafcb3b9",
+    "README.md": "c8a061e46896f55f1686aa27fc9db25e5a84095ea37817f2138cae7bf4fa992b",
+    "clink/__init__.py": "e929f4569db5f9062cc3bbfb6bdb614e28854d06bb19ceaa57fddd12bdc21557",
+    "clink/agents/__init__.py": "6d046292852c7ce097a4759ea8ea58358ae055293c3a513c39f16bb36edb5627",
+    "clink/agents/base.py": "3a34737baf6eadad6f05bae0eae48c6dfa6f52084364a2b3995551ee29a6fc0f",
+    "clink/agents/claude.py": "4c0b06a00c6cb1c500ff03cee8ab60a3f234e8b3b9b52ef05d0a46d8a9eda359",
+    "clink/agents/codex.py": "a41b52fd8592b6166a590b6da5a05e1afa051d5550bc98738e9437248afbd909",
+    "clink/agents/gemini.py": "2ba03d24d4639b61fca69623f9d9f07eb63faade3ee76dfb825c6cee529a67fc",
+    "clink/backend.py": "4a058f61ad58d227e06729fa8444762171566e7af72ac43b9aa0fb6ac2f9f11d",
+    "clink/constants.py": "2b34da469263b1c8db46c3790b72bc3aca00cc6c1e21013163e3c7da912e0bc1",
+    "clink/contracts.py": "59b1da6271ff9f4ee6879ecf91ac7123e25babf6cbf78a6780774ed06f1561db",
+    "clink/files.py": "02b1f3f86bc0926f14da673fb2669a06b8d28ea28f9e3238bc7944819ec2d19d",
+    "clink/models.py": "446b70e2eaceea1a6370e833011190a6722c10f75dc42fa144339cb1deb3b4bd",
+    "clink/native.py": "83137ac3cec3dbd88cd574b11bdbf2b138782ab5a7ae27eea2c7c15819cfc2fd",
+    "clink/native_adapters.py": "7a3daf32369e0492a69d307333441e8c27e936ffd0b156322fc5e7294a8d251f",
+    "clink/native_contracts.py": "4b62bee1167e4026526f34b4890b3aee81948644031679691c4535990ee9745c",
+    "clink/native_policy.py": "ec295f6450d53d1362dd87a51cb5551942f26868b48b5e88a252c8cefe4234c4",
+    "clink/parsers/__init__.py": "827dad23d8a5f619a07c634158099cab1ac8fb8b1477fa99cf9943bc8e5746cd",
+    "clink/parsers/agy.py": "35e1a75b765b668cb6f420583988534c3285278abc136f927883b8b2aff58d3c",
+    "clink/parsers/agy_native.py": "53090e591d518f18a65a9c4dfbf39d975e9072f65c9a1e687f56cf4e0489960e",
+    "clink/parsers/base.py": "8ca1b793199ee4e21b1e2bd3e2997bc07e18accb25b8eecb40bd24f2cbb905d9",
+    "clink/parsers/claude.py": "d536fd0315c306a489ae54357e42acd3200c217c13e543066a6f9002f69cd7e2",
+    "clink/parsers/claude_native.py": "621248359cced3782525d03716b4f64c55547b6dbc32eaedda168adf1e5cae06",
+    "clink/parsers/codex.py": "994a46698c51a12d443a86ae374a4fab37d8acdcd384b130098444313901d9a9",
+    "clink/parsers/codex_native.py": "b552f3b087351f9cdca1b53b1635f6f6f34f3e5f417be174c3aa057ca006b77b",
+    "clink/parsers/gemini.py": "88d0ec327ebf716ec84ce9488bacc46c9636e27fe500ca362f0c118cc390acc1",
+    "clink/parsers/grok.py": "09bb69ef0d631ff423a7f81cef24a8a0ac91cfcb065b01efa366504401d1328c",
+    "clink/parsers/grok_native.py": "940f05404389f27b79eda917fe831ace6b2c64bc085faf1872f927aeb5c8644d",
+    "clink/policy.py": "ebf24596bd7ce98e23a2abc7d1821196117b50d89dd8937ce2a79baabffec35a",
+    "clink/registry.py": "fe8319eef076370c05c09f506bd703ae096ee9b386e19743991595f230feaf66",
+    "clink/resources/CODEX-LICENSE": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+    "clink/resources/CODEX-NOTICE": "9d71575ecfd9a843fc1677b0efb08053c6ba9fd686a0de1a6f5382fd3c220915",
+    "clink/resources/PROVENANCE.md": "d31f3f3f303b304daf82c6b48e51ed12c99ddf5cd33d3788981a41dc74db0101",
+    "clink/resources/codex-0.166.0-models-direct.json": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+    "clink/resources/native-claude-2.1.304-admission.json": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
+    "clink/resources/native-grok-1.0.70-admission.json": "809f49238544d7fa317110c403952ba3fa791b9627066fa51d256ad16fc46ec1",
+    "clink/runner.py": "7fe67698f57ec1539ad3751f25dd0300166361d5d0b9159946836937f76a7632",
+    "clink/tasks.py": "bd334096aed8af27d7f2813a07594b99d53805f3ea13deff33a31237f93b593b",
+    "conf/__init__.py": "86fad2be8932c8ac572a17b8dc7a91bbba3ed41674b093ea51637e8eb88b7537",
+    "conf/cli_clients/agy.json": "d719cde96e135ba69c928c58d9f2d0465644f69b10105e0efb7ba844fb254d35",
+    "conf/cli_clients/claude.json": "66fb721bae54dbd57aa90b97fcb7b47297cbbfe71a1e565373f7a84c806a4317",
+    "conf/cli_clients/codex.json": "6f7968fb14ae8be0b27f84a5c3d1df7c9091005709fba59bdab59be6a1bb5b5e",
+    "conf/cli_clients/gemini.json": "a107289b52165849afb6c5a020a727000044c1990028106dbf9b54634db5bfec",
+    "conf/cli_clients/grok.json": "d2460b1aa637336ec3095dc45bbbb8e8e037200e0e82ca0934254e31c5201301",
+    "config.py": "45ea38d9edf8f499599fdb85a8a0c044cb4634465893e5a40bc6fd57373a32fd",
+    "pyproject.toml": "5b230cf344c8fa0794b0b408ff605a2fc75a847b12bbc089caa8458f6add4d2c",
+    "requirements.txt": "7504fe73c7667f2ab640153c9e83b1cc9242a0b30021f690f87dde69e557f93e",
+    "server.py": "ecad938b16221ede3f82402250a9c51517762b9fc331a0ad6355dd8a6c1b3d45",
+    "systemprompts/__init__.py": "aa9c900e10ad8a4b0ca6131fb02ec991856a88cda53694fed08d34a0aeb355bf",
+    "systemprompts/analyze_prompt.py": "514969e3f71d5c4497ce1e19d938fce2097dbd9b6b0202b6b688f6b67116c808",
+    "systemprompts/chat_prompt.py": "daa24dddbb46ab9f8fa08a139f4a1746bd3015c71d2c2d9b66486a9d999e997a",
+    "systemprompts/clink/codex_codereviewer.txt": "e53126c539354cf1adac5559c3ec4ad685eca0949fcbdf3096e84549fafb0569",
+    "systemprompts/clink/default.txt": "dd5393212b90378c4287a82be0ad9cc0cc346851cd3406550061a14c4e203afd",
+    "systemprompts/clink/default_codereviewer.txt": "e53126c539354cf1adac5559c3ec4ad685eca0949fcbdf3096e84549fafb0569",
+    "systemprompts/clink/default_planner.txt": "7ffacd5965cc85b56c658b85a07747bb5ccc9ac7774e0317a6bf080158cef98a",
+    "systemprompts/clink/native_codereviewer.txt": "007849216cc3c1e3927416836ecc9561a32f9e63e80f104414e6f948afb5cf91",
+    "systemprompts/clink/native_default.txt": "f8054076cd5a6a9ac1b8e7ce254888a9219454c4cdfbfb11447ce129baf4db45",
+    "systemprompts/clink/native_planner.txt": "1b498f5394ac1eb403db8dde26308231dbec2c1d6b6971d60056ef9225ceb386",
+    "systemprompts/codereview_prompt.py": "401cbc278588bc9ca9a3ff6a35b281d9f6690124d596b5b4216d4bc36013e929",
+    "systemprompts/consensus_prompt.py": "e1d4e893c3670a0bf27cb253b4b506c7725b0c04f24b4929299d03ae7f97fa19",
+    "systemprompts/debug_prompt.py": "9831249bb8e1912d7db4c31a3dbb8da43d042ec8c780ab7b0bd6dca9eae2b880",
+    "systemprompts/docgen_prompt.py": "377d298eae3c87f2683c390f375b400313c1fe9f2809266c136bdd405d2fc887",
+    "systemprompts/generate_code_prompt.py": "d06d7b9d92e3bce2c5d04d40de8c3ad512cd20a3322947b300f8a152a177773f",
+    "systemprompts/planner_prompt.py": "4906a4141f10b8447b2c133b4b7a1ac3e5677422c06ec4259663d728cc125d8c",
+    "systemprompts/precommit_prompt.py": "868f02bb9fe0dc66f273a6c5bb32de92a2d2db7451f71160c8b9eac2cc010703",
+    "systemprompts/refactor_prompt.py": "0e391a187afddb9d9680c006c6a6634a5aed9907036e7ee391b5defc3da6e3ee",
+    "systemprompts/secaudit_prompt.py": "97bd420186f155927ee86a28456256c2d1d1af192fba278bd63a27e625a47bb0",
+    "systemprompts/testgen_prompt.py": "c0d51b12bc79b4a4d438467cb5f0a8ac9372d3e5587fec8f9e96c44779d05b9a",
+    "systemprompts/thinkdeep_prompt.py": "44fa2219877aef8eb2a3e16dab0daa5949deea0857a023f5f34c2b0694f723f3",
+    "systemprompts/tracer_prompt.py": "069f991e89fa14ccf725e59be2f183cbeacc34f0ebfcb2515b65a7759e862775",
+    "tools/__init__.py": "e583353f4206e70173524bd52234e16448aea54ce911e70d9b536f2efe3639fe",
+    "tools/analyze.py": "14d31b26465971e8f939fae69a624577534e3277ea508e5d9018347c32e3b3b3",
+    "tools/apilookup.py": "d453aa48d91b145cd8783b73071fedc4cb3e5733b5eb0023801b44ee85d09c15",
+    "tools/challenge.py": "64e430b754bfa7996ea378d4578daebd161374cb54e1355fd4e590b6d9b50c58",
+    "tools/chat.py": "0668eb647cd6dcdf89c997587e45b4eb44001ab62402ca861c549e587f899eff",
+    "tools/clink.py": "8c6ac31b0d9726c806ae7b23e1fac73b6e2602536a4e61a46b6d2bd9b094913d",
+    "tools/codereview.py": "36422a17aa980735819b9e7308a55086f35e99af4d0d330e4dcf77566a1f650d",
+    "tools/consensus.py": "d55938088017eef061c4a69f1fd1fcd4a5c2be62ff369230d7a976471a9760d7",
+    "tools/debug.py": "b8a711c5f4102f14a55c06ff1bc4130eab42196288d9e11f34aaddc53515816e",
+    "tools/docgen.py": "2aa9475c6b0906ae8fb6074de63e210620c8273f16bcd598503bc802d2499a54",
+    "tools/listmodels.py": "053f894433a23ca9f66532579f34dff12cc653564f54642ff4bf99701e740a70",
+    "tools/models.py": "46e895d9b50210e2837930d124f4024f04ca1d2f8bedd4d9781c03b6e561ebcd",
+    "tools/planner.py": "87ef1d13b11bf61b233f994bfaaf73bd04d7b5c201851364b5783f28fd2b7d7d",
+    "tools/precommit.py": "6778fe1e63dabbdd1eea0e0b28df274b641c307610b22343000a5c486b178422",
+    "tools/refactor.py": "5f9abb9279862fb7facbd35aa9293365df7d2bc3fecc9b5a9dd6352744a478eb",
+    "tools/secaudit.py": "c35da0f393ae6b6ea9cb5419f3d1a9a18711f376378717ff408d0e30e244eae9",
+    "tools/shared/__init__.py": "e46b3f4cf02d1904336df178da9736787d008e8ccd4991366068e5fa4ebfdc86",
+    "tools/shared/base_models.py": "be9c088d2afef75c6d38c6795f537e8656d3e464264bb49862f1aaacaca0d517",
+    "tools/shared/base_tool.py": "28b18533896139cacf9236cdcaa1d5327e6d94910be8117525b7f72cccc97707",
+    "tools/shared/exceptions.py": "396bce7afabb057265cfe9698e6f726b48ed13b88a30f88eb41075aaac37c669",
+    "tools/shared/schema_builders.py": "1d4843b5e27c9fff6028811312c4257f4b0dcd0e581bcf7716fa7fdeebc86613",
+    "tools/simple/__init__.py": "e16d824ef0ca4106be0e4903ed8cc13c9c09600d63fd854f4d48f32360a3c78a",
+    "tools/simple/base.py": "6c1c7a9ec95451e18a4a11e420b70f9e658b4a28d7f2d8c3c0f8080203e4b00d",
+    "tools/testgen.py": "6ba01fc56e46ec60af80b18e487beda37a3e3916a1a1e9e94116da7a1b8dbb20",
+    "tools/thinkdeep.py": "4aa4c23ad2d53592e80eb96e8fe8f7e0df17cf900981421b06c3b285aeba4895",
+    "tools/tracer.py": "fa9e76288e8d4e0a8b0e4c8ee65d3f24183d3a3b78cb5cc3170f9d8b3e9a0bec",
+    "tools/version.py": "75375e0595e4802a9a6a70beed96e8ff273be328970976956692667c3981fe40",
+    "tools/workflow/__init__.py": "f1a079f234b99d8a3d8101fd313d6db3d8d039fbc6542a05dc7c2d88156d7313",
+    "tools/workflow/base.py": "a1f506eb12c7bc41004958fa04967fb48c6f6116b9d0971ed17b75f5eef6ec93",
+    "tools/workflow/schema_builders.py": "ad704054bb0ffefc33d7f588787e924c992fbfeb69cf844737d6fb6852c8588d",
+    "tools/workflow/workflow_mixin.py": "f4a45d46c552bc8a7f9587549dfa96ab9441bf2add769b4ab4f97f759c89c64e",
+    "utils/__init__.py": "5418aad16fafecf88befd088086798cd18962b9f981096d3fd2b319542ca75ba",
+    "utils/call_state.py": "a71e44608a36a27513863cf77bd8894cc9da38c0ab309a8916f50759f5b0940b",
+    "utils/client_info.py": "23ce9199a7487b80cd03faa9682ca93d552ebb7535f98be59dfc18ac015af8c5",
+    "utils/consensus_manifest.py": "aaeade3d9e34d5521a3c67630f5a4f9319898520a665af625b819ffa91ec1a6b",
+    "utils/conversation_memory.py": "49426c3b76e0fc7240f352e7f97c7d8c81186d83ae275ee5b60ad0d0b02eec93",
+    "utils/env.py": "a60162196653fea765ece3429047add82bc91abbbf7b0fd4fe2fb13e814f8ef4",
+    "utils/file_types.py": "854353fddd92543948adc3b6b60df4cea699818388ede71bcef3b9673ded238c",
+    "utils/file_utils.py": "402bcfe44b6e9df5df7313407e0be9d9aa7bbccd6731a0c4fa0a82858a792d3c",
+    "utils/image_utils.py": "0187f338457217f7517dc1378428be2d78faa7a33201add323289ba53fe0b73e",
+    "utils/security_config.py": "b50d886fadf14309c25c216321778fdb15828e3eb7b1e918c4fea2ed1b001e33",
+    "utils/storage_backend.py": "e295973cd0b97a29f2933edd645386ae5405bf457b0030f3b7286562e94c2da6",
+    "utils/token_utils.py": "048cd88a2d3816d2449d491820bf232a12bbdbc90a422672aef865462d81484c"
+  },
+  "source_files_sha256_are_authoritative_for_packaged_inputs": true,
+  "source_freeze_scope": "packaged runtime modules, README metadata, manifests, packaging declarations, and bundled resources",
+  "source_snapshot_kind": "frozen_working_tree",
+  "source_stable_during_verification": true,
+  "source_tree_sha256": "a66b8785b42dac486a510478299e6f0a722c93aead3981013ae0eff68f39f2bf",
+  "standard_distribution_verification": [
+    {
+      "artifact": "clink_mcp_server-0.1.0-py3-none-any.whl",
+      "entrypoint": "clink-mcp-server=server:run",
+      "members": 117,
+      "native_cli_calls": 0,
+      "provider_packages_or_catalogs": false,
+      "resource_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+      "sha256": "25446d927beec3ae2a3d8459eaea8d078275f300efe0c65c5eb9845991bb5652"
+    },
+    {
+      "artifact": "clink_mcp_server-0.1.0.tar.gz",
+      "entrypoint": "clink-mcp-server=server:run",
+      "members": 122,
+      "native_cli_calls": 0,
+      "provider_packages_or_catalogs": false,
+      "resource_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+      "sha256": "8a2e731b59c1c1b71470dee5ddcef208c650c20b0faa25179eb256e03b5c2abd"
+    }
+  ],
+  "started_at": "2026-11-01T11:55:50.639045+00:00",
+  "status": "passed",
+  "subprocess_environment": {
+    "base": [
+      "LANG",
+      "PATH",
+      "PIP_CONFIG_FILE",
+      "PIP_DISABLE_PIP_VERSION_CHECK",
+      "PIP_NO_INDEX",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONNOUSERSITE"
+    ],
+    "credential_values_inherited": false,
+    "pip_configuration_disabled": true
+  }
+}

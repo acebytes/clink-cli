@@ -25,6 +25,7 @@ Configure workspace roots explicitly in operator manifests before supplying path
 
 ```sh
 .venv/bin/python -m pip install -r requirements-dev.txt
+.venv/bin/python -m pytest tests/test_native_adapters.py tests/test_native_runtime.py tests/test_native_fixture_trust.py -q
 .venv/bin/python -m pytest tests/ -v -m "not integration"
 .venv/bin/python -m ruff check .
 .venv/bin/python -m black --check .
@@ -37,9 +38,11 @@ Use synthetic fixtures/executables for ordinary tests. Live CLI policy checks re
 
 ```sh
 .venv/bin/python scripts/verify_cli_policy.py --help
+.venv/bin/python scripts/verify_native_cli.py --help
+.venv/bin/python scripts/verify_native_adapters.py --help
 ```
 
-Preserve prior failed attempts and genuine receipts. Installation/help, an operator-reported login, or a zero exit is insufficient to admit execution. See [admission evidence](docs/clink-cli-admission.md) and the exact profile policy. The old helper verifies advisory suppression; [Claude Code 2.1.304 native admission](docs/verification/native-claude-2.1.304-admission.json) is separate and binds the exact recorded binary/recipe. Changes require reverification and fail closed. See [native lifecycle results](docs/native-lifecycle-results.md) for genuine passing, failed, and partial attempts; agy/grok remain parser/discovery-only. Do not add bypass flags or automatic retries when verification fails.
+Preserve prior failed attempts, consumed submissions, and genuine receipts. Installation/help, an operator-reported login, or a zero exit is insufficient to admit execution. See [admission evidence](docs/clink-cli-admission.md) and the exact profile policy. The first helper verifies advisory suppression; [Claude Code 2.1.304 native admission](docs/verification/native-claude-2.1.304-admission.json) is separate and binds the exact recorded binary/recipe. [Grok 1.0.70 native admission](docs/verification/native-grok-1.0.70-admission.json) enables only the exact recorded Darwin arm64 binary/recipe, with observed `grok-4.7-build` execution. Its [compatibility review](docs/native-grok-admission-review.md) retains all nine top-level invocations and ordinal8’s unknown `uncertain/native_failed` cause; a later cancellation passed without proving that cause resolved. Agy and Codex native adapters remain implemented with disabled bundled profiles pending separate live admission. The candidate harness uses process-local verification policies and cannot enable production automatically. Changes to admitted binaries/recipes require reverification and fail closed. See [native lifecycle results](docs/native-lifecycle-results.md) for the original genuine passing, failed, and partial attempts. Do not add bypass flags or automatic retries when verification fails.
 
 ## Runtime diagnostics
 
@@ -57,11 +60,14 @@ rg 'ERROR|WARNING' logs/mcp_server.log
 - `tools/` owns schemas and caller-driven workflow transitions; intermediate local steps must not launch a CLI.
 - `clink/registry.py` and `clink/models.py` validate an immutable operator configuration snapshot.
 - `clink/backend.py`, `clink/policy.py`, `clink/runner.py`, adapters, and parsers own consultation policy, shared process limits, cleanup, and terminal validation.
-- `clink/tasks.py` owns bounded task/attempt records, request-key deduplication, project/session ownership, and cancellation; `clink/native.py` and `clink/native_policy.py` own the separate native configuration, launch, parser, and admission contract.
+- `clink/tasks.py` owns bounded task/attempt records, request-key deduplication, project/session ownership, and cancellation; `clink/native.py` and `clink/native_policy.py` own shared native admission/configuration and execution.
+- `clink/native_adapters.py` owns adapter argv, session validation, parser dispatch, and input transport: Claude text stdin, Grok a private prompt file, Agy one user NDJSON event, and Codex stdin `-` through `exec`/`exec resume`. All use the same task manager and process pool.
 - `utils/` owns bounded continuation storage, per-tool state, locks, and declared-file change detection.
 - `systemprompts/` and `conf/cli_clients/` supply subordinate role expertise and safe defaults.
 
-Consultations return proposed edits to the caller and retain their restrictions on tools, inherited hooks/MCP/plugins, and recursive delegation. Explicit native tasks may edit/test and use configured tools, hooks, skills, plugins, MCP integrations, and subagents under native permissions. Keep native argv, environment-name inheritance, role prompts, model defaults, session mapping, and admission separate from the pinned Codex recipe. No permission bypass or approval relay is provided; unsupported headless approval needs return `permission_needed`.
+Consultations return proposed edits to the caller and retain their restrictions on tools, inherited hooks/MCP/plugins, and recursive delegation. Explicit native tasks may edit/test and use configured tools, hooks, skills, plugins, MCP integrations, and subagents under native permissions. Keep native argv, environment-name inheritance, role prompts, model defaults, session mapping, and admission separate from the pinned Codex consultation recipe. Candidate work must preserve that recipe/catalog and the admitted Claude/Grok native recipes. No permission bypass, wrapper approval override, or approval relay is provided; recognized headless denials return `permission_needed`, while terminal errors/incomplete signals cannot establish completion.
+
+Keep Grok task text out of argv/stdin: its bounded `0600` prompt file belongs in a private `0700` directory and survives until shared process cleanup finishes. Remove private resources on controlled completion, failure, queue rejection, and cancellation. Grok additionally retains configured `GROK_HOME`; other integration environment names remain operator-owned explicit inheritance. The verifier's optional `--trust-grok-fixture` enrollment is limited to its marked synthetic Git root, preserves unrelated trust entries/comments, and removes only its own unchanged grant. Normal task submission never performs this enrollment.
 
 Risk & Mitigation: native state and side effects require request-key deduplication, serialized session input, overlapping canonical project ownership, and bounded retention. Preserve safe argv construction, explicit root checks, no automatic resend/retry/fallback, and POSIX process-group cleanup. Native authority can extend beyond context roots; detached descendants and remote work may survive cleanup. Task `completed` does not verify fulfillment, and cancellation cannot undo partial effects.
 
