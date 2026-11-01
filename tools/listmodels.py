@@ -36,9 +36,12 @@ class ListModelsTool(BaseTool):
         return ""
 
     async def execute(self, arguments: dict[str, Any]) -> list[TextContent]:
+        from clink.native import get_native_runtime
+
         payload = {
             "status": "success",
             "clients": get_backend().describe(),
+            "native_task_clients": get_native_runtime().describe(),
             "authentication": "unknown; no login or inference probes performed",
             "model_selection": "request → role → client → native CLI default; no aliases or backend fallback",
         }

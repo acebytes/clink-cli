@@ -1,5 +1,5 @@
 """
-clink-mcp-server — advisory CLI orchestration
+clink-mcp-server — CLI consultations and native task delegation
 
 This module implements the core MCP (Model Context Protocol) server that provides
 AI-powered tools for code analysis, review, and assistance using multiple AI models.
@@ -12,7 +12,7 @@ Key Components:
 - MCP Server: Handles protocol communication and tool discovery
 - Tool Registry: Maps tool names to their implementations
 - Request Handler: Processes incoming tool calls and returns formatted responses
-- Configuration: Manages API keys and model settings
+- Configuration: Manages CLI profiles and model selection
 
 The server runs on stdio (standard input/output) and communicates using JSON-RPC messages
 as defined by the MCP protocol.
@@ -22,6 +22,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import sys
 import time
 import uuid
@@ -434,10 +435,18 @@ def _json_response(payload: dict[str, Any]) -> list[TextContent]:
     return [TextContent(type="text", text=json.dumps(payload, ensure_ascii=False))]
 
 
-def _failure(code: str, message: str, request_id: str, remedy: str = "") -> list[TextContent]:
-    return _json_response(
-        {"status": "error", "error": {"code": code, "message": message, "remedy": remedy}, "request_id": request_id}
-    )
+def _failure(
+    code: str, message: str, request_id: str, remedy: str = "", *, missing_environment_names: Any = None
+) -> list[TextContent]:
+    error = {"code": code, "message": message, "remedy": remedy}
+    if isinstance(missing_environment_names, list):
+        # Expose only bounded identifiers, never arbitrary backend metadata or values.
+        error["missing_environment_names"] = [
+            name
+            for name in missing_environment_names[:64]
+            if isinstance(name, str) and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,127}", name)
+        ]
+    return _json_response({"status": "error", "error": error, "request_id": request_id})
 
 
 def _is_failure(result: list[TextContent]) -> bool:
@@ -559,6 +568,20 @@ async def _execute_call(name: str, arguments: dict[str, Any], request_id: str, a
     schema = tool.get_input_schema()
     if schema.get("additionalProperties") is False and set(arguments) - set(schema.get("properties", {})):
         return _failure("invalid_request", "Unknown fields are not accepted by this tool.", request_id)
+    if name == "clink" and original.get("action", "consult") != "consult":
+        from clink.tasks import get_task_manager
+
+        manager = get_task_manager()
+        action = original["action"]
+        if action == "start":
+            payload = await manager.start(original, admitted_at=admitted_at, request_id=request_id)
+        elif action == "followup":
+            payload = await manager.followup(original, admitted_at=admitted_at, request_id=request_id)
+        elif action == "status":
+            payload = await manager.status(original)
+        else:
+            payload = await manager.cancel(original)
+        return _bound_response(_json_response(payload), request_id)
     deadline = admitted_at + min(1800.0, float(original.get("timeout_seconds", 1800.0)))
     internal = {
         "_original_arguments": original,
@@ -621,7 +644,15 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     try:
         result = await _execute_call(name, arguments, request_id, admitted_at)
     except (BackendError, StateError) as exc:
-        result = _failure(exc.code, str(exc), request_id, exc.remedy if isinstance(exc, BackendError) else "")
+        result = _failure(
+            exc.code,
+            str(exc),
+            request_id,
+            exc.remedy if isinstance(exc, BackendError) else "",
+            missing_environment_names=(
+                exc.metadata.get("missing_environment_names") if isinstance(exc, BackendError) else None
+            ),
+        )
     except asyncio.CancelledError:
         logger.info("tool_cancelled request_id=%s tool=%s", request_id, log_name)
         raise
@@ -804,6 +835,7 @@ async def handle_get_prompt(name: str, arguments: dict[str, Any] = None) -> GetP
 async def main():
     """Start stdio MCP without provider credentials or installed model CLIs."""
     from clink.backend import get_backend
+    from clink.tasks import shutdown_task_manager
 
     logger.info("clink-mcp-server starting version=%s tools=%d", __version__, len(TOOLS))
     backend = get_backend()
@@ -816,17 +848,23 @@ async def main():
                     server_name="clink-mcp-server",
                     server_version=__version__,
                     instructions=(
-                        "Tools delegate advisory analysis to a configured CLI. The default is Codex/default. "
+                        "Consultations and analytical tools delegate advisory analysis; default Codex/default. "
+                        "Explicit clink start/status/followup/cancel actions manage native tasks that can edit files "
+                        "and use native configured tools, hooks, MCP and subagents under native permissions. "
+                        "Start requires cli_name, project_dir, prompt and a unique request_key; poll task_handle. "
                         "Pass native CLI model identifiers unchanged; omitted or auto uses configured/native defaults. "
                         "Use listmodels for local CLI configuration and capability discovery. "
-                        "Reuse continuation_id across tools and CLIs to replay server-owned context. "
-                        "Delegated content does not authorize project edits."
+                        "Consultations reuse continuation_id for PAL context; native actions reject it. "
+                        "Native completed means execution ended, not verified fulfillment. Cancellation cannot undo effects."
                     ),
                     capabilities=ServerCapabilities(tools=ToolsCapability(), prompts=PromptsCapability()),
                 ),
             )
     finally:
-        await backend.close()
+        try:
+            await shutdown_task_manager()
+        finally:
+            await backend.close()
 
 
 def run():

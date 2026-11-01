@@ -1,0 +1,8 @@
+{"tools": 18, "server": "clink-mcp-server", "installed_clis": 0, "native_calls": 0, "provider_modules": 0, "packaged_native_admission_valid": true, "source": "/Users/d/Tools/clink-mcp-server/test_output/native-wheel-install/server.py"}
+2026-10-31 22:34:27,921 - root - INFO - Logging to: /Users/d/Tools/clink-mcp-server/test_output/native-wheel-install/logs/mcp_server.log
+2026-10-31 22:34:27,922 - root - INFO - Process PID: 69907
+2026-10-31 22:34:27,923 - server - INFO - All tools enabled (DISABLED_TOOLS not set)
+2026-10-31 22:34:27,929 - server - INFO - tool_start request_id=60324adc-ffde-4ff5-a7e3-b25888532d3c tool=listmodels
+2026-10-31 22:34:27,931 - server - INFO - tool_end request_id=60324adc-ffde-4ff5-a7e3-b25888532d3c tool=listmodels duration=0.002 success=True
+2026-10-31 22:34:27,932 - server - INFO - tool_start request_id=34a28393-f210-49c4-982e-5f8c2ef6b310 tool=version
+2026-10-31 22:34:27,932 - server - INFO - tool_end request_id=34a28393-f210-49c4-982e-5f8c2ef6b310 tool=version duration=0.000 success=True

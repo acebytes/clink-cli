@@ -41,7 +41,9 @@ async def test_clink_defaults_are_resolved_by_the_shared_backend(cli_backend):
     assert cli_backend.resolutions[0]["model"] is None
     assert payload["metadata"]["backend"] == {"cli_name": "codex", "role": "default"}
     schema = CLinkTool().get_input_schema()
-    assert schema["required"] == ["prompt"]
+    # Status/cancel need no prompt; the request model enforces action-specific fields.
+    assert "prompt" not in schema.get("required", [])
+    assert schema["properties"]["action"]["default"] == "consult"
 
 
 @pytest.mark.asyncio

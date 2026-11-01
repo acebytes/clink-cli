@@ -1,6 +1,6 @@
 # CLI configuration
 
-`clink-mcp-server` routes delegated analysis through installed native CLIs. The default selection is client `codex`, role `default`; `CLINK_DEFAULT_CLI` may select another configured client. The server has no hosted-provider fallback. Local workflow steps and discovery do not need a logged-in CLI.
+`clink-mcp-server` routes consultations through installed CLIs and exposes separate explicit [native task actions](native-cli-tasks.md). Consultation defaults to client `codex`, role `default`; `CLINK_DEFAULT_CLI` may select another configured consultation client. Native start requires explicit CLI/project selection. The server has no hosted-provider fallback. Local workflow steps and discovery do not need a logged-in CLI.
 
 ## Availability and admission
 
@@ -12,7 +12,9 @@ Native search is verified from an [actual backend lookup](verification/native-se
 
 The live lookup used its recorded parser revision. Later hostname/Unicode and literal `is_error` hardening passed offline tests using source-shaped synthetic fixtures and the captured source URLs. No live rerun under that final hardening or replay of unretained native raw output is claimed. The [17-tool matrix](verification/live-tools-2/README.md) plus separate lookup cover all 18 tool outcomes; see [implementation results](clink-implementation-results.md).
 
-Claude 2.1.304 remains `policy_unverified` because managed authority and live boundaries are unresolved; Gemini, Antigravity (`agy`), and xAI Grok Build (`grok`) are also unavailable. Read the [Codex/Claude verification report](verification/cli-policy/README.md) and separate [Antigravity/Grok findings](clink-cli-admission.md). Installation/configuration does not grant admission, and no generic custom-command adapter exists.
+Claude 2.1.304 consultation remains `policy_unverified` because its advisory managed-authority/live boundaries are unresolved; Gemini, Antigravity (`agy`), and xAI Grok Build (`grok`) consultations are also unavailable.
+
+[Claude Code 2.1.304 native tasks have separate admission](verification/native-claude-2.1.304-admission.json) for the exact recorded executable and launch recipe. Changed binaries/recipes fail closed and require reverification; the live synthetic-project evidence does not prove all user configurations, models, or detached/remote cleanup. See [native lifecycle results](native-lifecycle-results.md) for the passing gates and preserved failed/partial attempts. Antigravity/Grok support is parser/discovery-only, with no native admission. Existing advisory receipts cannot admit this profile. Read the [Codex/Claude verification report](verification/cli-policy/README.md) and separate [Antigravity/Grok findings](clink-cli-admission.md). Installation/configuration does not grant admission, and no generic custom-command adapter exists.
 
 Delegation supports POSIX process-group cleanup. On other platforms it returns `unsupported_platform`; local tools can still operate.
 
@@ -71,19 +73,44 @@ The prompt paths here resolve inside `~/.clink/cli_clients/prompts/`. This repla
 | `command` | Required executable, parsed as argv without a shell. Bare names use the server's `PATH`; executable paths resolve relative to this manifest. Embedded arguments face the same strict validation as other arguments. |
 | `working_dir` | Existing directory. Defaults to the server's startup working directory. |
 | `allowed_roots` | Nonempty list of existing directories. Defaults to the resolved `working_dir` alone; `working_dir` must be inside one of these roots. |
-| `default_model` | Native CLI identifier or `null`. No provider aliases or model catalogs. |
+| `default_model` | Consultation native CLI identifier or `null`; admitted Codex IDs must match its frozen catalog. No provider alias translation. |
 | `timeout_seconds` | Positive integer, at most 1800; defaults to 1800 and can shorten the overall deadline. |
 | `additional_args` | Validated extra argv tokens; use `[]` for ordinary configuration. |
 | `env` | String values for allowlisted child environment keys only; use `{}` unless an override is needed. |
-| `roles` | Named role objects with optional `prompt_path`, `role_args`, `description`, and native `model`. |
+| `roles` | Consultation role objects with optional `prompt_path`, `role_args`, `description`, and native `model`. |
+| `native_task` | Optional separate Claude native task profile; see below. Configuration alone does not grant admission. |
 
 Relative `working_dir`, `allowed_roots`, executable paths, and `prompt_path` resolve against the declaring manifest's directory; `~` expands to the user's home. A relative `CLI_CLIENTS_CONFIG_PATH` resolves against server startup cwd. Role names follow the client-name rules.
 
-The registry always supplies a `default` role if omitted. Every role with omitted or `null` `prompt_path` uses the adapter's bundled `systemprompts/clink/default.txt`; it does not inherit a same-named bundled specialist prompt. Explicit prompt files must be existing regular UTF-8 files no larger than 1 MiB. Their contents are read at startup. Roles provide subordinate expertise; they cannot override tool instructions or execution policy.
+The registry always supplies a `default` role if omitted. Every role with omitted or `null` `prompt_path` uses the adapter's bundled `systemprompts/clink/default.txt`; it does not inherit a same-named bundled specialist prompt. Explicit prompt files must be existing regular UTF-8 files no larger than 1 MiB. Their contents are read at startup. Consultation roles provide subordinate expertise; they cannot override tool instructions or execution policy.
 
-## Native model selection
+## Native task profile
 
-For each delegation, model precedence is:
+Only the Claude adapter currently implements this profile. A client may declare `native_task`; its `enabled` field defaults to `false`. The bundled Claude profile is enabled; launch requires its exact recorded binary/recipe to match the separate native admission. Enablement and executable presence do not authorize launch. Add the following object to a complete operator-owned Claude manifest; replacement still replaces the whole client. The example assumes the prompt file exists relative to that manifest:
+
+```json
+{
+  "native_task": {
+    "enabled": true,
+    "inherit_env": [],
+    "required_env": [],
+    "default_model": null,
+    "roles": {
+      "default": {"prompt_path": "./prompts/native-task.txt"}
+    }
+  }
+}
+```
+
+An enabled profile requires a native `default` role. Each native role requires an explicit existing UTF-8 `prompt_path`; it may also specify `description` and `model`, but `role_args` must remain empty. Write task expertise in these prompts without the consultation ban on edits or native capabilities. Native roles and model defaults do not inherit the top-level consultation roles or `default_model`. Native model precedence is request → native role → `native_task.default_model` → native CLI configuration. A resumed follow-up must preserve the original CLI, project, role, instruction profile, and model selection.
+
+`inherit_env` lists environment **names**, never values, needed by configured hooks/tools/MCP integrations. `required_env` must be a subset; names must be unique valid environment identifiers outside the reserved `CLINK_` namespace. At most 128 names are accepted in each list. Values are read from the server process only when launching a child. Missing required values stop execution with `missing_environment`, exposing names only. Keep credential values out of manifests, prompts, logs, and receipts; native login/configuration stores remain CLI-owned. The profile preserves native auth/config locations, project instructions, and configured capabilities under native permissions.
+
+The server protects launch flags; arbitrary native settings, resume IDs, bypass flags, and extra command arguments remain invalid. Native follow-up is selected by the server using the private session mapping. No PTY, interactive approval relay, or silent permission approval is supplied. Unsupported headless approval needs return `permission_needed`. Explicit image input is currently unsupported for native tasks. Native actions reject legacy `temperature`/`thinking_mode` controls; use native configuration and model fields. Per-attempt `timeout_seconds` accepts a finite number from 1 to 1800, includes launch preparation/queue wait, and starts afresh for follow-up. See [native task usage and limits](native-cli-tasks.md).
+
+## Consultation model selection
+
+For each consultation, model precedence is:
 
 1. Concrete request `model`.
 2. Selected role's `model`.
@@ -117,9 +144,9 @@ The restricted Codex recipe disables native file/command tools. The server suppl
 
 ## Execution policy and bounds
 
-Adapter policy owns sandbox, approval, MCP, hook/plugin, output, session, and recursion controls. Manifests cannot weaken them. Currently only Claude's `--verbose` token is permitted as an extra argument; Codex and the other adapters accept no extra argument tokens. This validation applies to `command` arguments, `additional_args`, and `role_args`. Put model selection in structured `model`/`default_model` fields. Legacy bypass flags, shell wrappers with arguments, output-file settings, resume flags, and arbitrary native settings fail validation.
+Each profile owns its launch policy. Consultation policy enforces sandbox, approval, MCP, hook/plugin, output, session, and recursion controls; manifests cannot weaken them. Native tasks use the separate profile above to preserve configured capabilities under native permissions, with independent admission and no permission bypass. Currently only Claude's `--verbose` token is permitted as an extra argument; Codex and the other adapters accept no extra argument tokens. This validation applies to `command` arguments, `additional_args`, and `role_args`. Put model selection in structured `model`/`default_model` fields. Legacy bypass flags, shell wrappers with arguments, output-file settings, resume flags, and arbitrary native settings fail validation.
 
-Child environments include only `PATH`, `HOME`, `USER`, `LOGNAME`, `TMPDIR`, `TMP`, `TEMP`, `LANG`, `LC_ALL`, `LC_CTYPE`, `TZ`, `CODEX_HOME`, and `CLAUDE_CONFIG_DIR`, plus the server-owned recursion marker. Manifest `env` accepts only that allowlist, excluding the marker. Provider keys and unrelated environment secrets are not forwarded. Native login stores retain ownership of authentication; the server does not copy credentials into prompts or generate native CLI configuration. Native auth/cache maintenance can still write operational files.
+Consultation child environments include only `PATH`, `HOME`, `USER`, `LOGNAME`, `TMPDIR`, `TMP`, `TEMP`, `LANG`, `LC_ALL`, `LC_CTYPE`, `TZ`, `CODEX_HOME`, and `CLAUDE_CONFIG_DIR`, plus the server-owned recursion marker. Manifest `env` accepts only that allowlist, excluding the marker. Provider keys and unrelated environment secrets are not forwarded. Native login stores retain ownership of authentication; the server does not copy credentials into prompts or generate native CLI configuration. Native auth/cache maintenance can still write operational files.
 
 | Bound | Limit |
 | --- | --- |
@@ -133,6 +160,8 @@ Child environments include only `PATH`, `HOME`, `USER`, `LOGNAME`, `TMPDIR`, `TM
 | Assembled prompt / replay history | 1 MiB / 128 KiB UTF-8. |
 | Explicit file/image context | At most 256 references and 64 MiB of files in total. |
 
-The server never retries, switches clients/providers, resumes a native session, or repairs output through a second model call. Native CLIs may retry internally. Cancellation cannot undo remote work or usage already submitted. The recorded active native cancellation probe predates the catalog projection and was not repeated under it; production runner cleanup also has separate synthetic coverage. Search and images require separately verified adapter capabilities; they are not inferred from CLI installation.
+The server never automatically retries, switches clients/providers, or repairs output through a second model call. Consultations never resume native sessions. Explicit native `followup` resumes only the recorded private native session; it does not replay PAL history or restart work automatically. Native CLIs may retry internally. Cancellation cannot undo remote work or usage already submitted. The recorded active native cancellation probe predates the catalog projection and was not repeated under it; production runner cleanup also has separate synthetic coverage. Search and images require separately verified adapter capabilities; they are not inferred from CLI installation.
 
-Risk & Mitigation: subprocess authority and filesystem reads are the relevant boundaries. Keep the installed-version admission gate intact, configure narrow context roots, and treat `policy_unverified`, `path_not_allowed`, and capability errors as terminal results rather than reasons to add bypass flags.
+Native tasks share the process, queue, prompt, and output bounds above, and additionally retain at most 64 tasks, 16 attempts per task, and 8 MiB of task metadata/results. Only the latest result is retained, capped at 20,000 characters. Inactive records expire three hours after their last terminal attempt; polling does not extend retention. Active records are never evicted. Capacity overflow is rejected before submission.
+
+Risk & Mitigation: native tasks can mutate files and external systems. Approved roots constrain project selection/context, not all native authority. Project/session ownership prevents conflicting server-owned native submissions, while external writers, detached descendants, and remote MCP operations remain outside that coordination. Cancellation/shutdown cleanup cannot roll back partial effects. Keep the independent installed-version admission gate intact and treat policy/capability errors as reasons to inspect evidence, never to add bypass flags.

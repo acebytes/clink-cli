@@ -1,0 +1,14 @@
+Collecting setuptools>=77
+  Downloading setuptools-84.2.1-py3-none-any.whl.metadata (6.6 kB)
+Collecting wheel
+  Downloading wheel-0.48.0-py3-none-any.whl.metadata (2.3 kB)
+Requirement already satisfied: packaging>=24.0 in ./.venv/lib/python3.12/site-packages (from wheel) (26.3)
+Downloading setuptools-84.2.1-py3-none-any.whl (876 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 876.3/876.3 kB 26.8 MB/s  0:00:00
+Downloading wheel-0.48.0-py3-none-any.whl (33 kB)
+Installing collected packages: wheel, setuptools
+
+Successfully installed setuptools-84.2.1 wheel-0.48.0
+
+[notice] A new release of pip is available: 26.2.1 -> 26.2.2
+[notice] To update, run: /Users/d/Tools/clink-mcp-server/.venv/bin/python -m pip install --upgrade pip

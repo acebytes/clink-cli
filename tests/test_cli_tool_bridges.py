@@ -171,7 +171,8 @@ async def test_chat_and_clink_share_routing_metadata_and_keep_generated_code_inl
     output = json.loads((await tool_class().execute(arguments))[0].text)
     assert "<GENERATED-CODE>" in output["content"]
     assert artifact.read_text(encoding="utf-8") == "preserve existing content"
-    assert tool_class().get_annotations()["readOnlyHint"] is True
+    # Clink also exposes explicit mutating native actions; consultations remain advisory.
+    assert tool_class().get_annotations()["readOnlyHint"] is (tool_class is not CLinkTool)
     assert len(backend.requests) == 1
     assert backend.resolutions[0] == {
         "cli_name": "explicit-cli",
