@@ -2,7 +2,7 @@
 
 Delegate work to installed CLI agents through MCP. Consultations return advice and proposed code. Explicit native tasks let an agent implement a request using its configured tools, hooks, skills, plugins, MCP integrations, and subagents under its own permissions. Start a task, inspect its progress, follow up in the same native session, or cancel it.
 
-The server preserves PAL's **18 MCP tools**. Native task actions extend the existing `clink` tool.
+The server preserves PAL's **18 MCP tools**. Native task actions extend the existing `clink` tool. Use **`/clink:setup`** in Claude Code or the terminal setup helper to give each repository its own configuration while sharing one clink installation.
 
 Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-server), formerly Zen MCP. **Copyright 2025 Beehive Innovations.** This fork preserves the upstream attribution and [Apache 2.0 license](LICENSE).
 
@@ -12,11 +12,12 @@ Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-serv
 | --- | --- | --- |
 | Ask for analysis or proposed code | `clink` with omitted action or `action: "consult"` | Defaults to Codex and the `default` role; returns content without writing project files. |
 | Delegate implementation | `clink` actions `start`, `status`, `followup`, `cancel` | Claude Code, Grok, and Antigravity native tasks, including configured capabilities and session continuation. |
+| Configure a project | `/clink:setup` or `python -m clink.setup` | Generates project-local CLI manifests, role prompts, and MCP registration. No native CLI or model calls. |
 | Inspect configuration | `version`, `listmodels` | Local discovery without logging in or calling a model. |
 
 | CLI | Consultation | Native tasks |
 | --- | --- | --- |
-| Codex 0.166.0 | Verified text, explicit local images, and structured native search. | Adapter implemented; bundled profile disabled pending separate native live admission. |
+| Codex 0.166.0 | Verified text, explicit local images, and structured native search. | Adapter implemented; disabled because supported output omits a prelaunch permission refusal. |
 | Claude Code 2.1.304 | Unavailable under the separate advisory policy. | Verified for the recorded binary and launch recipe. |
 | Antigravity 1.4.12 (`agy`) | Consultation execution unverified. | Verified for the recorded macOS arm64 binary and native launch recipe. |
 | xAI Grok Build 1.0.70 (`grok`) | Consultation execution unverified. | Verified for the recorded macOS arm64 binary and native launch recipe. |
@@ -30,43 +31,91 @@ Native Codex passed edit/test, configured MCP/subagent, and same-session follow-
 
 Python 3.10+ is required; Python 3.12 is the tested runtime. Process supervision targets POSIX systems. Other macOS builds and Linux need their own CLI verification; native Windows delegation is unavailable until equivalent process-tree cleanup is verified.
 
+### Prepare the installation once
+
+From the clink checkout:
+
 ```sh
+cd /absolute/path/clink-mcp-server
 ./run-server.sh --setup
-./run-server.sh
 ```
 
-`--setup` creates `.venv` when needed and installs runtime requirements, then exits. Ordinary startup uses `.venv/bin/python` without installing anything. The server communicates over stdio and normally runs under an MCP client; it may appear quiet when started directly.
+This installs runtime requirements into `.venv` and exits. **Dependency installation and project configuration are separate steps.** Ordinary server startup installs nothing. Optional server settings are in [.env.example](.env.example).
 
-The launcher does not create `.env`, copy credentials, register MCP servers, or change native CLI configuration. Optional server settings are in [.env.example](.env.example). Authenticate a supported CLI through its native login mechanism before delegating work; the server does not require hosted-provider API keys.
+Choose either setup route below for each existing project directory. Setup does not require an installed or authenticated native CLI. Before delegating actual work, authenticate the chosen CLI through its own login mechanism and ensure the MCP client's `PATH` can find it. Clink does not require hosted-provider API keys.
 
-Add this entry to your MCP client's configuration, replacing the checkout path:
+### Set up a project in Claude Code
+
+Start Claude Code from the project you want to configure, loading the local clink plugin:
+
+```sh
+cd /absolute/path/to/your-project
+claude --plugin-dir /absolute/path/clink-mcp-server/integrations/claude
+```
+
+Inside Claude Code, run:
+
+```text
+/clink:setup
+```
+
+The command invokes the setup helper for your current project. It is available in sessions that load this checkout-local plugin; it is not installed automatically by registering the MCP server, and is not a standalone marketplace package.
+
+### Set up from the terminal
+
+From the clink checkout, run the same helper directly:
+
+```sh
+.venv/bin/python -m clink.setup --project /absolute/path/to/your-project
+```
+
+All five bundled CLI manifests are generated by default. To configure only selected clients, repeat `--cli`:
+
+```sh
+.venv/bin/python -m clink.setup --project /absolute/path/to/your-project --cli agy --cli codex
+```
+
+### Generated files and connection
+
+Both routes create:
+
+```text
+your-project/
+  .clink/cli_clients/   # Complete CLI manifests
+  .clink/prompts/       # Local role prompts
+  .mcp.json            # Project-bound MCP server registration
+```
+
+Each generated manifest sets `working_dir` to `"../.."` and `allowed_roots` to `["../.."]`, relative to `.clink/cli_clients/`. Both resolve to your project root. The generated registration passes an explicit `--project` argument, so each repository can run its own server with independent configuration, task handles, and process limits. Optional user manifests remain supported; project manifests override them for the same CLI.
+
+Reconnect your MCP client after setup, then call `version` and `listmodels`. Check the selected client's roots and its separate consultation/native availability. Generating configuration does not grant CLI admission. Save useful task results before restarting an existing server, because its task handles are volatile.
+
+Identical reruns leave files unchanged. Custom manifests, prompts, or a differing existing `clink` registration produce a conflict; setup preserves them. Other `.mcp.json` server entries are retained. Avoid editing `.mcp.json` concurrently with setup. The `.clink/` manifests and prompts are portable, while generated `.mcp.json` paths are machine-specific and need updating when the project or installation moves.
+
+An older Claude **local-scope** registration named `clink` can override the project entry. If the expected roots do not appear, inspect the active definition in `/mcp` and check for an explicit `CLI_CLIENTS_CONFIG_PATH` override. See [project setup](docs/project-setup.md) for host precedence, conflict handling, and recovery.
+
+### Manual registration and other MCP clients
+
+For clients with a different configuration format, use the generated command and arguments in their settings. You can also register the launcher directly, replacing both paths:
 
 ```json
 {
   "mcpServers": {
     "clink": {
       "command": "/absolute/path/clink-mcp-server/run-server.sh",
-      "args": []
+      "args": ["--project", "/absolute/path/to/your-project"]
     }
   }
 }
 ```
 
-Ensure the MCP client's `PATH` resolves the CLI, or configure its absolute executable path in a client manifest. Configure `working_dir` and `allowed_roots` before selecting projects outside the server's default working directory. Restart the MCP connection after updating server code or configuration. See [getting started](docs/getting-started.md), [CLI configuration](docs/cli-configuration.md), and [migration from PAL](docs/migration.md).
-
-For multiple repositories, use [project setup](docs/project-setup.md) to generate each project's `.clink/` manifests/prompts and `.mcp.json` registration. From this checkout:
-
-```sh
-.venv/bin/python -m clink.setup --project /absolute/path/to/your-project
-```
-
-Claude Code also supports `/clink:setup` after loading the local plugin with `claude --plugin-dir /absolute/path/clink-mcp-server/integrations/claude`. Project settings override user settings when the server is launched with its generated `--project` binding. Setup preserves custom files and makes no model calls.
+The server communicates over stdio and normally runs under the MCP client. Launching without `--project` retains the older startup-directory defaults and does not load project manifests. The launcher itself does not generate configuration or copy credentials. See [getting started](docs/getting-started.md), [CLI configuration](docs/cli-configuration.md), and [migration from PAL](docs/migration.md).
 
 ## Run the first native task
 
 Call `version` and `listmodels` with empty arguments first. `listmodels` separates advisory `clients` from `native_task_clients`; inspect the admitted Claude, Grok, or Antigravity native profile. Discovery reports installation and recorded verification without authenticating or making inference calls. The current binary, recipe, and admission record are checked again at launch, so discovery availability is provisional.
 
-In advisory `clients`, `installed: true` only means the executable is present; `available` additionally requires verified consultation policy and POSIX support. Agy consultation remains unavailable even when its native profile is admitted. Use explicit `action: "start"` for native delegation, and configure an [external-project manifest](docs/cli-configuration.md#antigravity-projects-outside-the-checkout) before selecting a project outside the default checkout roots. A `path_not_allowed` refusal happens before the CLI launches.
+In advisory `clients`, `installed: true` only means the executable is present; `available` additionally requires verified consultation policy and POSIX support. Agy consultation remains unavailable even when its native profile is admitted. Use explicit `action: "start"` for native delegation and a `project_dir` inside that client's roots. Project setup configures those roots for you; [manual user-scope configuration](docs/cli-configuration.md#antigravity-projects-outside-the-checkout) remains available. A `path_not_allowed` refusal happens before the CLI launches.
 
 Use a disposable project with one failing test inside your configured roots. These examples are arguments to the **`clink` MCP tool**, not shell commands. Replace the project path, specify its actual test command in the prompt, and choose a new request key for each new submission:
 
@@ -115,10 +164,13 @@ Redeliver an identical submission with its original request key to retrieve the 
 
 ## What to test now
 
-The recorded Claude, Grok, and Antigravity lifecycle checks passed independent review for their exact admitted binaries/recipes. Use an admitted profile for the acceptance pass below in a disposable project. To test the newly enabled Antigravity path, change the example's `cli_name` to `agy`. Native Codex remains disabled for the output limitation described above.
+Start with project setup and discovery; these do not call a native model. The setup helper, installed package, and two-project MCP isolation have offline coverage. Claude Code's interactive plugin UI still needs a first-use acceptance check. For native lifecycle checks, use a disposable project and an admitted Claude, Grok, or Antigravity profile; select `cli_name: "agy"` to test Antigravity. Native Codex remains disabled for the output limitation above.
 
 | Check | Action and expected result |
 | --- | --- |
+| Project setup | Load the local plugin and run `/clink:setup`, or use the terminal helper. Expect `.clink/cli_clients`, `.clink/prompts`, and `.mcp.json` in the intended project, with no model call. |
+| Repeat setup | Run the same setup again before customizing files. Expect unchanged files. A differing custom manifest or existing clink registration must produce a conflict without being overwritten. |
+| Two repositories | Set up two projects and connect their generated registrations. Each `listmodels` response should show that project's roots. Switching projects must not require rewriting home configuration. |
 | Connection and discovery | Restart the MCP connection, then call `version` and `listmodels`. Claude, Grok, and Antigravity have admitted native profiles; Codex remains the consultation backend. Discovery makes no model call. |
 | Edit and test | Start the small failing-test task above. Receive a handle promptly, poll to completion, inspect the actual diff, and independently rerun the test successfully. |
 | Same-session follow-up | Submit a small adjustment when `followup_available` is true. Expect the same handle, a new attempt ID, and useful prior native context without resending the conversation. |
@@ -126,7 +178,7 @@ The recorded Claude, Grok, and Antigravity lifecycle checks passed independent r
 | Your configured capabilities | Exercise one known benign hook, subagent, or MCP operation. Verify its actual artifact or result. Configure required environment variable names in the native profile; do not put credential values in prompts. |
 | Cancellation | Start a harmless long-running task that first creates a disposable marker. Independently observe the marker and confirm work is still active before cancelling; `running` alone does not prove an edit happened. Expect cleanup before project ownership is released, the marker to remain, and repeated cancellation to retain the outcome. Independently check supervised descendants stopped. |
 | Permission refusal | Use a disposable target protected by a known native permission rule. Expect `permission_needed`, unchanged protected content, and no permission bypass or automatic retry. Check the state even if no `error` object is present. |
-| Project ownership | While a task is active, submit a separate start with a new key for the same project or an overlapping parent/child path. Expect `project_busy`. After cleanup, a new task can acquire the project. |
+| Project ownership | Within the same server, while a task is active, submit a separate start with a new key for the same project or an overlapping parent/child path. Expect `project_busy`. After cleanup, a new task can acquire the project. |
 | Restart behavior | Save useful results and finish active tasks, then restart the server. An old handle returns `unavailable` with unknown execution outcome; it must not launch replacement work. |
 | Consultation regression | Call `clink` with a review prompt and `absolute_file_paths`, omitting `action` and `cli_name`. Expect Codex advice and unchanged files. A subsequent consultation can use its PAL continuation ID. |
 
@@ -149,7 +201,17 @@ The analytical tools still use consultations. Native implementation requires exp
 
 ## Configuration and execution limits
 
-Client manifests load in this order: bundled clients → legacy `~/.pal/cli_clients` → `~/.clink/cli_clients` → `<bound-project>/.clink/cli_clients` → `CLI_CLIENTS_CONFIG_PATH`. Project configuration requires explicit `--project` launch binding. Each later manifest replaces the entire named client, rather than merging individual fields. See [project setup](docs/project-setup.md), the [manifest example](docs/cli-configuration.md#manifest-example), and the [native task profile](docs/cli-configuration.md#native-task-profile).
+Client manifests load from lowest to highest priority:
+
+```text
+bundled defaults
+  < legacy ~/.pal/cli_clients/
+  < user ~/.clink/cli_clients/
+  < project <bound-project>/.clink/cli_clients/
+  < explicit CLI_CLIENTS_CONFIG_PATH
+```
+
+Project configuration requires explicit `--project` launch binding. Each later manifest replaces the **entire named client**, including roles and native profiles. Generated project manifests start from bundled defaults and do not copy user-level customizations or credentials. Clients without a project manifest retain lower-priority configuration. The explicit override remains highest priority. See [project setup](docs/project-setup.md), the [manifest example](docs/cli-configuration.md#manifest-example), and the [native task profile](docs/cli-configuration.md#native-task-profile).
 
 Consultations default to `codex/default`. Model selection follows request → role → client → admitted adapter default. Native tasks require explicit CLI selection and use separate native-role and native-profile defaults. All bundled native profiles leave the model to native CLI configuration unless overridden; Claude native tasks do not inherit the advisory `sonnet` default, and native Codex does not inherit the restrictive consultation catalog/default. Omitted, `null`, or `auto` model selection uses the next default. Provider aliases are never translated and backends are never silently switched.
 
@@ -163,7 +225,7 @@ The admitted Codex catalog accepts 12 exact native model IDs; only `gpt-6.1-sol`
 | Terminal retention | Three hours without polling extensions. Active tasks are not evicted. Restart loses task handles, session mapping, and deduplication. |
 | Prompt and output | Assembled input at most 1 MiB, including Agy's encoded input envelope; captured stdout and stderr at most 10 MiB each. Truncation is reported. |
 
-Native tasks reserve one writer for overlapping canonical project directories and serialize session input. External writers are outside this coordination. Shutdown cancels active tasks and awaits cleanup. The server does not automatically retry, fall back, or recreate lost work; native CLIs may retry internally.
+These limits apply per server process. Native tasks reserve one writer for overlapping canonical project directories and serialize session input within that server. Other server processes and external writers are outside this coordination. Shutdown cancels active tasks and awaits cleanup. The server does not automatically retry, fall back, or recreate lost work; native CLIs may retry internally.
 
 **Risk & Mitigation:** Native agents can change files and invoke external integrations under their configured permissions. Approved roots constrain project selection and server-supplied context; they are not an OS sandbox. Codex's consultation profile also does not provide OS read isolation. Check actual effects after failures, cancellation, or lost handles. Detached descendants and remote MCP jobs can outlive supervised cleanup. The depth guard cannot police recursion through an already-running MCP server. Use disposable acceptance projects and independently verify changes and cleanup.
 
@@ -183,6 +245,8 @@ Before another candidate is enabled, genuine verification must establish the rec
 
 ## Development and evidence
 
+The latest [project setup verification](docs/verification/project-setup-1/README.md) passed **2,219 tests and 16 subtests** with network and unrelated-home-file access blocked, plus independent review and check-only lint/format checks. The [installed-package check](docs/verification/project-setup-packaging-1/summary.json) verified wheel/source resources, setup idempotence, and two real MCP stdio servers with independent project roots, each exposing 5 configured CLIs and all 18 tools. These checks made no native model calls; they do not establish Claude UI acceptance or new CLI admission.
+
 See [native adapter results](docs/native-adapters-results.md) for the shared-runtime checks, Grok and Antigravity admission, and the remaining native Codex output limitation.
 
 The first Claude lifecycle's [recorded results](docs/native-lifecycle-results.md) include **1,338 tests and 16 subtests passing**, with zero failures, errors, or skips, under network and unrelated-home-file isolation. That report also records independent review, check-only formatting, package builds, and installed-wheel discovery of all 18 tools. Its original scope does not establish live admission for additional adapters.
@@ -197,6 +261,7 @@ Install development requirements separately, then run existing tests and check-o
 
 ```sh
 .venv/bin/python -m pip install -r requirements-dev.txt
+.venv/bin/python -m pytest tests/test_project_binding.py tests/test_project_setup.py tests/test_project_setup_stdio.py -q
 .venv/bin/python -m pytest tests/test_native_adapters.py tests/test_grok_native_parser.py tests/test_agy_native_parser.py tests/test_codex_native_parser.py -q
 .venv/bin/python -m pytest tests/test_native_tasks.py tests/test_native_server.py tests/test_native_runtime.py tests/test_native_runner.py -q
 .venv/bin/python -m pytest tests/test_native_adapter_verifier.py tests/test_native_fixture_trust.py -q
