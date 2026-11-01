@@ -21,6 +21,8 @@ class SchemaBuilder:
 
     # Common field schemas that can be reused across all tool types
     COMMON_FIELD_SCHEMAS = {
+        "cli_name": {"type": "string", "description": COMMON_FIELD_DESCRIPTIONS["cli_name"]},
+        "role": {"type": "string", "description": COMMON_FIELD_DESCRIPTIONS["role"]},
         "temperature": {
             "type": "number",
             "description": COMMON_FIELD_DESCRIPTIONS["temperature"],
@@ -90,8 +92,6 @@ class SchemaBuilder:
 
         # Build required fields list
         required = list(required_fields) if required_fields else []
-        if (auto_mode or require_model) and "model" not in required:
-            required.append("model")
 
         # Build the complete schema
         schema = {

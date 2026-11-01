@@ -111,7 +111,7 @@ class SecauditRequest(WorkflowRequest):
             valid_compliance = {"SOC2", "PCI DSS", "HIPAA", "GDPR", "ISO 27001", "NIST", "FedRAMP", "FISMA"}
             for req in self.compliance_requirements:
                 if req not in valid_compliance:
-                    logger.warning(f"Unknown compliance requirement: {req}")
+                    logger.warning("security_compliance_requirement_unrecognized")
 
         return self
 
@@ -254,7 +254,7 @@ class SecauditTool(WorkflowTool):
         compliance requirements, and systematic findings for expert validation.
         """
         context_parts = [
-            f"=== SECURITY AUDIT REQUEST ===\n{self.initial_request or 'Security audit workflow initiated'}\n=== END REQUEST ==="
+            f"=== SECURITY AUDIT REQUEST ===\n{self.get_expert_initial_request(self.initial_request, 'Security audit workflow initiated')}\n=== END REQUEST ==="
         ]
 
         # Add investigation summary

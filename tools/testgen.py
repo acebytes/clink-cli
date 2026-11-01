@@ -252,7 +252,7 @@ class TestGenTool(WorkflowTool):
     def prepare_expert_analysis_context(self, consolidated_findings) -> str:
         """Prepare context for external model call for test generation validation."""
         context_parts = [
-            f"=== TEST GENERATION REQUEST ===\n{self.initial_request or 'Test generation workflow initiated'}\n=== END REQUEST ==="
+            f"=== TEST GENERATION REQUEST ===\n{self.get_expert_initial_request(self.initial_request, 'Test generation workflow initiated')}\n=== END REQUEST ==="
         ]
 
         # Add investigation summary

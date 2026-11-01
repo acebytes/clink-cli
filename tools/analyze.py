@@ -301,7 +301,7 @@ class AnalyzeTool(WorkflowTool):
     def prepare_expert_analysis_context(self, consolidated_findings) -> str:
         """Prepare context for external model call for final analysis validation."""
         context_parts = [
-            f"=== ANALYSIS REQUEST ===\\n{self.initial_request or 'Code analysis workflow initiated'}\\n=== END REQUEST ==="
+            f"=== ANALYSIS REQUEST ===\\n{self.get_expert_initial_request(self.initial_request, 'Code analysis workflow initiated')}\\n=== END REQUEST ==="
         ]
 
         # Add investigation summary

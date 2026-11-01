@@ -222,6 +222,10 @@ class ThinkDeepTool(WorkflowTool):
                 "Deep thinking analysis is complete with high certainty. "
                 "All aspects have been thoroughly considered and conclusions are definitive."
             )
+        elif not request.next_step_required and not self.get_request_use_assistant_model(request):
+            response_data["completion_message"] = (
+                "Deep thinking analysis is complete. Present the caller's findings; expert validation was disabled."
+            )
         elif not request.next_step_required:
             response_data["completion_message"] = (
                 "Deep thinking analysis phase complete. Expert validation will provide additional insights and recommendations."
@@ -411,6 +415,8 @@ but also acknowledge strong insights and valid conclusions.
         """
         Determine if expert analysis should be called based on confidence and completion.
         """
+        if request and not self.get_request_use_assistant_model(request):
+            return False
         if request:
             try:
                 # Don't call expert analysis if confidence is "certain"

@@ -20,9 +20,11 @@ logger = logging.getLogger(__name__)
 
 # Shared field descriptions to avoid duplication
 COMMON_FIELD_DESCRIPTIONS = {
-    "model": "Model to run. Supply a name if requested by the user or stay in auto mode. When in auto mode, use `listmodels` tool for model discovery.",
-    "temperature": "0 = deterministic · 1 = creative.",
-    "thinking_mode": "Reasoning depth: minimal, low, medium, high, or max.",
+    "model": "Native CLI model identifier. Omitted, null, or auto uses role/client/native defaults. No provider alias translation.",
+    "cli_name": "Configured CLI client name. Defaults to codex; unavailable selections fail without fallback.",
+    "role": "Configured subordinate expertise/style role. Defaults to default; tool instructions retain authority.",
+    "temperature": "Legacy sampling setting; unsupported explicit values are unapplied with a warning.",
+    "thinking_mode": "Legacy reasoning setting; unsupported explicit values are unapplied with a warning.",
     "continuation_id": (
         "Unique thread continuation ID for multi-turn conversations. Works across different tools. "
         "ALWAYS reuse the last continuation_id you were given—this preserves full conversation context, "
@@ -65,6 +67,10 @@ class ToolRequest(BaseModel):
     model selection, temperature control, and conversation threading.
     Tool-specific request models should inherit from this class.
     """
+
+    # Native CLI selection (resolved only when a tool actually delegates).
+    cli_name: Optional[str] = Field(None, description=COMMON_FIELD_DESCRIPTIONS["cli_name"])
+    role: Optional[str] = Field(None, description=COMMON_FIELD_DESCRIPTIONS["role"])
 
     # Model configuration
     model: Optional[str] = Field(None, description=COMMON_FIELD_DESCRIPTIONS["model"])
@@ -128,7 +134,7 @@ class WorkflowRequest(BaseWorkflowRequest):
     def convert_string_to_list(cls, v):
         """Convert string inputs to empty lists to handle malformed inputs gracefully."""
         if isinstance(v, str):
-            logger.warning(f"Field received string '{v}' instead of list, converting to empty list")
+            logger.warning("workflow_list_field_invalid type=string action=empty_list")
             return []
         return v
 

@@ -202,6 +202,8 @@ class DocgenTool(WorkflowTool):
 
         # Exclude common fields that documentation generation doesn't need
         excluded_common_fields = [
+            "cli_name",
+            "role",
             "model",  # Documentation doesn't need external model selection
             "temperature",  # Documentation doesn't need temperature control
             "thinking_mode",  # Documentation doesn't need thinking mode
