@@ -425,19 +425,38 @@ async def test_runtime_terminal_error_code_and_permission_counts_are_preserved(r
 
 
 @pytest.mark.asyncio
-async def test_prepare_failure_is_redacted_without_retaining_request(runtime):
+@pytest.mark.parametrize("code", ["missing_environment", "path_not_allowed", "unknown_private_code"])
+async def test_prepare_failure_is_redacted_without_retaining_request(runtime, code):
     def fail(*args, **kwargs):
-        raise BackendError("missing_environment", "private first input secret-token", metadata={"secret": "value"})
+        raise BackendError(
+            code,
+            "private first input secret-token /private/secret-project",
+            "private remedy secret-token /private/secret-project",
+            metadata={"secret": "value", "project_dir": "/private/secret-project"},
+        )
 
     runtime.prepare = fail
     manager = NativeTaskManager(runtime)
     with pytest.raises(BackendError) as caught:
         await manager.start(start_args(runtime))
-    assert caught.value.code == "missing_environment"
-    assert "secret" not in str(caught.value)
+    assert caught.value.code == ("native_unavailable" if code == "unknown_private_code" else code)
+    serialized = json.dumps(caught.value.to_dict())
+    for private in ("private first input", "private remedy", "secret-token", "/private/secret-project"):
+        assert private not in serialized
+    if code == "path_not_allowed":
+        assert "project_dir and context paths" in str(caught.value)
+        assert "allowed_roots" in str(caught.value)
+        assert "listmodels" in caught.value.remedy
+        assert "operator-owned CLI manifest" in caught.value.remedy
+        assert "restart the server" in caught.value.remedy
+    else:
+        assert str(caught.value) == "Native task admission could not be established."
+        assert caught.value.remedy == ""
     assert not caught.value.metadata
     assert not manager._keys
     assert not manager._records
+    assert not manager._jobs
+    assert not manager._leases
 
 
 @pytest.mark.asyncio

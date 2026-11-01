@@ -378,6 +378,39 @@ def test_working_directory_must_be_inside_an_allowed_root(sources: RegistrySourc
         ClinkRegistry()
 
 
+@pytest.mark.parametrize("source", ["user", "explicit"])
+def test_documented_agy_manifest_allows_external_project_and_preserves_roles(
+    sources: RegistrySources, source: str
+) -> None:
+    checkout = Path(__file__).resolve().parents[1]
+    documentation = (checkout / "docs" / "cli-configuration.md").read_text(encoding="utf-8")
+    example = documentation.split("## Antigravity projects outside the checkout\n", 1)[1]
+    example = example.split("```json\n", 1)[1].split("```", 1)[0]
+    project = sources.startup.parent / "external-project"
+    project.mkdir()
+    manifest = json.loads(
+        example.replace("/absolute/path/to/clink-mcp-server", str(checkout)).replace(
+            "/absolute/path/to/project", str(project)
+        )
+    )
+    sources.write(name="agy", adapter="agy", command="agy")
+    path = sources.write(source=source, **manifest)
+    if source == "explicit":
+        sources.env[registry_module.CONFIG_ENV_VAR] = str(path)
+
+    client = ClinkRegistry().get_client("agy")
+
+    assert client.working_dir == project.resolve()
+    assert client.allowed_roots == (project.resolve(),)
+    assert sources.startup.resolve() not in client.allowed_roots
+    assert client.native_task.enabled is True
+    assert set(client.roles) == set(client.native_task.roles) == {"default", "planner", "codereviewer"}
+    for roles in (client.roles, client.native_task.roles):
+        for role in roles.values():
+            assert role.prompt_path.parent == checkout / "systemprompts" / "clink"
+            assert role.prompt_text == role.prompt_path.read_text(encoding="utf-8")
+
+
 def test_directory_symlinks_cannot_bypass_allowed_roots(sources: RegistrySources) -> None:
     root = sources.startup / "root"
     outside = sources.startup.parent / "outside"

@@ -18,6 +18,8 @@ All four adapters reuse `NativeTaskManager` and the shared process pool. Task ha
 
 These examples use the separately admitted Claude native profile; use `cli_name: "grok"` or `cli_name: "agy"` for an admitted Grok or Antigravity installation. Replace the directory with an existing absolute path inside the configured client's `allowed_roots`.
 
+For Agy outside the server checkout, use the complete [external-project manifest example](cli-configuration.md#antigravity-projects-outside-the-checkout). `path_not_allowed` is a project/context admission refusal before launch; inspect the configured roots and resolved paths. Omitting `action` still selects consultation, whose admission is separate from native tasks.
+
 ```json
 {
   "action": "start",

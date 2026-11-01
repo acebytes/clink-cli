@@ -58,6 +58,8 @@ Ensure the MCP client's `PATH` resolves the CLI, or configure its absolute execu
 
 Call `version` and `listmodels` with empty arguments first. `listmodels` separates advisory `clients` from `native_task_clients`; inspect the admitted Claude, Grok, or Antigravity native profile. Discovery reports installation and recorded verification without authenticating or making inference calls. The current binary, recipe, and admission record are checked again at launch, so discovery availability is provisional.
 
+In advisory `clients`, `installed: true` only means the executable is present; `available` additionally requires verified consultation policy and POSIX support. Agy consultation remains unavailable even when its native profile is admitted. Use explicit `action: "start"` for native delegation, and configure an [external-project manifest](docs/cli-configuration.md#antigravity-projects-outside-the-checkout) before selecting a project outside the default checkout roots. A `path_not_allowed` refusal happens before the CLI launches.
+
 Use a disposable project with one failing test inside your configured roots. These examples are arguments to the **`clink` MCP tool**, not shell commands. Replace the project path, specify its actual test command in the prompt, and choose a new request key for each new submission:
 
 ```json

@@ -4,7 +4,7 @@
 
 ## Availability and admission
 
-Call `listmodels` with `{}` to inspect configured clients, roles, executable presence, native model defaults, policy verification, and image/search capabilities. Discovery does not run a model or log in; authentication is reported as unknown. An executable being available does not mean its execution policy is verified.
+Call `listmodels` with `{}` to inspect configured clients, roles, executable presence, native model defaults, policy verification, and image/search capabilities. In consultation `clients`, `installed` reports executable presence; `available` also requires verified consultation policy and POSIX support. Native availability is reported separately in `native_task_clients`. Discovery does not run a model or log in; authentication is reported as unknown. Availability is provisional: exact executable, recipe, and bound resource checks still run before launch. Installation alone does not establish admission for either route.
 
 [Codex 0.166.0 has accepted text/image/search admission](verification/cli-policy/codex-0.166.0-admission-v5-search.json) through the strict production parser. It binds the tested macOS arm64 executable, exact restrictive recipe, and frozen bundled catalog by SHA-256. Changing any bound component invalidates that admission; other platforms/builds are not admitted by the record. Earlier v1/v2 acceptances were invalidated for backend usability and remain preserved.
 
@@ -85,6 +85,65 @@ The prompt paths here resolve inside `~/.clink/cli_clients/prompts/`. This repla
 Relative `working_dir`, `allowed_roots`, executable paths, and `prompt_path` resolve against the declaring manifest's directory; `~` expands to the user's home. A relative `CLI_CLIENTS_CONFIG_PATH` resolves against server startup cwd. Role names follow the client-name rules.
 
 For consultation roles, the registry supplies a `default` role if omitted. Every consultation role with omitted or `null` `prompt_path` uses the adapter's bundled `systemprompts/clink/default.txt`; it does not inherit a same-named bundled specialist prompt. Explicit prompt files must be existing regular UTF-8 files no larger than 1 MiB. Their contents are read at startup. Consultation roles provide subordinate expertise; they cannot override tool instructions or execution policy. Native roles require their own explicit prompts below.
+
+## Antigravity projects outside the checkout
+
+The bundled Agy manifest omits `working_dir` and `allowed_roots`. The registry therefore uses the server's startup working directory for both. `run-server.sh` starts in the checkout, so seeing only the checkout in `listmodels` is expected even when no operator manifest exists. Restarting without a configuration change preserves that default.
+
+For a project elsewhere, save this complete replacement as `~/.clink/cli_clients/agy.json`. Replace every `/absolute/path/to/clink-mcp-server` with your checkout path and both `/absolute/path/to/project` occurrences with the existing project directory. This example preserves all three consultation and native roles. If `CLI_CLIENTS_CONFIG_PATH` also defines `agy`, update that higher-priority manifest instead.
+
+```json
+{
+  "schema_version": 1,
+  "name": "agy",
+  "adapter": "agy",
+  "command": "agy",
+  "working_dir": "/absolute/path/to/project",
+  "allowed_roots": ["/absolute/path/to/project"],
+  "roles": {
+    "default": {
+      "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/default.txt"
+    },
+    "planner": {
+      "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/default_planner.txt"
+    },
+    "codereviewer": {
+      "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/default_codereviewer.txt"
+    }
+  },
+  "native_task": {
+    "enabled": true,
+    "roles": {
+      "default": {
+        "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/native_default.txt"
+      },
+      "planner": {
+        "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/native_planner.txt"
+      },
+      "codereviewer": {
+        "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/native_codereviewer.txt"
+      }
+    }
+  }
+}
+```
+
+Set both `working_dir` and `allowed_roots`: the configured working directory must be inside an allowed root. Choose the narrow project directory, rather than a shared temporary directory or your entire home. Prompt files may remain in the checkout outside that project. Absolute prompt paths here make relocation explicit; existing paths relative to the new manifest also work. Copying the bundled manifest unchanged into your home configuration breaks its six relative prompt paths, which were anchored to `conf/cli_clients/`.
+
+Restart the MCP server after saving the manifest, then inspect `listmodels`: Agy's `clients` entry reports its configured roots, and `native_task_clients` reports its enabled native profile. Save any useful task results first: restart discards server-owned task handles. For an installed admitted Agy build, explicitly submit:
+
+```json
+{
+  "action": "start",
+  "cli_name": "agy",
+  "project_dir": "/absolute/path/to/project",
+  "prompt": "Report connectivity without editing files or running commands.",
+  "request_key": "agy-connectivity-1",
+  "timeout_seconds": 180
+}
+```
+
+Poll the returned handle with `action: "status"`; a successful start only schedules work. This is native delegation under the CLI's configured permissions and can use native tools or edit files. The prompt requests a no-op but does not impose an advisory sandbox. Omitting `action` selects consultation, which remains `policy_unverified` for Agy; configuration does not change that admission. A `path_not_allowed` refusal means the project or declared context did not pass path checks. Inspect the selected client's roots, path existence/access, and resolved symlink targets before submitting again. The error intentionally omits filesystem paths and raw exception details.
 
 ## Native task profile
 

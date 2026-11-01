@@ -75,11 +75,29 @@ def test_native_model_precedence_and_frozen_role(backend):
     assert any(code == "unsupported_parameter" for code, _ in target.warnings)
 
 
-def test_discovery_does_not_launch_or_authenticate(backend, monkeypatch):
+@pytest.mark.parametrize("installed", [False, True])
+@pytest.mark.parametrize("admitted", [False, True])
+@pytest.mark.parametrize("platform", ["posix", "nt"])
+def test_discovery_reports_provisional_advisory_availability_without_launch(
+    backend, monkeypatch, installed, admitted, platform
+):
+    policy = backend.resolve().policy
+    monkeypatch.setattr(module, "_VERIFIED_POLICIES", {"codex": policy} if admitted else {})
+    monkeypatch.setattr(module, "os", SimpleNamespace(name=platform))
+    monkeypatch.setattr(module.shutil, "which", lambda name: "/synthetic/fake-cli" if installed else None)
     monkeypatch.setattr(asyncio, "create_subprocess_exec", lambda *args, **kwargs: pytest.fail("discovery launched"))
+    monkeypatch.setattr(module, "executable_digest", lambda *args: pytest.fail("discovery hashed the executable"))
+    monkeypatch.setattr(module, "recipe_digest", lambda *args: pytest.fail("discovery checked the recipe"))
+    monkeypatch.setattr(backend, "_verify_resources", lambda *args: pytest.fail("discovery checked catalog resources"))
     description = backend.describe()[0]
     assert description["authentication"] == "unknown"
-    assert description["available"] is True
+    assert description["installed"] is installed
+    assert description["available"] is (installed and admitted and platform == "posix")
+    assert description["verification_status"] == ("test_fixture" if admitted else "unverified")
+    assert "provisional" in description["launch_validation"]
+    assert "requires POSIX" in description["launch_validation"]
+    assert "exact executable, recipe and catalog resources rechecked" in description["launch_validation"]
+    assert "authentication remains unknown" in description["launch_validation"]
 
 
 @pytest.mark.asyncio
@@ -102,9 +120,22 @@ async def test_fake_cli_normalized_content_and_redaction(backend, monkeypatch):
 async def test_policy_unverified_and_recursion_refuse_launch(backend, monkeypatch):
     target = backend.resolve()
     monkeypatch.setattr(module, "_VERIFIED_POLICIES", {})
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", lambda *args, **kwargs: pytest.fail("refusal launched"))
+    monkeypatch.setattr("clink.tasks.get_task_manager", lambda: pytest.fail("consultation selected native execution"))
     with pytest.raises(BackendError) as caught:
         await backend.run(CLIRequest(prompt="request", target=target))
     assert caught.value.code == "policy_unverified"
+    assert "CLI consultation policy" in str(caught.value)
+    remedy = caught.value.remedy
+    assert "Consultation requires separate version-specific isolation verification" in remedy
+    assert "run the opt-in CLI policy verification harness for this installed version" in remedy
+    assert "If native execution is intended" in remedy
+    assert "listmodels.native_task_clients" in remedy
+    assert "clink action=start" in remedy
+    assert "cli_name, project_dir, prompt, and request_key" in remedy
+    assert "enabled, separately admitted profile" in remedy
+    assert "Native tasks can edit files and use configured tools" in remedy
+    assert backend.pool.running == 0
     monkeypatch.setenv("CLINK_DELEGATION_DEPTH", "1")
     with pytest.raises(BackendError) as caught:
         await backend.run(CLIRequest(prompt="request", target=target))

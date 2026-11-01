@@ -61,6 +61,15 @@ _ERROR_CODES = frozenset(
         "verification_required",
     }
 )
+# Admission exceptions may contain private diagnostics; publish only code-indexed text.
+_PREPARE_DIAGNOSTICS = {
+    "path_not_allowed": (
+        "Native project_dir and context paths must be absolute, accessible, and within the configured allowed_roots.",
+        "Supply project_dir and context paths within an allowed_roots entry; inspect listmodels for the selected "
+        "client's allowed_roots. To authorize another workspace, update allowed_roots in the operator-owned CLI "
+        "manifest and restart the server.",
+    )
+}
 # Native output is untrusted. Public metadata must not become a second raw-stream channel.
 _METADATA_KEYS = frozenset(
     {
@@ -320,6 +329,7 @@ class NativeTaskManager:
             return self.runtime.prepare(*args, **kwargs)
         except BackendError as exc:
             code = exc.code if exc.code in _ERROR_CODES else "native_unavailable"
+            message, remedy = _PREPARE_DIAGNOSTICS.get(code, ("Native task admission could not be established.", ""))
             missing = exc.metadata.get("missing_environment_names")
             metadata = {}
             if isinstance(missing, list):
@@ -328,7 +338,7 @@ class NativeTaskManager:
                     for name in missing[:64]
                     if isinstance(name, str) and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,127}", name)
                 ]
-            raise BackendError(code, "Native task admission could not be established.", metadata=metadata) from None
+            raise BackendError(code, message, remedy, metadata=metadata) from None
         except Exception:
             raise BackendError("native_unavailable", "Native task admission could not be established.") from None
 

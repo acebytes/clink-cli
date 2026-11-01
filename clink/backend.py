@@ -260,19 +260,24 @@ class CLIBackend:
         )
 
     def describe(self) -> list[dict[str, Any]]:
-        """Report configured capabilities and executable presence without launching processes."""
+        """Report provisional advisory availability without launching processes or checking login."""
         result = []
         for name in self.registry.list_clients():
             client = self.registry.get_client(name)
             adapter = client.adapter or client.runner or client.name
             policy = self._policy(adapter)
-            available = bool(client.executable and shutil.which(client.executable[0]))
+            installed = bool(client.executable and shutil.which(client.executable[0]))
             result.append(
                 {
                     "cli_name": client.name,
                     "adapter": adapter,
                     "roles": sorted(client.roles),
-                    "available": available,
+                    "installed": installed,
+                    "available": installed and policy.verified and os.name == "posix",
+                    "launch_validation": (
+                        "provisional; requires POSIX; exact executable, recipe and catalog resources rechecked "
+                        "before each launch; authentication remains unknown"
+                    ),
                     "default": client.name == self.default_cli,
                     "default_model": client.default_model,
                     "supported_models": list(policy.supported_models),
@@ -580,8 +585,12 @@ class CLIBackend:
         if not policy.verified or target.policy != policy:
             raise BackendError(
                 "policy_unverified",
-                "The installed CLI policy has not passed version-specific isolation checks.",
-                "Run the opt-in CLI policy verification harness for this installed version.",
+                "The installed CLI consultation policy has not passed version-specific isolation checks.",
+                "Consultation requires separate version-specific isolation verification; run the opt-in CLI policy "
+                "verification harness for this installed version. If native execution is intended, inspect "
+                "listmodels.native_task_clients, then submit clink action=start with explicit cli_name, project_dir, "
+                "prompt, and request_key only for an enabled, separately admitted profile. Native tasks can edit "
+                "files and use configured tools.",
             )
         await self._verify_executable_policy(target, policy, deadline)
         if request.images and not policy.images:

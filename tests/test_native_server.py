@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import sys
 from contextlib import asynccontextmanager
 from dataclasses import replace
 from types import SimpleNamespace
@@ -12,7 +13,8 @@ import pytest_asyncio
 import clink.backend
 import clink.tasks
 import server
-from clink.contracts import BackendError
+from clink.contracts import AdapterPolicy, BackendError
+from clink.native import NativeRuntime
 from clink.native_contracts import FrozenNativeContext, NativeRunOutcome
 from clink.tasks import NativeTaskManager
 from tests.cli_helpers import context_target
@@ -147,6 +149,45 @@ async def test_native_missing_environment_reports_names_without_values(native_ma
     assert "private" not in caught.value.payload
     assert "BAD=value" not in caught.value.payload
     assert runtime.runs == []
+
+
+@pytest.mark.asyncio
+async def test_native_outside_project_reports_root_remedy_without_launch_or_reservation(
+    native_manager, monkeypatch, tmp_path
+):
+    manager, fixture_runtime = native_manager
+    approved = tmp_path / "approved"
+    outside = tmp_path / "private-unapproved-project"
+    approved.mkdir()
+    outside.mkdir()
+    role = SimpleNamespace(name="default", prompt_text="Synthetic native role", model=None)
+    client = SimpleNamespace(
+        name="agy",
+        adapter="agy",
+        executable=(sys.executable,),
+        allowed_roots=(approved,),
+        native_task=SimpleNamespace(enabled=True, roles={"default": role}),
+    )
+    registry = SimpleNamespace(get_client={"agy": client}.__getitem__)
+    runtime = NativeRuntime(SimpleNamespace(registry=registry, pool=None, _nested=False))
+    monkeypatch.setattr(runtime, "_policy", lambda adapter: AdapterPolicy(adapter, verified=True))
+    monkeypatch.setattr(manager, "runtime", runtime)
+    monkeypatch.delenv("CLINK_DELEGATION_DEPTH", raising=False)
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", lambda *args, **kwargs: pytest.fail("refusal launched"))
+    with pytest.raises(ToolExecutionError) as caught:
+        await server.handle_call_tool("clink", start_arguments(outside, cli_name="agy"))
+    error = json.loads(caught.value.payload)["error"]
+    assert error["code"] == "path_not_allowed"
+    assert "project_dir and context paths" in error["message"]
+    for guidance in ("allowed_roots", "listmodels", "operator-owned CLI manifest", "restart the server"):
+        assert guidance in error["remedy"]
+    for private_path in (str(approved), str(outside)):
+        assert private_path not in caught.value.payload
+    assert not manager._keys
+    assert not manager._records
+    assert not manager._jobs
+    assert not manager._leases
+    assert fixture_runtime.runs == []
 
 
 @pytest.mark.asyncio
