@@ -2,9 +2,15 @@
 
 import json
 import re
+from fnmatch import fnmatchcase
 from pathlib import Path
 
 import pytest
+
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -48,13 +54,33 @@ def test_compose_preserves_stdio_and_restricts_container():
 
 def test_dockerignore_allows_only_packaging_inputs():
     patterns = (ROOT / ".dockerignore").read_text().splitlines()
-    patterns = [line for line in patterns if line and not line.startswith("#")]
+    patterns = [line.strip() for line in patterns if line.strip() and not line.lstrip().startswith("#")]
     assert patterns[0] == "**"
+    # Keep this test scoped to the repository's closed allowlist, rather than
+    # approximating Docker's general pattern language with a partial matcher.
+    assert patterns[-2:] == ["**/__pycache__/", "**/*.py[cod]"]
+    assert all(pattern.startswith("!") for pattern in patterns[1:-2])
     for resource in ("!conf/cli_clients/*.json", "!systemprompts/clink/*.txt", "!LICENSE"):
         assert resource in patterns
     for pattern in patterns:
         if pattern.startswith("!"):
             assert not any(item in pattern for item in (".env", ".venv", "providers", "_models.json", "docs/", ".git"))
+
+    metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    for package, declarations in metadata["tool"]["setuptools"]["package-data"].items():
+        for declaration in declarations:
+            resource_pattern = f"{package.replace('.', '/')}/{declaration}"
+            assert f"!{resource_pattern}" in patterns, f"Package data excluded from Docker context: {resource_pattern}"
+            resources = list(ROOT.glob(resource_pattern))
+            assert resources, f"Package data declaration matches no files: {resource_pattern}"
+            for resource in resources:
+                relative = resource.relative_to(ROOT)
+                assert resource.is_file()
+                assert "__pycache__" not in relative.parts
+                assert not fnmatchcase(resource.name, "*.py[cod]")
+                for parent in relative.parents:
+                    if parent != Path("."):
+                        assert f"!{parent.as_posix()}/" in patterns, f"Docker context excludes parent: {parent}"
 
 
 @pytest.mark.parametrize("filename", ["test.yml", "docker-pr.yml"])

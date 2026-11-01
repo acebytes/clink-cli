@@ -58,6 +58,7 @@ def test_distribution_explicitly_excludes_provider_packages_and_catalogs():
             "resources/codex-0.166.0-models-direct.json",
             "resources/native-claude-2.1.304-admission.json",
             "resources/native-grok-1.0.70-admission.json",
+            "resources/native-agy-1.4.12-admission.json",
             "resources/PROVENANCE.md",
             "resources/CODEX-LICENSE",
             "resources/CODEX-NOTICE",
@@ -84,7 +85,11 @@ def test_pinned_codex_runtime_resource_survives_package_installation():
 
 @pytest.mark.parametrize(
     "adapter,filename",
-    [("claude", "native-claude-2.1.304-admission.json"), ("grok", "native-grok-1.0.70-admission.json")],
+    [
+        ("claude", "native-claude-2.1.304-admission.json"),
+        ("grok", "native-grok-1.0.70-admission.json"),
+        ("agy", "native-agy-1.4.12-admission.json"),
+    ],
 )
 def test_native_admission_is_packaged_and_matches_its_pinned_receipt(adapter, filename):
     from clink.native import _VERIFIED_NATIVE_POLICIES

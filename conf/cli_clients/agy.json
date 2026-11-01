@@ -21,7 +21,7 @@
     }
   },
   "native_task": {
-    "enabled": false,
+    "enabled": true,
     "inherit_env": [],
     "required_env": [],
     "default_model": null,

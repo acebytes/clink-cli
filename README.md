@@ -11,18 +11,20 @@ Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-serv
 | Use | Interface | Current support |
 | --- | --- | --- |
 | Ask for analysis or proposed code | `clink` with omitted action or `action: "consult"` | Defaults to Codex and the `default` role; returns content without writing project files. |
-| Delegate implementation | `clink` actions `start`, `status`, `followup`, `cancel` | Claude Code and Grok native tasks, including configured capabilities and session continuation. |
+| Delegate implementation | `clink` actions `start`, `status`, `followup`, `cancel` | Claude Code, Grok, and Antigravity native tasks, including configured capabilities and session continuation. |
 | Inspect configuration | `version`, `listmodels` | Local discovery without logging in or calling a model. |
 
 | CLI | Consultation | Native tasks |
 | --- | --- | --- |
 | Codex 0.166.0 | Verified text, explicit local images, and structured native search. | Adapter implemented; bundled profile disabled pending separate native live admission. |
 | Claude Code 2.1.304 | Unavailable under the separate advisory policy. | Verified for the recorded binary and launch recipe. |
-| Antigravity (`agy`) | Consultation execution unverified. | Adapter implemented; bundled profile disabled pending native live admission. |
+| Antigravity 1.4.12 (`agy`) | Consultation execution unverified. | Verified for the recorded macOS arm64 binary and native launch recipe. |
 | xAI Grok Build 1.0.70 (`grok`) | Consultation execution unverified. | Verified for the recorded macOS arm64 binary and native launch recipe. |
 | Gemini | Unavailable pending policy verification. | Not implemented. |
 
 Verification is bound to exact binaries and launch recipes. Current live evidence covers the recorded macOS arm64 installations. An installed executable or an authentication session alone does not admit execution; upgrading a CLI can require reverification. See the [Codex admission report](docs/verification/cli-policy/README.md), [Claude native lifecycle results](docs/native-lifecycle-results.md), and [Grok native admission](docs/native-grok-admission-review.md).
+
+Native Codex passed edit/test, configured MCP/subagent, and same-session follow-up checks, but remains disabled: Codex 0.166.0 omits a genuine prelaunch permission refusal from its supported execution output. Clink cannot reliably report that refusal as `permission_needed`. A supported native failure signal or a verified CLI upgrade is required; more permission grants do not repair this output limitation. See the [diagnosis](docs/native-codex-attempt5-diagnosis.md).
 
 ## Install and connect
 
@@ -54,7 +56,7 @@ Ensure the MCP client's `PATH` resolves the CLI, or configure its absolute execu
 
 ## Run the first native task
 
-Call `version` and `listmodels` with empty arguments first. `listmodels` separates advisory `clients` from `native_task_clients`; inspect the admitted Claude or Grok native profile. Discovery reports installation and recorded verification without authenticating or making inference calls. The current binary, recipe, and admission record are checked again at launch, so discovery availability is provisional.
+Call `version` and `listmodels` with empty arguments first. `listmodels` separates advisory `clients` from `native_task_clients`; inspect the admitted Claude, Grok, or Antigravity native profile. Discovery reports installation and recorded verification without authenticating or making inference calls. The current binary, recipe, and admission record are checked again at launch, so discovery availability is provisional.
 
 Use a disposable project with one failing test inside your configured roots. These examples are arguments to the **`clink` MCP tool**, not shell commands. Replace the project path, specify its actual test command in the prompt, and choose a new request key for each new submission:
 
@@ -103,11 +105,11 @@ Redeliver an identical submission with its original request key to retrieve the 
 
 ## What to test now
 
-The recorded Claude and Grok lifecycle checks passed independent review for their exact admitted binaries/recipes. Use either admitted profile for the acceptance pass below in a disposable project. Antigravity and native Codex remain disabled candidates awaiting separate live admission; finding their native profiles in discovery does not make them available.
+The recorded Claude, Grok, and Antigravity lifecycle checks passed independent review for their exact admitted binaries/recipes. Use an admitted profile for the acceptance pass below in a disposable project. To test the newly enabled Antigravity path, change the example's `cli_name` to `agy`. Native Codex remains disabled for the output limitation described above.
 
 | Check | Action and expected result |
 | --- | --- |
-| Connection and discovery | Restart the MCP connection, then call `version` and `listmodels`. Claude and Grok appear under native profiles; Codex remains the consultation backend. Discovery makes no model call. |
+| Connection and discovery | Restart the MCP connection, then call `version` and `listmodels`. Claude, Grok, and Antigravity have admitted native profiles; Codex remains the consultation backend. Discovery makes no model call. |
 | Edit and test | Start the small failing-test task above. Receive a handle promptly, poll to completion, inspect the actual diff, and independently rerun the test successfully. |
 | Same-session follow-up | Submit a small adjustment when `followup_available` is true. Expect the same handle, a new attempt ID, and useful prior native context without resending the conversation. |
 | Duplicate delivery | Repeat an identical start with its original key. Expect the same handle/attempt and `deduplicated: true`, with no repeated work. Change the prompt with that key and expect `request_key_conflict`. |
@@ -157,7 +159,7 @@ Native tasks reserve one writer for overlapping canonical project directories an
 
 ## Native adapters and admission
 
-Claude and Grok have admitted native profiles. Grok admission is limited to its recorded 1.0.70 macOS arm64 binary/recipe, with observed `grok-4.7-build` execution. Antigravity and native Codex have implemented adapters and disabled bundled profiles pending independent live admission. All reuse the same task manager, request-key deduplication, project/session ownership, deadlines, and shared process pool. Setting `native_task.enabled` to `true` cannot replace a genuine installed-version admission record.
+Claude, Grok, and Antigravity have admitted native profiles. Grok and Antigravity admission is limited to their recorded 1.0.70 and 1.4.12 macOS arm64 binaries/recipes. Grok reported `grok-4.7-build`; Antigravity did not report its actual model. Antigravity's [admission review](docs/native-agy-admission-review.md) records all four lifecycle checks, preserves ten total calls, and distinguishes proven child read/lifecycle from unverified returned-token content. Native Codex remains disabled. All reuse the same task manager, request-key deduplication, project/session ownership, deadlines, and shared process pool. Setting `native_task.enabled` to `true` cannot replace a genuine installed-version admission record.
 
 | Adapter | Implemented transport and native follow-up |
 | --- | --- |
@@ -171,7 +173,7 @@ Before another candidate is enabled, genuine verification must establish the rec
 
 ## Development and evidence
 
-See [native adapter results](docs/native-adapters-results.md) for the current shared-runtime checks, Grok admission, and outstanding Agy/Codex native gates.
+See [native adapter results](docs/native-adapters-results.md) for the shared-runtime checks, Grok and Antigravity admission, and the remaining native Codex output limitation.
 
 The first Claude lifecycle's [recorded results](docs/native-lifecycle-results.md) include **1,338 tests and 16 subtests passing**, with zero failures, errors, or skips, under network and unrelated-home-file isolation. That report also records independent review, check-only formatting, package builds, and installed-wheel discovery of all 18 tools. Its original scope does not establish live admission for additional adapters.
 

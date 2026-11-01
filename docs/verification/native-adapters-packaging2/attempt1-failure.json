@@ -1,0 +1,15 @@
+{
+  "attempt": 1,
+  "status": "failed_before_build",
+  "command": [".venv/bin/python", "docs/verification/native-adapters-packaging2/verify.py"],
+  "helper_exit_code": 1,
+  "failed_step": "build",
+  "diagnosis": "The outer execution sandbox prevented macOS sandbox-exec from applying the network-denying Seatbelt profile: sandbox_apply: Operation not permitted.",
+  "build_output": "build.txt",
+  "native_cli_calls": 0,
+  "model_calls": 0,
+  "authentication_probes": 0,
+  "network_calls": 0,
+  "replacement_attempt": 2,
+  "correction": "Run the same offline build/install/discovery helper through approved elevated execution so its explicit network-denying Seatbelt profile can apply. Preserve attempt 1 and use distinct attempt 2 scratch/evidence paths."
+}

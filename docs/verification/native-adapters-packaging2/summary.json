@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "purpose": "Offline packaging and installed-wheel discovery after exact Agy native admission integration",
+  "authoritative_success_receipt": "attempt2/summary.json",
+  "preserved_failure_receipt": "attempt1-failure.json",
+  "source_tree_sha256": "330ec015dea5708160299d576e8c4e5a298d47a05e46a63ed6f7acee17f1c236",
+  "source_stable_during_verification": true,
+  "agy_admission_sha256": "7c845424c38d57c3b5027eb2f91b159bf00d633f3ffa8de772f69f2c49c36381",
+  "wheel": {
+    "path": "test_output/native-adapters-packaging2-attempt2/dist/clink_mcp_server-0.1.0-py3-none-any.whl",
+    "sha256": "67de8153aed632fd58caba3c6c22d2b9b70f5a6bf58c41d4805d922d67fb797a",
+    "members": 118
+  },
+  "sdist": {
+    "path": "test_output/native-adapters-packaging2-attempt2/dist/clink_mcp_server-0.1.0.tar.gz",
+    "sha256": "8fe2631113ee453c5cf0f01ffd2f15b0eb6965669c79ab7150cc4aca5218b05f",
+    "members": 123
+  },
+  "installed_wheel": {
+    "tool_count": 18,
+    "client_count": 5,
+    "native_profile_count": 4,
+    "enabled_verified_native_profiles": ["agy", "claude", "grok"],
+    "disabled_native_profiles": ["codex"],
+    "installed_clis": 0,
+    "available_clients": 0,
+    "native_cli_calls": 0,
+    "model_calls": 0,
+    "authentication_probes": 0,
+    "subprocess_calls": 0,
+    "network_calls": 0
+  },
+  "prior_advisory_and_native_pins_unchanged": true,
+  "package_published": false,
+  "docker_image_built_or_pulled": false,
+  "limitations": [
+    "Managed runtime/build dependencies were reused without fresh dependency resolution.",
+    "Actual MCP tool discovery and local-call handlers ran in-process from installed wheel modules; no separate MCP stdio transport test.",
+    "This verifies packaging and discovery only; native execution admission rests on separate reviewed live evidence."
+  ]
+}

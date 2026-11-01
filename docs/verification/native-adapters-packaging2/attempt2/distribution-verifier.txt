@@ -1,0 +1,20 @@
+[
+  {
+    "artifact": "clink_mcp_server-0.1.0-py3-none-any.whl",
+    "sha256": "67de8153aed632fd58caba3c6c22d2b9b70f5a6bf58c41d4805d922d67fb797a",
+    "members": 118,
+    "resource_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+    "provider_packages_or_catalogs": false,
+    "entrypoint": "clink-mcp-server=server:run",
+    "native_cli_calls": 0
+  },
+  {
+    "artifact": "clink_mcp_server-0.1.0.tar.gz",
+    "sha256": "8fe2631113ee453c5cf0f01ffd2f15b0eb6965669c79ab7150cc4aca5218b05f",
+    "members": 123,
+    "resource_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+    "provider_packages_or_catalogs": false,
+    "entrypoint": "clink-mcp-server=server:run",
+    "native_cli_calls": 0
+  }
+]

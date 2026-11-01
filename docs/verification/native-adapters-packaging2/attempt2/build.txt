@@ -1,0 +1,636 @@
+running egg_info
+creating clink_mcp_server.egg-info
+writing clink_mcp_server.egg-info/PKG-INFO
+writing dependency_links to clink_mcp_server.egg-info/dependency_links.txt
+writing entry points to clink_mcp_server.egg-info/entry_points.txt
+writing requirements to clink_mcp_server.egg-info/requires.txt
+writing top-level names to clink_mcp_server.egg-info/top_level.txt
+writing manifest file 'clink_mcp_server.egg-info/SOURCES.txt'
+reading manifest file 'clink_mcp_server.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+adding license file 'clink/resources/CODEX-LICENSE'
+adding license file 'clink/resources/CODEX-NOTICE'
+writing manifest file 'clink_mcp_server.egg-info/SOURCES.txt'
+running sdist
+running egg_info
+writing clink_mcp_server.egg-info/PKG-INFO
+writing dependency_links to clink_mcp_server.egg-info/dependency_links.txt
+writing entry points to clink_mcp_server.egg-info/entry_points.txt
+writing requirements to clink_mcp_server.egg-info/requires.txt
+writing top-level names to clink_mcp_server.egg-info/top_level.txt
+reading manifest file 'clink_mcp_server.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+adding license file 'clink/resources/CODEX-LICENSE'
+adding license file 'clink/resources/CODEX-NOTICE'
+writing manifest file 'clink_mcp_server.egg-info/SOURCES.txt'
+running check
+creating clink_mcp_server-0.1.0
+creating clink_mcp_server-0.1.0/clink
+creating clink_mcp_server-0.1.0/clink/agents
+creating clink_mcp_server-0.1.0/clink/parsers
+creating clink_mcp_server-0.1.0/clink/resources
+creating clink_mcp_server-0.1.0/clink_mcp_server.egg-info
+creating clink_mcp_server-0.1.0/conf
+creating clink_mcp_server-0.1.0/conf/cli_clients
+creating clink_mcp_server-0.1.0/systemprompts
+creating clink_mcp_server-0.1.0/systemprompts/clink
+creating clink_mcp_server-0.1.0/tools
+creating clink_mcp_server-0.1.0/tools/shared
+creating clink_mcp_server-0.1.0/tools/simple
+creating clink_mcp_server-0.1.0/tools/workflow
+creating clink_mcp_server-0.1.0/utils
+copying files to clink_mcp_server-0.1.0...
+copying LICENSE -> clink_mcp_server-0.1.0
+copying MANIFEST.in -> clink_mcp_server-0.1.0
+copying README.md -> clink_mcp_server-0.1.0
+copying config.py -> clink_mcp_server-0.1.0
+copying pyproject.toml -> clink_mcp_server-0.1.0
+copying requirements.txt -> clink_mcp_server-0.1.0
+copying server.py -> clink_mcp_server-0.1.0
+copying clink/__init__.py -> clink_mcp_server-0.1.0/clink
+copying clink/backend.py -> clink_mcp_server-0.1.0/clink
+copying clink/constants.py -> clink_mcp_server-0.1.0/clink
+copying clink/contracts.py -> clink_mcp_server-0.1.0/clink
+copying clink/files.py -> clink_mcp_server-0.1.0/clink
+copying clink/models.py -> clink_mcp_server-0.1.0/clink
+copying clink/native.py -> clink_mcp_server-0.1.0/clink
+copying clink/native_adapters.py -> clink_mcp_server-0.1.0/clink
+copying clink/native_contracts.py -> clink_mcp_server-0.1.0/clink
+copying clink/native_policy.py -> clink_mcp_server-0.1.0/clink
+copying clink/policy.py -> clink_mcp_server-0.1.0/clink
+copying clink/registry.py -> clink_mcp_server-0.1.0/clink
+copying clink/runner.py -> clink_mcp_server-0.1.0/clink
+copying clink/tasks.py -> clink_mcp_server-0.1.0/clink
+copying clink/agents/__init__.py -> clink_mcp_server-0.1.0/clink/agents
+copying clink/agents/base.py -> clink_mcp_server-0.1.0/clink/agents
+copying clink/agents/claude.py -> clink_mcp_server-0.1.0/clink/agents
+copying clink/agents/codex.py -> clink_mcp_server-0.1.0/clink/agents
+copying clink/agents/gemini.py -> clink_mcp_server-0.1.0/clink/agents
+copying clink/parsers/__init__.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/parsers/agy.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/parsers/agy_native.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/parsers/base.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/parsers/claude.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/parsers/claude_native.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/parsers/codex.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/parsers/codex_native.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/parsers/gemini.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/parsers/grok.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/parsers/grok_native.py -> clink_mcp_server-0.1.0/clink/parsers
+copying clink/resources/CODEX-LICENSE -> clink_mcp_server-0.1.0/clink/resources
+copying clink/resources/CODEX-NOTICE -> clink_mcp_server-0.1.0/clink/resources
+copying clink/resources/PROVENANCE.md -> clink_mcp_server-0.1.0/clink/resources
+copying clink/resources/codex-0.166.0-models-direct.json -> clink_mcp_server-0.1.0/clink/resources
+copying clink/resources/native-agy-1.4.12-admission.json -> clink_mcp_server-0.1.0/clink/resources
+copying clink/resources/native-claude-2.1.304-admission.json -> clink_mcp_server-0.1.0/clink/resources
+copying clink/resources/native-grok-1.0.70-admission.json -> clink_mcp_server-0.1.0/clink/resources
+copying clink_mcp_server.egg-info/PKG-INFO -> clink_mcp_server-0.1.0/clink_mcp_server.egg-info
+copying clink_mcp_server.egg-info/SOURCES.txt -> clink_mcp_server-0.1.0/clink_mcp_server.egg-info
+copying clink_mcp_server.egg-info/dependency_links.txt -> clink_mcp_server-0.1.0/clink_mcp_server.egg-info
+copying clink_mcp_server.egg-info/entry_points.txt -> clink_mcp_server-0.1.0/clink_mcp_server.egg-info
+copying clink_mcp_server.egg-info/requires.txt -> clink_mcp_server-0.1.0/clink_mcp_server.egg-info
+copying clink_mcp_server.egg-info/top_level.txt -> clink_mcp_server-0.1.0/clink_mcp_server.egg-info
+copying conf/__init__.py -> clink_mcp_server-0.1.0/conf
+copying conf/cli_clients/agy.json -> clink_mcp_server-0.1.0/conf/cli_clients
+copying conf/cli_clients/claude.json -> clink_mcp_server-0.1.0/conf/cli_clients
+copying conf/cli_clients/codex.json -> clink_mcp_server-0.1.0/conf/cli_clients
+copying conf/cli_clients/gemini.json -> clink_mcp_server-0.1.0/conf/cli_clients
+copying conf/cli_clients/grok.json -> clink_mcp_server-0.1.0/conf/cli_clients
+copying systemprompts/__init__.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/analyze_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/chat_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/codereview_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/consensus_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/debug_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/docgen_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/generate_code_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/planner_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/precommit_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/refactor_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/secaudit_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/testgen_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/thinkdeep_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/tracer_prompt.py -> clink_mcp_server-0.1.0/systemprompts
+copying systemprompts/clink/codex_codereviewer.txt -> clink_mcp_server-0.1.0/systemprompts/clink
+copying systemprompts/clink/default.txt -> clink_mcp_server-0.1.0/systemprompts/clink
+copying systemprompts/clink/default_codereviewer.txt -> clink_mcp_server-0.1.0/systemprompts/clink
+copying systemprompts/clink/default_planner.txt -> clink_mcp_server-0.1.0/systemprompts/clink
+copying systemprompts/clink/native_codereviewer.txt -> clink_mcp_server-0.1.0/systemprompts/clink
+copying systemprompts/clink/native_default.txt -> clink_mcp_server-0.1.0/systemprompts/clink
+copying systemprompts/clink/native_planner.txt -> clink_mcp_server-0.1.0/systemprompts/clink
+copying tools/__init__.py -> clink_mcp_server-0.1.0/tools
+copying tools/analyze.py -> clink_mcp_server-0.1.0/tools
+copying tools/apilookup.py -> clink_mcp_server-0.1.0/tools
+copying tools/challenge.py -> clink_mcp_server-0.1.0/tools
+copying tools/chat.py -> clink_mcp_server-0.1.0/tools
+copying tools/clink.py -> clink_mcp_server-0.1.0/tools
+copying tools/codereview.py -> clink_mcp_server-0.1.0/tools
+copying tools/consensus.py -> clink_mcp_server-0.1.0/tools
+copying tools/debug.py -> clink_mcp_server-0.1.0/tools
+copying tools/docgen.py -> clink_mcp_server-0.1.0/tools
+copying tools/listmodels.py -> clink_mcp_server-0.1.0/tools
+copying tools/models.py -> clink_mcp_server-0.1.0/tools
+copying tools/planner.py -> clink_mcp_server-0.1.0/tools
+copying tools/precommit.py -> clink_mcp_server-0.1.0/tools
+copying tools/refactor.py -> clink_mcp_server-0.1.0/tools
+copying tools/secaudit.py -> clink_mcp_server-0.1.0/tools
+copying tools/testgen.py -> clink_mcp_server-0.1.0/tools
+copying tools/thinkdeep.py -> clink_mcp_server-0.1.0/tools
+copying tools/tracer.py -> clink_mcp_server-0.1.0/tools
+copying tools/version.py -> clink_mcp_server-0.1.0/tools
+copying tools/shared/__init__.py -> clink_mcp_server-0.1.0/tools/shared
+copying tools/shared/base_models.py -> clink_mcp_server-0.1.0/tools/shared
+copying tools/shared/base_tool.py -> clink_mcp_server-0.1.0/tools/shared
+copying tools/shared/exceptions.py -> clink_mcp_server-0.1.0/tools/shared
+copying tools/shared/schema_builders.py -> clink_mcp_server-0.1.0/tools/shared
+copying tools/simple/__init__.py -> clink_mcp_server-0.1.0/tools/simple
+copying tools/simple/base.py -> clink_mcp_server-0.1.0/tools/simple
+copying tools/workflow/__init__.py -> clink_mcp_server-0.1.0/tools/workflow
+copying tools/workflow/base.py -> clink_mcp_server-0.1.0/tools/workflow
+copying tools/workflow/schema_builders.py -> clink_mcp_server-0.1.0/tools/workflow
+copying tools/workflow/workflow_mixin.py -> clink_mcp_server-0.1.0/tools/workflow
+copying utils/__init__.py -> clink_mcp_server-0.1.0/utils
+copying utils/call_state.py -> clink_mcp_server-0.1.0/utils
+copying utils/client_info.py -> clink_mcp_server-0.1.0/utils
+copying utils/consensus_manifest.py -> clink_mcp_server-0.1.0/utils
+copying utils/conversation_memory.py -> clink_mcp_server-0.1.0/utils
+copying utils/env.py -> clink_mcp_server-0.1.0/utils
+copying utils/file_types.py -> clink_mcp_server-0.1.0/utils
+copying utils/file_utils.py -> clink_mcp_server-0.1.0/utils
+copying utils/image_utils.py -> clink_mcp_server-0.1.0/utils
+copying utils/security_config.py -> clink_mcp_server-0.1.0/utils
+copying utils/storage_backend.py -> clink_mcp_server-0.1.0/utils
+copying utils/token_utils.py -> clink_mcp_server-0.1.0/utils
+Writing clink_mcp_server-0.1.0/setup.cfg
+Creating tar archive
+removing 'clink_mcp_server-0.1.0' (and everything under it)
+running egg_info
+writing clink_mcp_server.egg-info/PKG-INFO
+writing dependency_links to clink_mcp_server.egg-info/dependency_links.txt
+writing entry points to clink_mcp_server.egg-info/entry_points.txt
+writing requirements to clink_mcp_server.egg-info/requires.txt
+writing top-level names to clink_mcp_server.egg-info/top_level.txt
+reading manifest file 'clink_mcp_server.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+adding license file 'clink/resources/CODEX-LICENSE'
+adding license file 'clink/resources/CODEX-NOTICE'
+writing manifest file 'clink_mcp_server.egg-info/SOURCES.txt'
+running bdist_wheel
+running build
+running build_py
+creating build/lib
+copying server.py -> build/lib
+copying config.py -> build/lib
+creating build/lib/systemprompts
+copying systemprompts/analyze_prompt.py -> build/lib/systemprompts
+copying systemprompts/codereview_prompt.py -> build/lib/systemprompts
+copying systemprompts/testgen_prompt.py -> build/lib/systemprompts
+copying systemprompts/tracer_prompt.py -> build/lib/systemprompts
+copying systemprompts/__init__.py -> build/lib/systemprompts
+copying systemprompts/debug_prompt.py -> build/lib/systemprompts
+copying systemprompts/thinkdeep_prompt.py -> build/lib/systemprompts
+copying systemprompts/refactor_prompt.py -> build/lib/systemprompts
+copying systemprompts/planner_prompt.py -> build/lib/systemprompts
+copying systemprompts/docgen_prompt.py -> build/lib/systemprompts
+copying systemprompts/secaudit_prompt.py -> build/lib/systemprompts
+copying systemprompts/generate_code_prompt.py -> build/lib/systemprompts
+copying systemprompts/consensus_prompt.py -> build/lib/systemprompts
+copying systemprompts/chat_prompt.py -> build/lib/systemprompts
+copying systemprompts/precommit_prompt.py -> build/lib/systemprompts
+creating build/lib/clink
+copying clink/files.py -> build/lib/clink
+copying clink/runner.py -> build/lib/clink
+copying clink/backend.py -> build/lib/clink
+copying clink/tasks.py -> build/lib/clink
+copying clink/models.py -> build/lib/clink
+copying clink/registry.py -> build/lib/clink
+copying clink/native_policy.py -> build/lib/clink
+copying clink/constants.py -> build/lib/clink
+copying clink/policy.py -> build/lib/clink
+copying clink/__init__.py -> build/lib/clink
+copying clink/native.py -> build/lib/clink
+copying clink/native_adapters.py -> build/lib/clink
+copying clink/contracts.py -> build/lib/clink
+copying clink/native_contracts.py -> build/lib/clink
+creating build/lib/tools
+copying tools/planner.py -> build/lib/tools
+copying tools/version.py -> build/lib/tools
+copying tools/codereview.py -> build/lib/tools
+copying tools/refactor.py -> build/lib/tools
+copying tools/models.py -> build/lib/tools
+copying tools/apilookup.py -> build/lib/tools
+copying tools/__init__.py -> build/lib/tools
+copying tools/secaudit.py -> build/lib/tools
+copying tools/docgen.py -> build/lib/tools
+copying tools/testgen.py -> build/lib/tools
+copying tools/chat.py -> build/lib/tools
+copying tools/listmodels.py -> build/lib/tools
+copying tools/consensus.py -> build/lib/tools
+copying tools/debug.py -> build/lib/tools
+copying tools/precommit.py -> build/lib/tools
+copying tools/thinkdeep.py -> build/lib/tools
+copying tools/challenge.py -> build/lib/tools
+copying tools/tracer.py -> build/lib/tools
+copying tools/analyze.py -> build/lib/tools
+copying tools/clink.py -> build/lib/tools
+creating build/lib/utils
+copying utils/image_utils.py -> build/lib/utils
+copying utils/consensus_manifest.py -> build/lib/utils
+copying utils/env.py -> build/lib/utils
+copying utils/client_info.py -> build/lib/utils
+copying utils/file_types.py -> build/lib/utils
+copying utils/call_state.py -> build/lib/utils
+copying utils/__init__.py -> build/lib/utils
+copying utils/file_utils.py -> build/lib/utils
+copying utils/token_utils.py -> build/lib/utils
+copying utils/security_config.py -> build/lib/utils
+copying utils/storage_backend.py -> build/lib/utils
+copying utils/conversation_memory.py -> build/lib/utils
+creating build/lib/conf
+copying conf/__init__.py -> build/lib/conf
+creating build/lib/clink/parsers
+copying clink/parsers/agy.py -> build/lib/clink/parsers
+copying clink/parsers/codex.py -> build/lib/clink/parsers
+copying clink/parsers/grok_native.py -> build/lib/clink/parsers
+copying clink/parsers/claude.py -> build/lib/clink/parsers
+copying clink/parsers/codex_native.py -> build/lib/clink/parsers
+copying clink/parsers/grok.py -> build/lib/clink/parsers
+copying clink/parsers/__init__.py -> build/lib/clink/parsers
+copying clink/parsers/gemini.py -> build/lib/clink/parsers
+copying clink/parsers/agy_native.py -> build/lib/clink/parsers
+copying clink/parsers/claude_native.py -> build/lib/clink/parsers
+copying clink/parsers/base.py -> build/lib/clink/parsers
+creating build/lib/clink/agents
+copying clink/agents/codex.py -> build/lib/clink/agents
+copying clink/agents/claude.py -> build/lib/clink/agents
+copying clink/agents/__init__.py -> build/lib/clink/agents
+copying clink/agents/gemini.py -> build/lib/clink/agents
+copying clink/agents/base.py -> build/lib/clink/agents
+creating build/lib/tools/shared
+copying tools/shared/schema_builders.py -> build/lib/tools/shared
+copying tools/shared/base_models.py -> build/lib/tools/shared
+copying tools/shared/__init__.py -> build/lib/tools/shared
+copying tools/shared/base_tool.py -> build/lib/tools/shared
+copying tools/shared/exceptions.py -> build/lib/tools/shared
+creating build/lib/tools/simple
+copying tools/simple/__init__.py -> build/lib/tools/simple
+copying tools/simple/base.py -> build/lib/tools/simple
+creating build/lib/tools/workflow
+copying tools/workflow/schema_builders.py -> build/lib/tools/workflow
+copying tools/workflow/workflow_mixin.py -> build/lib/tools/workflow
+copying tools/workflow/__init__.py -> build/lib/tools/workflow
+copying tools/workflow/base.py -> build/lib/tools/workflow
+creating build/lib/systemprompts/clink
+copying systemprompts/clink/default_codereviewer.txt -> build/lib/systemprompts/clink
+copying systemprompts/clink/codex_codereviewer.txt -> build/lib/systemprompts/clink
+copying systemprompts/clink/native_planner.txt -> build/lib/systemprompts/clink
+copying systemprompts/clink/default.txt -> build/lib/systemprompts/clink
+copying systemprompts/clink/native_default.txt -> build/lib/systemprompts/clink
+copying systemprompts/clink/default_planner.txt -> build/lib/systemprompts/clink
+copying systemprompts/clink/native_codereviewer.txt -> build/lib/systemprompts/clink
+creating build/lib/clink/resources
+copying clink/resources/codex-0.166.0-models-direct.json -> build/lib/clink/resources
+copying clink/resources/native-claude-2.1.304-admission.json -> build/lib/clink/resources
+copying clink/resources/native-grok-1.0.70-admission.json -> build/lib/clink/resources
+copying clink/resources/native-agy-1.4.12-admission.json -> build/lib/clink/resources
+copying clink/resources/PROVENANCE.md -> build/lib/clink/resources
+copying clink/resources/CODEX-LICENSE -> build/lib/clink/resources
+copying clink/resources/CODEX-NOTICE -> build/lib/clink/resources
+creating build/lib/conf/cli_clients
+copying conf/cli_clients/grok.json -> build/lib/conf/cli_clients
+copying conf/cli_clients/agy.json -> build/lib/conf/cli_clients
+copying conf/cli_clients/gemini.json -> build/lib/conf/cli_clients
+copying conf/cli_clients/claude.json -> build/lib/conf/cli_clients
+copying conf/cli_clients/codex.json -> build/lib/conf/cli_clients
+installing to build/bdist.macosx-15.0-arm64/wheel
+running install
+running install_lib
+creating build/bdist.macosx-15.0-arm64/wheel
+creating build/bdist.macosx-15.0-arm64/wheel/systemprompts
+creating build/bdist.macosx-15.0-arm64/wheel/systemprompts/clink
+copying build/lib/systemprompts/clink/default_codereviewer.txt -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts/clink
+copying build/lib/systemprompts/clink/codex_codereviewer.txt -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts/clink
+copying build/lib/systemprompts/clink/native_planner.txt -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts/clink
+copying build/lib/systemprompts/clink/default.txt -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts/clink
+copying build/lib/systemprompts/clink/native_default.txt -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts/clink
+copying build/lib/systemprompts/clink/default_planner.txt -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts/clink
+copying build/lib/systemprompts/clink/native_codereviewer.txt -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts/clink
+copying build/lib/systemprompts/analyze_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/codereview_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/testgen_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/tracer_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/debug_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/thinkdeep_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/refactor_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/planner_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/docgen_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/secaudit_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/generate_code_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/consensus_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/chat_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+copying build/lib/systemprompts/precommit_prompt.py -> build/bdist.macosx-15.0-arm64/wheel/./systemprompts
+creating build/bdist.macosx-15.0-arm64/wheel/clink
+copying build/lib/clink/files.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/clink/runner.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+creating build/bdist.macosx-15.0-arm64/wheel/clink/parsers
+copying build/lib/clink/parsers/agy.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/parsers/codex.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/parsers/grok_native.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/parsers/claude.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/parsers/codex_native.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/parsers/grok.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/parsers/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/parsers/gemini.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/parsers/agy_native.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/parsers/claude_native.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/parsers/base.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/parsers
+copying build/lib/clink/backend.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/clink/tasks.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/clink/models.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/clink/registry.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/clink/native_policy.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+creating build/bdist.macosx-15.0-arm64/wheel/clink/resources
+copying build/lib/clink/resources/native-agy-1.4.12-admission.json -> build/bdist.macosx-15.0-arm64/wheel/./clink/resources
+copying build/lib/clink/resources/PROVENANCE.md -> build/bdist.macosx-15.0-arm64/wheel/./clink/resources
+copying build/lib/clink/resources/CODEX-NOTICE -> build/bdist.macosx-15.0-arm64/wheel/./clink/resources
+copying build/lib/clink/resources/native-grok-1.0.70-admission.json -> build/bdist.macosx-15.0-arm64/wheel/./clink/resources
+copying build/lib/clink/resources/native-claude-2.1.304-admission.json -> build/bdist.macosx-15.0-arm64/wheel/./clink/resources
+copying build/lib/clink/resources/codex-0.166.0-models-direct.json -> build/bdist.macosx-15.0-arm64/wheel/./clink/resources
+copying build/lib/clink/resources/CODEX-LICENSE -> build/bdist.macosx-15.0-arm64/wheel/./clink/resources
+copying build/lib/clink/constants.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/clink/policy.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/clink/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+creating build/bdist.macosx-15.0-arm64/wheel/clink/agents
+copying build/lib/clink/agents/codex.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/agents
+copying build/lib/clink/agents/claude.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/agents
+copying build/lib/clink/agents/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/agents
+copying build/lib/clink/agents/gemini.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/agents
+copying build/lib/clink/agents/base.py -> build/bdist.macosx-15.0-arm64/wheel/./clink/agents
+copying build/lib/clink/native.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/clink/native_adapters.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/clink/contracts.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/clink/native_contracts.py -> build/bdist.macosx-15.0-arm64/wheel/./clink
+copying build/lib/server.py -> build/bdist.macosx-15.0-arm64/wheel/.
+creating build/bdist.macosx-15.0-arm64/wheel/tools
+copying build/lib/tools/planner.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/version.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/codereview.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/refactor.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/models.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/apilookup.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/secaudit.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+creating build/bdist.macosx-15.0-arm64/wheel/tools/shared
+copying build/lib/tools/shared/schema_builders.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/shared
+copying build/lib/tools/shared/base_models.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/shared
+copying build/lib/tools/shared/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/shared
+copying build/lib/tools/shared/base_tool.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/shared
+copying build/lib/tools/shared/exceptions.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/shared
+copying build/lib/tools/docgen.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+creating build/bdist.macosx-15.0-arm64/wheel/tools/simple
+copying build/lib/tools/simple/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/simple
+copying build/lib/tools/simple/base.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/simple
+copying build/lib/tools/testgen.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/chat.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/listmodels.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/consensus.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/debug.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+creating build/bdist.macosx-15.0-arm64/wheel/tools/workflow
+copying build/lib/tools/workflow/schema_builders.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/workflow
+copying build/lib/tools/workflow/workflow_mixin.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/workflow
+copying build/lib/tools/workflow/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/workflow
+copying build/lib/tools/workflow/base.py -> build/bdist.macosx-15.0-arm64/wheel/./tools/workflow
+copying build/lib/tools/precommit.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/thinkdeep.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/challenge.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/tracer.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/analyze.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/tools/clink.py -> build/bdist.macosx-15.0-arm64/wheel/./tools
+copying build/lib/config.py -> build/bdist.macosx-15.0-arm64/wheel/.
+creating build/bdist.macosx-15.0-arm64/wheel/utils
+copying build/lib/utils/image_utils.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/consensus_manifest.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/env.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/client_info.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/file_types.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/call_state.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/file_utils.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/token_utils.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/security_config.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/storage_backend.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+copying build/lib/utils/conversation_memory.py -> build/bdist.macosx-15.0-arm64/wheel/./utils
+creating build/bdist.macosx-15.0-arm64/wheel/conf
+copying build/lib/conf/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./conf
+creating build/bdist.macosx-15.0-arm64/wheel/conf/cli_clients
+copying build/lib/conf/cli_clients/grok.json -> build/bdist.macosx-15.0-arm64/wheel/./conf/cli_clients
+copying build/lib/conf/cli_clients/agy.json -> build/bdist.macosx-15.0-arm64/wheel/./conf/cli_clients
+copying build/lib/conf/cli_clients/gemini.json -> build/bdist.macosx-15.0-arm64/wheel/./conf/cli_clients
+copying build/lib/conf/cli_clients/claude.json -> build/bdist.macosx-15.0-arm64/wheel/./conf/cli_clients
+copying build/lib/conf/cli_clients/codex.json -> build/bdist.macosx-15.0-arm64/wheel/./conf/cli_clients
+running install_egg_info
+running egg_info
+writing clink_mcp_server.egg-info/PKG-INFO
+writing dependency_links to clink_mcp_server.egg-info/dependency_links.txt
+writing entry points to clink_mcp_server.egg-info/entry_points.txt
+writing requirements to clink_mcp_server.egg-info/requires.txt
+writing top-level names to clink_mcp_server.egg-info/top_level.txt
+reading manifest file 'clink_mcp_server.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+adding license file 'clink/resources/CODEX-LICENSE'
+adding license file 'clink/resources/CODEX-NOTICE'
+writing manifest file 'clink_mcp_server.egg-info/SOURCES.txt'
+Copying clink_mcp_server.egg-info to build/bdist.macosx-15.0-arm64/wheel/./clink_mcp_server-0.1.0-py3.12.egg-info
+running install_scripts
+creating build/bdist.macosx-15.0-arm64/wheel/clink_mcp_server-0.1.0.dist-info/WHEEL
+creating '/Users/d/Tools/clink-mcp-server/test_output/native-adapters-packaging2-attempt2/dist/.tmp-dz1cnutr/clink_mcp_server-0.1.0-py3-none-any.whl' and adding 'build/bdist.macosx-15.0-arm64/wheel' to it
+adding 'config.py'
+adding 'server.py'
+adding 'clink/__init__.py'
+adding 'clink/backend.py'
+adding 'clink/constants.py'
+adding 'clink/contracts.py'
+adding 'clink/files.py'
+adding 'clink/models.py'
+adding 'clink/native.py'
+adding 'clink/native_adapters.py'
+adding 'clink/native_contracts.py'
+adding 'clink/native_policy.py'
+adding 'clink/policy.py'
+adding 'clink/registry.py'
+adding 'clink/runner.py'
+adding 'clink/tasks.py'
+adding 'clink/agents/__init__.py'
+adding 'clink/agents/base.py'
+adding 'clink/agents/claude.py'
+adding 'clink/agents/codex.py'
+adding 'clink/agents/gemini.py'
+adding 'clink/parsers/__init__.py'
+adding 'clink/parsers/agy.py'
+adding 'clink/parsers/agy_native.py'
+adding 'clink/parsers/base.py'
+adding 'clink/parsers/claude.py'
+adding 'clink/parsers/claude_native.py'
+adding 'clink/parsers/codex.py'
+adding 'clink/parsers/codex_native.py'
+adding 'clink/parsers/gemini.py'
+adding 'clink/parsers/grok.py'
+adding 'clink/parsers/grok_native.py'
+adding 'clink/resources/CODEX-LICENSE'
+adding 'clink/resources/CODEX-NOTICE'
+adding 'clink/resources/PROVENANCE.md'
+adding 'clink/resources/codex-0.166.0-models-direct.json'
+adding 'clink/resources/native-agy-1.4.12-admission.json'
+adding 'clink/resources/native-claude-2.1.304-admission.json'
+adding 'clink/resources/native-grok-1.0.70-admission.json'
+adding 'clink_mcp_server-0.1.0.dist-info/licenses/LICENSE'
+adding 'clink_mcp_server-0.1.0.dist-info/licenses/clink/resources/CODEX-LICENSE'
+adding 'clink_mcp_server-0.1.0.dist-info/licenses/clink/resources/CODEX-NOTICE'
+adding 'conf/__init__.py'
+adding 'conf/cli_clients/agy.json'
+adding 'conf/cli_clients/claude.json'
+adding 'conf/cli_clients/codex.json'
+adding 'conf/cli_clients/gemini.json'
+adding 'conf/cli_clients/grok.json'
+adding 'systemprompts/__init__.py'
+adding 'systemprompts/analyze_prompt.py'
+adding 'systemprompts/chat_prompt.py'
+adding 'systemprompts/codereview_prompt.py'
+adding 'systemprompts/consensus_prompt.py'
+adding 'systemprompts/debug_prompt.py'
+adding 'systemprompts/docgen_prompt.py'
+adding 'systemprompts/generate_code_prompt.py'
+adding 'systemprompts/planner_prompt.py'
+adding 'systemprompts/precommit_prompt.py'
+adding 'systemprompts/refactor_prompt.py'
+adding 'systemprompts/secaudit_prompt.py'
+adding 'systemprompts/testgen_prompt.py'
+adding 'systemprompts/thinkdeep_prompt.py'
+adding 'systemprompts/tracer_prompt.py'
+adding 'systemprompts/clink/codex_codereviewer.txt'
+adding 'systemprompts/clink/default.txt'
+adding 'systemprompts/clink/default_codereviewer.txt'
+adding 'systemprompts/clink/default_planner.txt'
+adding 'systemprompts/clink/native_codereviewer.txt'
+adding 'systemprompts/clink/native_default.txt'
+adding 'systemprompts/clink/native_planner.txt'
+adding 'tools/__init__.py'
+adding 'tools/analyze.py'
+adding 'tools/apilookup.py'
+adding 'tools/challenge.py'
+adding 'tools/chat.py'
+adding 'tools/clink.py'
+adding 'tools/codereview.py'
+adding 'tools/consensus.py'
+adding 'tools/debug.py'
+adding 'tools/docgen.py'
+adding 'tools/listmodels.py'
+adding 'tools/models.py'
+adding 'tools/planner.py'
+adding 'tools/precommit.py'
+adding 'tools/refactor.py'
+adding 'tools/secaudit.py'
+adding 'tools/testgen.py'
+adding 'tools/thinkdeep.py'
+adding 'tools/tracer.py'
+adding 'tools/version.py'
+adding 'tools/shared/__init__.py'
+adding 'tools/shared/base_models.py'
+adding 'tools/shared/base_tool.py'
+adding 'tools/shared/exceptions.py'
+adding 'tools/shared/schema_builders.py'
+adding 'tools/simple/__init__.py'
+adding 'tools/simple/base.py'
+adding 'tools/workflow/__init__.py'
+adding 'tools/workflow/base.py'
+adding 'tools/workflow/schema_builders.py'
+adding 'tools/workflow/workflow_mixin.py'
+adding 'utils/__init__.py'
+adding 'utils/call_state.py'
+adding 'utils/client_info.py'
+adding 'utils/consensus_manifest.py'
+adding 'utils/conversation_memory.py'
+adding 'utils/env.py'
+adding 'utils/file_types.py'
+adding 'utils/file_utils.py'
+adding 'utils/image_utils.py'
+adding 'utils/security_config.py'
+adding 'utils/storage_backend.py'
+adding 'utils/token_utils.py'
+adding 'clink_mcp_server-0.1.0.dist-info/METADATA'
+adding 'clink_mcp_server-0.1.0.dist-info/WHEEL'
+adding 'clink_mcp_server-0.1.0.dist-info/entry_points.txt'
+adding 'clink_mcp_server-0.1.0.dist-info/top_level.txt'
+adding 'clink_mcp_server-0.1.0.dist-info/RECORD'
+removing build/bdist.macosx-15.0-arm64/wheel
+Successfully built clink_mcp_server-0.1.0.tar.gz and clink_mcp_server-0.1.0-py3-none-any.whl
+* Getting build dependencies for sdist...
+no previously-included directories found matching 'providers'
+no previously-included directories found matching 'tests'
+no previously-included directories found matching 'simulator_tests'
+no previously-included directories found matching 'test_simulation_files'
+no previously-included directories found matching 'docs'
+no previously-included directories found matching 'logs'
+no previously-included directories found matching '.github'
+no previously-included directories found matching '.agents'
+no previously-included directories found matching '.codex'
+warning: no previously-included files matching '*_models.json' found under directory 'conf'
+warning: no previously-included files found matching 'CLAUDE.local.md'
+warning: no previously-included files matching '.env*' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '.DS_Store' found anywhere in distribution
+* Building sdist...
+no previously-included directories found matching 'providers'
+no previously-included directories found matching 'tests'
+no previously-included directories found matching 'simulator_tests'
+no previously-included directories found matching 'test_simulation_files'
+no previously-included directories found matching 'docs'
+no previously-included directories found matching 'logs'
+no previously-included directories found matching '.github'
+no previously-included directories found matching '.agents'
+no previously-included directories found matching '.codex'
+warning: no previously-included files matching '*_models.json' found under directory 'conf'
+warning: no previously-included files found matching 'CLAUDE.local.md'
+warning: no previously-included files matching '.env*' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '.DS_Store' found anywhere in distribution
+* Building wheel from sdist
+* Getting build dependencies for wheel...
+no previously-included directories found matching 'providers'
+no previously-included directories found matching 'tests'
+no previously-included directories found matching 'simulator_tests'
+no previously-included directories found matching 'test_simulation_files'
+no previously-included directories found matching 'docs'
+no previously-included directories found matching 'logs'
+no previously-included directories found matching '.github'
+no previously-included directories found matching '.agents'
+no previously-included directories found matching '.codex'
+warning: no previously-included files matching '*_models.json' found under directory 'conf'
+warning: no previously-included files found matching 'CLAUDE.local.md'
+warning: no previously-included files matching '.env*' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '.DS_Store' found anywhere in distribution
+* Building wheel...
+warning: build_py: byte-compiling is disabled, skipping.
+
+warning: install_lib: byte-compiling is disabled, skipping.
+
+no previously-included directories found matching 'providers'
+no previously-included directories found matching 'tests'
+no previously-included directories found matching 'simulator_tests'
+no previously-included directories found matching 'test_simulation_files'
+no previously-included directories found matching 'docs'
+no previously-included directories found matching 'logs'
+no previously-included directories found matching '.github'
+no previously-included directories found matching '.agents'
+no previously-included directories found matching '.codex'
+warning: no previously-included files matching '*_models.json' found under directory 'conf'
+warning: no previously-included files found matching 'CLAUDE.local.md'
+warning: no previously-included files matching '.env*' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '.DS_Store' found anywhere in distribution

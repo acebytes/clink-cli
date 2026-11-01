@@ -1,0 +1,41 @@
+{
+  "scope": "configured_local_native_discovery",
+  "timestamp_utc": "2026-11-01T14:17:37.881562+00:00",
+  "native_profiles": [
+    {
+      "cli_name": "agy",
+      "enabled": true,
+      "installed": true,
+      "available": true,
+      "verification_status": "verified_native_lifecycle"
+    },
+    {
+      "cli_name": "claude",
+      "enabled": true,
+      "installed": true,
+      "available": true,
+      "verification_status": "verified_native_lifecycle"
+    },
+    {
+      "cli_name": "codex",
+      "enabled": false,
+      "installed": true,
+      "available": false,
+      "verification_status": "unverified"
+    },
+    {
+      "cli_name": "grok",
+      "enabled": true,
+      "installed": true,
+      "available": true,
+      "verification_status": "verified_native_lifecycle"
+    }
+  ],
+  "observed_calls": {
+    "subprocess": 0,
+    "network": 0
+  },
+  "availability_provisional_until_launch_revalidation": true,
+  "authentication_probed": false,
+  "environment_values_recorded": false
+}

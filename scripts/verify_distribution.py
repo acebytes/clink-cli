@@ -17,6 +17,7 @@ REQUIRED_RESOURCES = (
     CATALOG,
     "clink/resources/native-claude-2.1.304-admission.json",
     "clink/resources/native-grok-1.0.70-admission.json",
+    "clink/resources/native-agy-1.4.12-admission.json",
     "clink/resources/CODEX-LICENSE",
     "clink/resources/CODEX-NOTICE",
     "clink/resources/PROVENANCE.md",

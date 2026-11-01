@@ -1,0 +1,145 @@
+{
+  "advisory_admissions": [
+    "codex"
+  ],
+  "authentication_probes": 0,
+  "catalog_sha256": "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12",
+  "client_count": 5,
+  "clients": [
+    {
+      "adapter": "agy",
+      "authentication": "unknown",
+      "available": false,
+      "cli_name": "agy",
+      "verification_status": "unverified"
+    },
+    {
+      "adapter": "claude",
+      "authentication": "unknown",
+      "available": false,
+      "cli_name": "claude",
+      "verification_status": "unverified"
+    },
+    {
+      "adapter": "codex",
+      "authentication": "unknown",
+      "available": false,
+      "cli_name": "codex",
+      "verification_status": "verified"
+    },
+    {
+      "adapter": "gemini",
+      "authentication": "unknown",
+      "available": false,
+      "cli_name": "gemini",
+      "verification_status": "unverified"
+    },
+    {
+      "adapter": "grok",
+      "authentication": "unknown",
+      "available": false,
+      "cli_name": "grok",
+      "verification_status": "unverified"
+    }
+  ],
+  "forbidden_audit_events": [],
+  "installed_clis": 0,
+  "local_calls": [
+    "listmodels",
+    "version"
+  ],
+  "model_calls": 0,
+  "modules_from_installed_wheel": [
+    "server",
+    "clink.native",
+    "clink.native_adapters",
+    "clink.parsers.grok_native",
+    "clink.parsers.agy_native",
+    "clink.parsers.codex_native"
+  ],
+  "native_admissions": {
+    "agy": {
+      "evidence_sha256": "7c845424c38d57c3b5027eb2f91b159bf00d633f3ffa8de772f69f2c49c36381",
+      "executable_sha256": "34423fc9b0af3841e7646aa72a2d40ffeab8218b22d1cb99eac7355f9eba31e3",
+      "recipe_sha256": "da740ab92a35b480344a4dc07a517681dfbd5768f18ea01fbb65074337659a4f",
+      "resource": "clink/resources/native-agy-1.4.12-admission.json",
+      "version": "1.4.12"
+    },
+    "claude": {
+      "evidence_sha256": "ed3cd9bf385ac533b8f24c06cc14a431c0dbac0100f1eb23f24953eab6ca4de2",
+      "executable_sha256": "b9ac5374839f14abf3f1f45610637c332b5daee5ce0d1634726cef87aab78e6a",
+      "recipe_sha256": "de885baaadfdf5810321e32992c7e961f3a360dda90b903ab98ffc243564885e",
+      "resource": "clink/resources/native-claude-2.1.304-admission.json",
+      "version": "2.1.304 (Claude Code)"
+    },
+    "grok": {
+      "evidence_sha256": "809f49238544d7fa317110c403952ba3fa791b9627066fa51d256ad16fc46ec1",
+      "executable_sha256": "5c8a688251bf61e35370b828b6a353b0a20fcc3f64000de8a91d426039f29cec",
+      "recipe_sha256": "b2e236f6490d3d00b51dac2a634c8b4f845b649ad9386c6510c6ae902f730cd3",
+      "resource": "clink/resources/native-grok-1.0.70-admission.json",
+      "version": "grok 1.0.70 (f50904eaee6c)"
+    }
+  },
+  "native_cli_calls": 0,
+  "native_profile_count": 4,
+  "native_profiles": {
+    "agy": {
+      "authentication": "unknown",
+      "available": false,
+      "enabled": true,
+      "installed": false,
+      "verification_status": "verified_native_lifecycle"
+    },
+    "claude": {
+      "authentication": "unknown",
+      "available": false,
+      "enabled": true,
+      "installed": false,
+      "verification_status": "verified_native_lifecycle"
+    },
+    "codex": {
+      "authentication": "unknown",
+      "available": false,
+      "enabled": false,
+      "installed": false,
+      "verification_status": "unverified"
+    },
+    "grok": {
+      "authentication": "unknown",
+      "available": false,
+      "enabled": true,
+      "installed": false,
+      "verification_status": "verified_native_lifecycle"
+    }
+  },
+  "network_calls": 0,
+  "platform": [
+    "Darwin",
+    "arm64"
+  ],
+  "provider_credentials_supplied": false,
+  "runtime": "installed_wheel_target_with_managed_dependencies",
+  "status": "passed",
+  "subprocess_calls": 0,
+  "tool_count": 18,
+  "tools": [
+    "analyze",
+    "apilookup",
+    "challenge",
+    "chat",
+    "clink",
+    "codereview",
+    "consensus",
+    "debug",
+    "docgen",
+    "listmodels",
+    "planner",
+    "precommit",
+    "refactor",
+    "secaudit",
+    "testgen",
+    "thinkdeep",
+    "tracer",
+    "version"
+  ]
+}

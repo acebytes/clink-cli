@@ -1,0 +1,746 @@
+{
+  "accepted_checks": {
+    "cancel": {
+      "observations": {
+        "agy_fixture_cancel_command_approval_emitted": true,
+        "descendant_identity_observed": true,
+        "emergency_cleanup_requested": false,
+        "observed_mutation": true,
+        "pool_released": true,
+        "project_leases_released": true,
+        "synthetic_child_ready_observed": true,
+        "synthetic_descendant_absent": true
+      },
+      "ordinal": 10,
+      "passed": true,
+      "process_group_absent_after_cleanup": true,
+      "source_receipt": "docs/verification/native-agy-1.4.12-attempt10.json",
+      "source_sha256": "a76cd876e3a5843f37d7113a227f26d3b618bc5c74fea4a892365010ba6efd8b",
+      "state": "cancelled"
+    },
+    "edit": {
+      "native_denial_diagnostic": {
+        "denials": [],
+        "parser_valid": true,
+        "permission_denial_count": 0,
+        "schema_version": 1,
+        "tool_error_count": 0,
+        "truncated": false
+      },
+      "observations": {
+        "agy_fixture_arithmetic_edit_approval_emitted": true,
+        "agy_fixture_mcp_canary_approval_emitted": true,
+        "agy_fixture_subagent_approval_emitted": true,
+        "agy_fixture_test_command_approval_emitted": true,
+        "agy_session_start_observed": true,
+        "fixture_changed": true,
+        "fixture_subagent_canary_matches": false,
+        "fixture_subagent_read_observed": true,
+        "fixture_subagent_started": true,
+        "fixture_subagent_stopped": true,
+        "fixture_subagent_token_return_verified": false,
+        "independent_final_test_passed": true,
+        "mcp_environment_canary_matches": true,
+        "native_test_failure_observed": true,
+        "native_test_success_observed": true,
+        "protected_file_untouched": true,
+        "scope_hook_observed": true
+      },
+      "ordinal": 7,
+      "passed": true,
+      "process_group_absent_after_cleanup": true,
+      "source_receipt": "docs/verification/native-agy-1.4.12-attempt10.json",
+      "source_sha256": "a76cd876e3a5843f37d7113a227f26d3b618bc5c74fea4a892365010ba6efd8b",
+      "state": "completed"
+    },
+    "followup": {
+      "native_denial_diagnostic": {
+        "denials": [],
+        "parser_valid": true,
+        "permission_denial_count": 0,
+        "schema_version": 1,
+        "tool_error_count": 0,
+        "truncated": false
+      },
+      "observations": {
+        "context_token_matches": true,
+        "same_native_session": true
+      },
+      "ordinal": 8,
+      "passed": true,
+      "process_group_absent_after_cleanup": true,
+      "source_receipt": "docs/verification/native-agy-1.4.12-attempt10.json",
+      "source_sha256": "a76cd876e3a5843f37d7113a227f26d3b618bc5c74fea4a892365010ba6efd8b",
+      "state": "completed"
+    },
+    "permission": {
+      "native_denial_diagnostic": {
+        "denials": [
+          {
+            "fixture_operation": "unknown",
+            "reason_code": "agy_denied_action",
+            "signature": "agy_1_4_12_denied_action",
+            "tool_category": "unknown"
+          }
+        ],
+        "parser_valid": true,
+        "permission_denial_count": 1,
+        "schema_version": 1,
+        "tool_error_count": 1,
+        "truncated": false
+      },
+      "observations": {
+        "permission_hook_observed": true,
+        "protected_file_untouched": true
+      },
+      "ordinal": 9,
+      "passed": true,
+      "process_group_absent_after_cleanup": true,
+      "source_receipt": "docs/verification/native-agy-1.4.12-attempt10.json",
+      "source_sha256": "a76cd876e3a5843f37d7113a227f26d3b618bc5c74fea4a892365010ba6efd8b",
+      "state": "permission_needed"
+    }
+  },
+  "actual_model": null,
+  "actual_model_origin": "unknown",
+  "actual_models": [],
+  "adapter": "agy",
+  "admission": {
+    "basis": "One complete original attempt10 invocation passed all four checks; earlier six submissions remain failed history. Parent recorded independent evidence GO from native_execution_review; production integration has a separate review gate.",
+    "independent_review": "evidence_passed",
+    "production_integration": "Requires separate independent implementation review of policy, manifest and packaged-resource activation; this receipt records accepted lifecycle evidence."
+  },
+  "attempt_history": [
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "cancellation_requested": false,
+      "check": "edit",
+      "exit_status": 0,
+      "followup_available": true,
+      "ordinal": 1,
+      "outcome": "Native permission refusal before required capabilities; retained failed edit gate.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "result_unavailable": false,
+      "spawn_observed": true,
+      "state": "permission_needed",
+      "stderr_bytes": 303,
+      "stdout_bytes": 4587
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "cancellation_requested": false,
+      "check": "edit",
+      "error_code": "parse_error",
+      "exit_status": 0,
+      "followup_available": false,
+      "ordinal": 2,
+      "outcome": "Zero native exit with parse_error/uncertain; exact historical stream mismatch was not retained or established.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "result_unavailable": false,
+      "spawn_observed": true,
+      "state": "uncertain",
+      "stderr_bytes": 303,
+      "stdout_bytes": 4314
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "cancellation_requested": false,
+      "check": "edit",
+      "exit_status": 0,
+      "followup_available": true,
+      "ordinal": 3,
+      "outcome": "Native permission refusal; required edit/capabilities were not observed.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "result_unavailable": false,
+      "spawn_observed": true,
+      "state": "permission_needed",
+      "stderr_bytes": 303,
+      "stdout_bytes": 3242
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "cancellation_requested": false,
+      "check": "edit",
+      "exit_status": 0,
+      "followup_available": true,
+      "ordinal": 4,
+      "outcome": "Native permission refusal with exact command/wait but absent classic Cwd and unexpected arguments; installed alternate contract subsequently investigated.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "result_unavailable": false,
+      "spawn_observed": true,
+      "state": "permission_needed",
+      "stderr_bytes": 303,
+      "stdout_bytes": 4317
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "cancellation_requested": false,
+      "check": "edit",
+      "exit_status": 0,
+      "followup_available": true,
+      "ordinal": 5,
+      "outcome": "Exact test-command approval and failing arithmetic test observed, then native MCP refusal; bounded later exact-session diagnosis identifies the generic synthetic canary dispatcher.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "result_unavailable": false,
+      "spawn_observed": true,
+      "state": "permission_needed",
+      "stderr_bytes": 295,
+      "stdout_bytes": 5066
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "cancellation_requested": false,
+      "check": "edit",
+      "exit_status": 0,
+      "followup_available": true,
+      "native_denial_diagnostic": {
+        "denials": [],
+        "parser_valid": true,
+        "permission_denial_count": 0,
+        "schema_version": 1,
+        "tool_error_count": 0,
+        "truncated": false
+      },
+      "ordinal": 6,
+      "outcome": "Native edit/test and MCP succeeded; retained failed child lifecycle observer gate. Later bounded diagnosis establishes child execution/read and installed reason mismatch, with historical hook fullyIdle still unknown.",
+      "passed": false,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "result_unavailable": false,
+      "spawn_observed": true,
+      "state": "completed",
+      "stderr_bytes": 0,
+      "stdout_bytes": 25691
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "cancellation_requested": false,
+      "check": "edit",
+      "exit_status": 0,
+      "followup_available": true,
+      "native_denial_diagnostic": {
+        "denials": [],
+        "parser_valid": true,
+        "permission_denial_count": 0,
+        "schema_version": 1,
+        "tool_error_count": 0,
+        "truncated": false
+      },
+      "ordinal": 7,
+      "outcome": "Accepted single-invocation edit/test, configured hook and inherited-environment MCP, plus named child start/exact read/strict idle stop.",
+      "passed": true,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "result_unavailable": false,
+      "spawn_observed": true,
+      "state": "completed",
+      "stderr_bytes": 0,
+      "stdout_bytes": 22369
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "cancellation_requested": false,
+      "check": "followup",
+      "exit_status": 0,
+      "followup_available": true,
+      "native_denial_diagnostic": {
+        "denials": [],
+        "parser_valid": true,
+        "permission_denial_count": 0,
+        "schema_version": 1,
+        "tool_error_count": 0,
+        "truncated": false
+      },
+      "ordinal": 8,
+      "outcome": "Accepted explicit native continuation with the same private session and context token.",
+      "passed": true,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "result_unavailable": false,
+      "spawn_observed": true,
+      "state": "completed",
+      "stderr_bytes": 0,
+      "stdout_bytes": 2731
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "cancellation_requested": false,
+      "check": "permission",
+      "exit_status": 0,
+      "followup_available": true,
+      "native_denial_diagnostic": {
+        "denials": [
+          {
+            "fixture_operation": "unknown",
+            "reason_code": "agy_denied_action",
+            "signature": "agy_1_4_12_denied_action",
+            "tool_category": "unknown"
+          }
+        ],
+        "parser_valid": true,
+        "permission_denial_count": 1,
+        "schema_version": 1,
+        "tool_error_count": 1,
+        "truncated": false
+      },
+      "ordinal": 9,
+      "outcome": "Accepted native permission_needed refusal with exact protected-target hook observed and target untouched; zero exit did not imply completion.",
+      "passed": true,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "exited",
+      "result_unavailable": false,
+      "spawn_observed": true,
+      "state": "permission_needed",
+      "stderr_bytes": 309,
+      "stdout_bytes": 3496
+    },
+    {
+      "actual_model": null,
+      "actual_model_origin": "unknown",
+      "cancellation_requested": true,
+      "check": "cancel",
+      "followup_available": false,
+      "ordinal": 10,
+      "outcome": "Accepted cancellation after mutation and exact synthetic child readiness; identified child and CLI process group absent, pool and project leases released; no emergency cleanup.",
+      "passed": true,
+      "possible_partial_effects": true,
+      "process_group_absent_after_cleanup": true,
+      "reason": "cancelled",
+      "result_unavailable": true,
+      "spawn_observed": true,
+      "state": "cancelled"
+    }
+  ],
+  "budget": {
+    "automatic_retries": 0,
+    "consumed_submission_allowance": 10,
+    "internal_native_subagent_submissions": "not counted by top-level process allowance; native turns, tools and internal model requests may exceed ten",
+    "new_native_invocations_for_admission": 0,
+    "submission_allowance_total": 10,
+    "top_level_native_invocations": 10
+  },
+  "evidence_pairs": [
+    {
+      "fixture_config_sha256": "c1b1faee61c27e45006c815eed633c0b577912ddc420f9427e24812c0a34ccb2",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-agy-1.4.12-attempt1-prepare.preflight.json",
+      "prior_evidence_sha256": null,
+      "project_root_sha256": "8823af3dc1b402a310a7e97f64b5359a050400b0951c304256b359e145aa2b9d",
+      "receipt": "docs/verification/native-agy-1.4.12-attempt1-prepare.json",
+      "submission_allowance_total": 4,
+      "submissions_consumed_total": 0,
+      "submissions_in_this_invocation": 0
+    },
+    {
+      "fixture_config_sha256": "c1b1faee61c27e45006c815eed633c0b577912ddc420f9427e24812c0a34ccb2",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-agy-1.4.12-attempt2.preflight.json",
+      "prior_evidence_sha256": "a8e8b10b64b5063d577400e90778c495fe6cedc2e3302a51dbd3c9e0cb2ba994",
+      "project_root_sha256": "8823af3dc1b402a310a7e97f64b5359a050400b0951c304256b359e145aa2b9d",
+      "receipt": "docs/verification/native-agy-1.4.12-attempt2.json",
+      "submission_allowance_total": 4,
+      "submissions_consumed_total": 1,
+      "submissions_in_this_invocation": 1
+    },
+    {
+      "fixture_config_sha256": "5621985cd78c6e33115fe8a327e27ec537a326c286ccd773e466130954e7bdbc",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-agy-1.4.12-attempt3.preflight.json",
+      "prior_evidence_sha256": "8b2eccd5b61b3d94e571125cc321d1f7a2385aee3dc61578a72d289a60cfbda5",
+      "project_root_sha256": "c43f75b4ff2b296b01fd3b537ce7ec3941b919970d077e7f5299f76874723ee0",
+      "receipt": "docs/verification/native-agy-1.4.12-attempt3.json",
+      "submission_allowance_total": 5,
+      "submissions_consumed_total": 2,
+      "submissions_in_this_invocation": 1
+    },
+    {
+      "fixture_config_sha256": "5a420ad88cc1b330fb888f5770cad4f7f54b2ac70445b5f8903087ccdf0eb45b",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-agy-1.4.12-attempt4.preflight.json",
+      "prior_evidence_sha256": "26cca974a945b0f2a57257d7e7d0c9e864617d49e621a164780cf25a7b4f8f2a",
+      "project_root_sha256": "a8df869c257c0d60ec9550ec93a036f8bebabb8033f7fe2ac9ce2c085f86732e",
+      "receipt": "docs/verification/native-agy-1.4.12-attempt4.json",
+      "submission_allowance_total": 5,
+      "submissions_consumed_total": 3,
+      "submissions_in_this_invocation": 1
+    },
+    {
+      "fixture_config_sha256": "ea46f4aa064e07e7584b49b0915f20e371d9101a63cd45345e961303d03b40cb",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-agy-1.4.12-attempt5.preflight.json",
+      "prior_evidence_sha256": "b37f82ec293f0c3373d8cc184f17be388f44054f58eebcff52999e908b7684e0",
+      "project_root_sha256": "fa5b2dc3e285bccd88029f593709d6762b0e09fbd877e614cd44835f3a280926",
+      "receipt": "docs/verification/native-agy-1.4.12-attempt5.json",
+      "submission_allowance_total": 5,
+      "submissions_consumed_total": 4,
+      "submissions_in_this_invocation": 1
+    },
+    {
+      "fixture_config_sha256": "253d9ec3a5a8818293d45af3c1de62984d67e64581efdc855d9e9ed83c2aa2fc",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-agy-1.4.12-attempt6.preflight.json",
+      "prior_evidence_sha256": "bb76e3eb3336e00d63fb079cbf76b1ab8fc7584d59c9e24dd80ab80e8a56d39b",
+      "project_root_sha256": "f9a51dd043cc7ddcaff54ff68ba960fa932f02e527eca0b34ff09c777091acfb",
+      "receipt": "docs/verification/native-agy-1.4.12-attempt6.json",
+      "submission_allowance_total": 8,
+      "submissions_consumed_total": 5,
+      "submissions_in_this_invocation": 1
+    },
+    {
+      "fixture_config_sha256": "0dbfb61351f226e43caf9abaf03135e09ed3a4f8c9b900332cc676d2b89c2700",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-agy-1.4.12-attempt7-prepare.preflight.json",
+      "prior_evidence_sha256": "516f45532bfc2ac26ffd9000d0fe1de1d35376ae497b0db5e2d8a1a36414eef7",
+      "project_root_sha256": "91514e80e7aaa7b67b60bef2f2a01d5f80b82ebc9914b423f9453121f41ba499",
+      "receipt": "docs/verification/native-agy-1.4.12-attempt7-prepare.json",
+      "submission_allowance_total": 9,
+      "submissions_consumed_total": 5,
+      "submissions_in_this_invocation": 0
+    },
+    {
+      "fixture_config_sha256": "0dbfb61351f226e43caf9abaf03135e09ed3a4f8c9b900332cc676d2b89c2700",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-agy-1.4.12-attempt8.preflight.json",
+      "prior_evidence_sha256": "c362b387e3093243ca192b5dbc1c998597ddce7cc70a976b7f68bf76e9cb3cc6",
+      "project_root_sha256": "91514e80e7aaa7b67b60bef2f2a01d5f80b82ebc9914b423f9453121f41ba499",
+      "receipt": "docs/verification/native-agy-1.4.12-attempt8.json",
+      "submission_allowance_total": 9,
+      "submissions_consumed_total": 6,
+      "submissions_in_this_invocation": 1
+    },
+    {
+      "fixture_config_sha256": "eda36dcbcfe4ca26b08941a507f31ee5392a433b88a58e783b75dd8cf208a216",
+      "original_native_verified": false,
+      "preflight": "docs/verification/native-agy-1.4.12-attempt9-prepare.preflight.json",
+      "prior_evidence_sha256": "e00d4fdc944a547ddc5fc13be8f481b93d68693b90f1c5921e527efca2444c49",
+      "project_root_sha256": "9f46c8818684d7c7b8f5e204ec491435c273b99d53dc923919a5b76dcf0715fb",
+      "receipt": "docs/verification/native-agy-1.4.12-attempt9-prepare.json",
+      "submission_allowance_total": 10,
+      "submissions_consumed_total": 6,
+      "submissions_in_this_invocation": 0
+    },
+    {
+      "fixture_config_sha256": "eda36dcbcfe4ca26b08941a507f31ee5392a433b88a58e783b75dd8cf208a216",
+      "original_native_verified": true,
+      "preflight": "docs/verification/native-agy-1.4.12-attempt10.preflight.json",
+      "prior_evidence_sha256": "b66c55ae6361557920ebb56cea46e1ef96a538fac2225a1fdeede85bafb44c42",
+      "project_root_sha256": "9f46c8818684d7c7b8f5e204ec491435c273b99d53dc923919a5b76dcf0715fb",
+      "receipt": "docs/verification/native-agy-1.4.12-attempt10.json",
+      "submission_allowance_total": 10,
+      "submissions_consumed_total": 10,
+      "submissions_in_this_invocation": 4
+    }
+  ],
+  "executable_sha256": "34423fc9b0af3841e7646aa72a2d40ffeab8218b22d1cb99eac7355f9eba31e3",
+  "gate_source": {
+    "accepted_ordinals": [
+      7,
+      8,
+      9,
+      10
+    ],
+    "all_four_checks_same_invocation": true,
+    "gates": [],
+    "native_verified": true,
+    "path": "docs/verification/native-agy-1.4.12-attempt10.json",
+    "preflight": "docs/verification/native-agy-1.4.12-attempt10.preflight.json",
+    "preflight_sha256": "a683bd71ae0ffdd416f65d7987da59d142f8c1d642ed5a8a3ebdfc47958d8ebf",
+    "sha256": "a76cd876e3a5843f37d7113a227f26d3b618bc5c74fea4a892365010ba6efd8b"
+  },
+  "history_integrity": {
+    "all_accepted_gates_from_single_final_invocation": true,
+    "all_original_ledger_prefixes_preserved": true,
+    "earlier_failed_submissions_not_reclassified": true,
+    "same_version_binary_and_recipe": true,
+    "source_receipt_and_preflight_links_rechecked": true,
+    "source_receipts_unchanged": true
+  },
+  "limitations": [
+    "Actual execution model identity is unknown.",
+    "Named child start, exact successful canary read and strict fullyIdle/NO_TOOL_CALL/no-error stop are observed; returned token/final response content is not verified, and fixture_subagent_canary_matches remains false.",
+    "Native approval hooks were limited to exact synthetic commands, arithmetic edit, synthetic MCP canary and configured child; native user Ask/Deny rules retained priority. This evidence does not grant production approvals.",
+    "Earlier parse_error/uncertain submission remains an undiagnosed historical stream mismatch; later source/parser corrections are not proof of its exact cause.",
+    "Native approved roots constrain supplied project/context, not every capability available under native policy.",
+    "Cancellation proves the CLI process group and identified synthetic child absent; detached or remote work is not proven absent. Cancellation does not roll back prior effects.",
+    "Continuation/session bindings are volatile; restart loses server-side mappings. Native CLIs retain their own sessions."
+  ],
+  "model_limitation": "The original ledger reports actual_model null/unknown. Native configured model selection was retained; no independent execution-model identity is established.",
+  "observed_version": "1.4.12",
+  "platform": {
+    "context_capture": {
+      "binary_cpu_subtype": 0,
+      "binary_cpu_type": 16777228,
+      "binary_format": "Mach-O 64-bit little-endian",
+      "binary_machine": "arm64",
+      "binary_sha256_rechecked": true,
+      "captured_after_lifecycle_verification": true,
+      "host_machine": "arm64",
+      "host_system": "Darwin",
+      "native_cli_executed_for_context_capture": false,
+      "original_receipt_architecture_field_present": false,
+      "timestamp_utc": "2026-11-01T14:14:00.227996+00:00"
+    },
+    "machine": "arm64",
+    "scope": "exact recorded binary; other platforms require separate verification",
+    "system": "Darwin"
+  },
+  "privacy_and_configuration": {
+    "bounded_later_private_artifact_diagnoses": "Only exact synthetic attempt6 and attempt8 native records inspected read-only; durable notes retain fixed comparisons/source references only. No unrelated native sessions or credentials inspected.",
+    "final_fixture_configuration_intact_after_shutdown": true,
+    "host_configuration_changed": false,
+    "native_home_and_auth_preserved": true,
+    "pool_running_after_final_shutdown": 0,
+    "project_leases_after_final_shutdown": 0,
+    "source_receipts_report_no_raw_output_prompts_native_ids_or_environment_values": true
+  },
+  "profile": "native_task_v1",
+  "prompt_transport": {
+    "channel": "stdin_single_user_ndjson",
+    "input_envelope": {
+      "event": "user",
+      "message": {
+        "content": "@CLINK_NATIVE_PROMPT@"
+      }
+    },
+    "native_resume": "--conversation with one exact private session identity",
+    "stdin": "one bounded user event followed by EOF"
+  },
+  "recipe_sha256": "da740ab92a35b480344a4dc07a517681dfbd5768f18ea01fbb65074337659a4f",
+  "requested_model": null,
+  "schema_version": 1,
+  "source_binding": {
+    "binding_limit": "Original receipts/preflights bind binary, version, recipe, project and synthetic fixture configuration; they do not record historical per-file runtime source hashes. Current source snapshots are captured later and compared with the conductor-reported live checkpoint. They do not retroactively attest unrecorded historical source bytes.",
+    "conductor_reported_live_source_commit": "270d1e527eeca4d5ec0a8a0d782b70bb848bb653",
+    "core_files_before_production_admission_integration": [
+      {
+        "matches_source_commit": true,
+        "path": "clink/native.py",
+        "sha256": "83137ac3cec3dbd88cd574b11bdbf2b138782ab5a7ae27eea2c7c15819cfc2fd"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/native_adapters.py",
+        "sha256": "7a3daf32369e0492a69d307333441e8c27e936ffd0b156322fc5e7294a8d251f"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/native_policy.py",
+        "sha256": "ec295f6450d53d1362dd87a51cb5551942f26868b48b5e88a252c8cefe4234c4"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/native_contracts.py",
+        "sha256": "4b62bee1167e4026526f34b4890b3aee81948644031679691c4535990ee9745c"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/runner.py",
+        "sha256": "7fe67698f57ec1539ad3751f25dd0300166361d5d0b9159946836937f76a7632"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/tasks.py",
+        "sha256": "bd334096aed8af27d7f2813a07594b99d53805f3ea13deff33a31237f93b593b"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/registry.py",
+        "sha256": "fe8319eef076370c05c09f506bd703ae096ee9b386e19743991595f230feaf66"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/backend.py",
+        "sha256": "4a058f61ad58d227e06729fa8444762171566e7af72ac43b9aa0fb6ac2f9f11d"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "clink/parsers/agy_native.py",
+        "sha256": "53090e591d518f18a65a9c4dfbf39d975e9072f65c9a1e687f56cf4e0489960e"
+      }
+    ],
+    "production_integration_delta": "After evidence acceptance: exact Agy native policy/receipt/platform binding, enabled bundled Agy native profile, focused rejection tests, and separately owned package resources. Existing launch recipes, parser, runner, task manager, advisory Codex policy and Claude/Grok receipts remain unchanged.",
+    "snapshot_captured_after_lifecycle_verification": true,
+    "snapshot_utc": "2026-11-01T14:14:00.227996+00:00",
+    "verifier_files": [
+      {
+        "matches_source_commit": true,
+        "path": "scripts/verify_native_adapters.py",
+        "sha256": "0feb0760d95cf3eceec57269155be47be2753723b3e470f88d0c8210787d5b6b"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "scripts/native_agy_fixture.py",
+        "sha256": "86f595502f4660bcd5788d09cbb1861da9d344e1026205ca67921001456cf761"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "scripts/native_mcp_fixture.py",
+        "sha256": "ebdbd420bf04cac3ca1cb2ee55126f695ada85aba51dbed1633a56d7cd26713a"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "scripts/native_diagnostics.py",
+        "sha256": "4606c24e5075c2fe168c50288673438bd185f83abb2d4b3c23b6b50038df52c1"
+      },
+      {
+        "matches_source_commit": true,
+        "path": "scripts/native_fixture_trust.py",
+        "sha256": "b6d1ce2b948ac273257c7e99571f70330341540550c7b0a45b14a03b73f0625a"
+      }
+    ]
+  },
+  "source_evidence": [
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-agy-1.4.12-attempt1-prepare.json",
+      "sha256": "a8e8b10b64b5063d577400e90778c495fe6cedc2e3302a51dbd3c9e0cb2ba994"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-agy-1.4.12-attempt1-prepare.preflight.json",
+      "sha256": "7ac97b329edb05463610788ad03d91d94adb6b790f55aef69b0d28db02f9ffd9"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-agy-1.4.12-attempt2.json",
+      "sha256": "8b2eccd5b61b3d94e571125cc321d1f7a2385aee3dc61578a72d289a60cfbda5"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-agy-1.4.12-attempt2.preflight.json",
+      "sha256": "7ac97b329edb05463610788ad03d91d94adb6b790f55aef69b0d28db02f9ffd9"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-agy-1.4.12-attempt3.json",
+      "sha256": "26cca974a945b0f2a57257d7e7d0c9e864617d49e621a164780cf25a7b4f8f2a"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-agy-1.4.12-attempt3.preflight.json",
+      "sha256": "4d6808841a8d1fee3de6b7f91a2cb68cd0642688da1f1aa0a54d0457b510e993"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-agy-1.4.12-attempt4.json",
+      "sha256": "b37f82ec293f0c3373d8cc184f17be388f44054f58eebcff52999e908b7684e0"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-agy-1.4.12-attempt4.preflight.json",
+      "sha256": "f7076989711e3b7c2cc5019bb71dcca620ecd6339da42e71d91d1731451dc869"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-agy-1.4.12-attempt5.json",
+      "sha256": "bb76e3eb3336e00d63fb079cbf76b1ab8fc7584d59c9e24dd80ab80e8a56d39b"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-agy-1.4.12-attempt5.preflight.json",
+      "sha256": "55ab18de6974592e0a0987b071cd44729bc77492b453374128dd072c89725132"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-agy-1.4.12-attempt6.json",
+      "sha256": "516f45532bfc2ac26ffd9000d0fe1de1d35376ae497b0db5e2d8a1a36414eef7"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-agy-1.4.12-attempt6.preflight.json",
+      "sha256": "1c86d035e53698d1e71d32f0c1e9fa1107c97c733292811e6e2d58882236470b"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-agy-1.4.12-attempt7-prepare.json",
+      "sha256": "c362b387e3093243ca192b5dbc1c998597ddce7cc70a976b7f68bf76e9cb3cc6"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-agy-1.4.12-attempt7-prepare.preflight.json",
+      "sha256": "2ca6a3805f10b7dff687a9c3d60038b99e117b3c51abb476f28111af963f4436"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-agy-1.4.12-attempt8.json",
+      "sha256": "e00d4fdc944a547ddc5fc13be8f481b93d68693b90f1c5921e527efca2444c49"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-agy-1.4.12-attempt8.preflight.json",
+      "sha256": "2ca6a3805f10b7dff687a9c3d60038b99e117b3c51abb476f28111af963f4436"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-agy-1.4.12-attempt9-prepare.json",
+      "sha256": "b66c55ae6361557920ebb56cea46e1ef96a538fac2225a1fdeede85bafb44c42"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-agy-1.4.12-attempt9-prepare.preflight.json",
+      "sha256": "a683bd71ae0ffdd416f65d7987da59d142f8c1d642ed5a8a3ebdfc47958d8ebf"
+    },
+    {
+      "kind": "original_receipt",
+      "path": "docs/verification/native-agy-1.4.12-attempt10.json",
+      "sha256": "a76cd876e3a5843f37d7113a227f26d3b618bc5c74fea4a892365010ba6efd8b"
+    },
+    {
+      "kind": "original_preflight",
+      "path": "docs/verification/native-agy-1.4.12-attempt10.preflight.json",
+      "sha256": "a683bd71ae0ffdd416f65d7987da59d142f8c1d642ed5a8a3ebdfc47958d8ebf"
+    }
+  ],
+  "status": "accepted_native_lifecycle",
+  "supporting_evidence": [
+    {
+      "path": "docs/verification/native-adapters-candidate13/result.json",
+      "sha256": "3658f11a7676347300d5eb73e71e0b6f5e470c8cd72bee3fe10cdc34a9fed30b"
+    },
+    {
+      "path": "docs/verification/native-adapters-candidate13/junit.xml",
+      "sha256": "84eec93214d051dc86b581121319562ab8688f57853b26c0d446e3173536eb3c"
+    },
+    {
+      "path": "docs/native-agy-installed-contract.md",
+      "sha256": "0fbde01b5a32f10590e252e349850c0dfc8a466bbe8a5cb112a4d0290770f7f9"
+    },
+    {
+      "path": "docs/native-agy-attempt6-diagnosis.md",
+      "sha256": "706311c3c0e4ac512abb1a20d6bab9e3b911aae2315e33bcbcce98372b5fd9b1"
+    },
+    {
+      "path": "docs/native-agy-attempt8-diagnosis.md",
+      "sha256": "43f4db7c65fe7741a2594a99badaf5f31e85d4782f8ae9fcc6544ed02987958d"
+    }
+  ],
+  "verification_path": "Actual ClinkRegistry, CLIBackend, NativeRuntime, shared ProcessPool and NativeTaskManager start/status/followup/cancel. Candidate admission override remained harness-only during original verification; production integration occurs separately after independent evidence acceptance."
+}

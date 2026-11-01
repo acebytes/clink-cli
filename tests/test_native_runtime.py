@@ -306,57 +306,61 @@ def test_registry_native_profiles_require_explicit_native_role_prompts(tmp_path,
     "system,machine,admitted",
     [("Darwin", "arm64", True), ("Darwin", "x86_64", False), ("Linux", "aarch64", False)],
 )
-def test_production_grok_admission_requires_exact_verified_platform(monkeypatch, system, machine, admitted):
+@pytest.mark.parametrize("adapter,version", [("grok", "grok 1.0.70 (f50904eaee6c)"), ("agy", "1.4.12")])
+def test_production_native_admission_requires_exact_verified_platform(
+    monkeypatch, system, machine, admitted, adapter, version
+):
     monkeypatch.setattr(native.platform, "system", lambda: system)
     monkeypatch.setattr(native.platform, "machine", lambda: machine)
-    policy = NativeRuntime._policy("grok")
+    policy = NativeRuntime._policy(adapter)
     assert policy.verified is admitted
     if admitted:
-        assert policy.version == "grok 1.0.70 (f50904eaee6c)"
-        assert policy.recipe_sha256 == native_recipe_digest("grok")
+        assert policy.version == version
+        assert policy.recipe_sha256 == native_recipe_digest(adapter)
     else:
         assert policy.verification_status == "platform_unverified"
     assert NativeRuntime._policy("claude").verified
-    assert not NativeRuntime._policy("agy").verified
     assert not NativeRuntime._policy("codex").verified
 
 
-@pytest.fixture
-def production_grok_runtime(tmp_path, monkeypatch):
+@pytest.fixture(params=["grok", "agy"])
+def production_admitted_runtime(tmp_path, monkeypatch, request):
     """Use the real admission with a deliberately different, never-launched executable."""
-    receipt = Path(native.__file__).parent / "resources/native-grok-1.0.70-admission.json"
-    packaged = tmp_path / "clink/resources/native-grok-1.0.70-admission.json"
+    adapter = request.param
+    evidence = native._VERIFIED_NATIVE_POLICIES[adapter].evidence
+    receipt = Path(native.__file__).resolve().parent.parent / evidence
+    packaged = tmp_path / evidence
     packaged.parent.mkdir(parents=True)
     packaged.write_bytes(receipt.read_bytes())
-    executable = tmp_path / "fake-grok"
+    executable = tmp_path / f"fake-{adapter}"
     executable.write_text("#!" + sys.executable + "\nraise RuntimeError('must never launch')\n")
     executable.chmod(0o755)
     role = ResolvedCLIRole(name="default", prompt_path=tmp_path / "role.txt", prompt_text="Native role")
     client = ResolvedCLIClient(
-        name="grok",
-        adapter="grok",
+        name=adapter,
+        adapter=adapter,
         executable=(str(executable),),
         working_dir=tmp_path,
         allowed_roots=(tmp_path,),
         timeout_seconds=10,
-        parser="grok_json",
+        parser="grok_json" if adapter == "grok" else "agy_json",
         roles={"default": role},
         native_task=ResolvedNativeTask(enabled=True, roles={"default": role}),
     )
-    registry = SimpleNamespace(get_client={"grok": client}.__getitem__, list_clients=lambda: ["grok"])
+    registry = SimpleNamespace(get_client={adapter: client}.__getitem__, list_clients=lambda: [adapter])
     monkeypatch.setattr(native, "__file__", str(tmp_path / "clink/native.py"))
     monkeypatch.setattr(native.platform, "system", lambda: "Darwin")
     monkeypatch.setattr(native.platform, "machine", lambda: "arm64")
     monkeypatch.delenv("CLINK_DELEGATION_DEPTH", raising=False)
-    monkeypatch.setenv("CLINK_DEFAULT_CLI", "grok")
-    return NativeRuntime(CLIBackend(registry)), packaged
+    monkeypatch.setenv("CLINK_DEFAULT_CLI", adapter)
+    return NativeRuntime(CLIBackend(registry)), packaged, adapter
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("changed", ["binary", "receipt", "recipe", "platform"])
-async def test_production_grok_binding_changes_fail_before_spawn(production_grok_runtime, monkeypatch, changed):
-    runtime, receipt = production_grok_runtime
-    context = runtime.prepare("grok", None, None, str(receipt.parents[2]))
+async def test_production_native_binding_changes_fail_before_spawn(production_admitted_runtime, monkeypatch, changed):
+    runtime, receipt, adapter = production_admitted_runtime
+    context = runtime.prepare(adapter, None, None, str(receipt.parents[2]))
     runtime._validate_admission(context)
     if changed == "receipt":
         receipt.write_text("changed")
@@ -372,8 +376,8 @@ async def test_production_grok_binding_changes_fail_before_spawn(production_grok
     assert not runtime.pool._children
 
 
-def test_bundled_grok_native_profile_enabled_without_admitting_other_candidates():
+def test_bundled_admitted_native_profiles_enabled_without_admitting_codex():
     directory = Path(__file__).resolve().parent.parent / "conf/cli_clients"
     for adapter in ("claude", "grok", "agy", "codex"):
         config = json.loads((directory / f"{adapter}.json").read_text())
-        assert config["native_task"]["enabled"] is (adapter in {"claude", "grok"})
+        assert config["native_task"]["enabled"] is (adapter in {"claude", "grok", "agy"})

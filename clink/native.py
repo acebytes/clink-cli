@@ -52,8 +52,21 @@ _VERIFIED_NATIVE_POLICIES: dict[str, AdapterPolicy] = {
         executable_sha256="5c8a688251bf61e35370b828b6a353b0a20fcc3f64000de8a91d426039f29cec",
         recipe_sha256="b2e236f6490d3d00b51dac2a634c8b4f845b649ad9386c6510c6ae902f730cd3",
     ),
+    "agy": AdapterPolicy(
+        adapter="agy",
+        version="1.4.12",
+        verified=True,
+        verification_status="verified_native_lifecycle",
+        file_references=True,
+        repository_instructions="native user/project instructions retained",
+        read_scope="native permissions; approved roots constrain supplied context only",
+        evidence="clink/resources/native-agy-1.4.12-admission.json",
+        evidence_sha256="7c845424c38d57c3b5027eb2f91b159bf00d633f3ffa8de772f69f2c49c36381",
+        executable_sha256="34423fc9b0af3841e7646aa72a2d40ffeab8218b22d1cb99eac7355f9eba31e3",
+        recipe_sha256="da740ab92a35b480344a4dc07a517681dfbd5768f18ea01fbb65074337659a4f",
+    ),
 }
-_VERIFIED_NATIVE_PLATFORMS = {"grok": ("Darwin", "arm64")}
+_VERIFIED_NATIVE_PLATFORMS = {"grok": ("Darwin", "arm64"), "agy": ("Darwin", "arm64")}
 
 
 class NativeRuntime:

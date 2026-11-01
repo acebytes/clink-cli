@@ -8,13 +8,15 @@ Genuine attempts 2/3 cover file edits, native failing-then-passing tests, hooks,
 
 **Grok 1.0.70 native tasks are also admitted** for the exact macOS arm64 binary and recipe in the [Grok admission record](verification/native-grok-1.0.70-admission.json), with observed `grok-4.7-build` execution. Its composite evidence covers native edit/test, hooks, specialist, MCP/environment, follow-up, permission refusal and cancellation after mutation. All nine top-level invocations remain recorded. Ordinal8 returned `uncertain/native_failed` with unknown cause; ordinal9 passed without establishing a diagnosed or repaired production defect. See the [compatibility and limitation review](native-grok-admission-review.md).
 
-Antigravity (`agy`) and Codex native adapters are implemented with separate launch, transport, session, and parser contracts. Their bundled native profiles remain disabled and have no production native admission. The existing Codex admission verifies its restrictive consultation profile only. Enabling `native_task` or finding an executable does not admit native execution. See [configuration](cli-configuration.md#native-task-profile) and [admission scope](clink-cli-admission.md#native-task-admission-is-separate).
+**Antigravity 1.4.12 native tasks are admitted** for the exact macOS arm64 binary and recipe in the [Agy admission record](verification/native-agy-1.4.12-admission.json). One complete sequence passed edit/test, configured hooks/MCP and child lifecycle/read, same-session follow-up, permission refusal, and cancellation with the identified child and process group gone. All ten calls and earlier failed gates remain preserved. Actual model and returned child-token content remain unverified; see the [admission review](native-agy-admission-review.md).
+
+The Codex native adapter remains disabled: its installed `exec --json` interface omits a genuine prelaunch permission refusal, preventing reliable `permission_needed` reporting for that path. Its public history APIs do not expose the missing failure either. See the [source-backed diagnosis](native-codex-attempt5-diagnosis.md). The existing Codex admission verifies its restrictive consultation profile only. Enabling `native_task` or finding an executable does not admit native execution. See [configuration](cli-configuration.md#native-task-profile).
 
 All four adapters reuse `NativeTaskManager` and the shared process pool. Task handles, attempt tracking, deduplication, project/session ownership, cancellation, and retention follow the same rules below; adding an adapter does not create a separate pool or change the consultation defaults.
 
 ## Submit and inspect work
 
-These examples use the separately admitted Claude native profile; use `cli_name: "grok"` for an admitted Grok installation. Replace the directory with an existing absolute path inside the configured client's `allowed_roots`.
+These examples use the separately admitted Claude native profile; use `cli_name: "grok"` or `cli_name: "agy"` for an admitted Grok or Antigravity installation. Replace the directory with an existing absolute path inside the configured client's `allowed_roots`.
 
 ```json
 {
@@ -82,7 +84,7 @@ Records, request keys, and private session mappings disappear on server restart.
 
 ## Adapter transports and permissions
 
-This table describes implemented contracts. Claude and Grok have production native admission for their exact recorded binaries/recipes; Antigravity and Codex remain disabled native candidates awaiting genuine installed-version verification.
+This table describes implemented contracts. Claude, Grok, and Antigravity have production native admission for their exact recorded binaries/recipes; native Codex remains disabled for its known output limitation.
 
 | Adapter | Input and native follow-up | Permission behavior |
 | --- | --- | --- |
