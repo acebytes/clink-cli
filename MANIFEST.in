@@ -1,0 +1,19 @@
+include LICENSE README.md requirements.txt
+include clink/resources/codex-0.166.0-models-direct.json
+include clink/resources/PROVENANCE.md
+include clink/resources/CODEX-LICENSE
+include clink/resources/CODEX-NOTICE
+recursive-include conf/cli_clients *.json
+recursive-include systemprompts/clink *.txt
+prune providers
+prune tests
+prune simulator_tests
+prune test_simulation_files
+prune docs
+prune logs
+prune .github
+prune .agents
+prune .codex
+recursive-exclude conf *_models.json
+exclude CLAUDE.local.md
+global-exclude .env* *.py[cod] .DS_Store

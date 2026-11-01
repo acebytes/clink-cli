@@ -1,126 +1,85 @@
-"""Tests for uvx path resolution functionality."""
+"""Check the runtime resources that must survive wheel/uvx installation."""
 
+import hashlib
 import json
-import tempfile
+from importlib.resources import files
 from pathlib import Path
-from unittest.mock import patch
 
-from providers.registries.openrouter import OpenRouterModelRegistry
+from clink.models import CLIClientConfig
+from clink.registry import ClinkRegistry
+
+ROOT = Path(__file__).resolve().parent.parent
 
 
-class TestUvxPathResolution:
-    """Test uvx path resolution for OpenRouter model registry."""
+def test_cli_manifests_are_package_resources():
+    directory = files("conf").joinpath("cli_clients")
+    manifests = sorted(path for path in directory.iterdir() if path.name.endswith(".json"))
+    assert {path.name for path in manifests} >= {"codex.json", "claude.json", "gemini.json"}
+    for manifest in manifests:
+        config = CLIClientConfig.model_validate(json.loads(manifest.read_text()))
+        assert config.schema_version == 1
+        assert config.env == {}
 
-    def test_normal_operation(self):
-        """Test that normal operation works in development environment."""
-        registry = OpenRouterModelRegistry()
-        assert len(registry.list_models()) > 0
-        assert len(registry.list_aliases()) > 0
 
-    def test_config_path_resolution(self):
-        """Test that the config path resolution finds the config file in multiple locations."""
-        # Check that the config file exists in the development location
-        config_file = Path(__file__).parent.parent / "conf" / "openrouter_models.json"
-        assert config_file.exists(), "Config file should exist in conf/openrouter_models.json"
+def test_role_prompt_resources_resolve_relative_to_installed_manifests(monkeypatch, tmp_path):
+    import clink.registry
 
-        # Test that a registry can find and use the config
-        registry = OpenRouterModelRegistry()
+    monkeypatch.setattr(clink.registry, "USER_CONFIG_DIR", tmp_path / "user")
+    monkeypatch.setattr(clink.registry, "LEGACY_USER_CONFIG_DIR", tmp_path / "legacy")
+    monkeypatch.delenv("CLI_CLIENTS_CONFIG_PATH", raising=False)
+    registry = ClinkRegistry()
+    assert "codex" in registry.list_clients()
+    for name in registry.list_clients():
+        for role in registry.get_client(name).roles.values():
+            assert role.prompt_path.is_file()
+            assert role.prompt_path.read_text().strip()
+    assert files("systemprompts").joinpath("clink/default.txt").read_text().strip()
 
-        # When using resources, config_path is None; when using file system, it should exist
-        if registry.use_resources:
-            assert registry.config_path is None, "When using resources, config_path should be None"
-        else:
-            assert registry.config_path.exists(), "When using file system, config path should exist"
 
-        assert len(registry.list_models()) > 0, "Registry should load models from config"
+def test_distribution_explicitly_excludes_provider_packages_and_catalogs():
+    try:
+        import tomllib
+    except ImportError:
+        import tomli as tomllib
 
-    def test_explicit_config_path_override(self):
-        """Test that explicit config path works correctly."""
-        config_path = Path(__file__).parent.parent / "conf" / "openrouter_models.json"
+    metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    packages = metadata["tool"]["setuptools"]["packages"]["find"]
+    assert "providers*" in packages["exclude"]
+    assert "providers*" not in packages["include"]
+    assert metadata["tool"]["setuptools"]["include-package-data"] is False
+    assert metadata["tool"]["setuptools"]["package-data"] == {
+        "clink": [
+            "resources/codex-0.166.0-models-direct.json",
+            "resources/PROVENANCE.md",
+            "resources/CODEX-LICENSE",
+            "resources/CODEX-NOTICE",
+        ],
+        "conf": ["cli_clients/*.json"],
+        "systemprompts": ["clink/*.txt"],
+    }
+    assert "data-files" not in metadata["tool"]["setuptools"]
+    manifest = (ROOT / "MANIFEST.in").read_text()
+    assert "prune providers" in manifest
+    assert "recursive-exclude conf *_models.json" in manifest
 
-        registry = OpenRouterModelRegistry(config_path=str(config_path))
 
-        # Should use the provided file path
-        assert registry.config_path == config_path
-        assert len(registry.list_models()) > 0
+def test_pinned_codex_runtime_resource_survives_package_installation():
+    resource = files("clink").joinpath("resources/codex-0.166.0-models-direct.json")
+    content = resource.read_bytes()
+    assert len(content) == 757141
+    assert hashlib.sha256(content).hexdigest() == "69d3e68d0e78a684c56b1818f1351149902fc61c398e4b69d371dfdea08e4e12"
+    catalog = json.loads(content)
+    assert set(catalog) == {"models"}
+    assert len(catalog["models"]) == 12
+    assert all(model["tool_mode"] == "direct" for model in catalog["models"])
 
-    def test_environment_variable_override(self):
-        """Test that CUSTOM_MODELS_CONFIG_PATH environment variable works."""
-        config_path = Path(__file__).parent.parent / "conf" / "openrouter_models.json"
 
-        with patch.dict("os.environ", {"OPENROUTER_MODELS_CONFIG_PATH": str(config_path)}):
-            registry = OpenRouterModelRegistry()
-
-            # Should use environment path
-            assert registry.config_path == config_path
-            assert len(registry.list_models()) > 0
-
-    @patch("providers.registries.base.importlib.resources.files")
-    def test_multiple_path_fallback(self, mock_files):
-        """Test that file-system fallback works when resource loading fails."""
-        mock_files.side_effect = Exception("Resource loading failed")
-
-        with tempfile.TemporaryDirectory() as tmpdir:
-            temp_dir = Path(tmpdir)
-            conf_dir = temp_dir / "conf"
-            conf_dir.mkdir(parents=True, exist_ok=True)
-            config_path = conf_dir / "openrouter_models.json"
-            config_path.write_text(
-                json.dumps(
-                    {
-                        "models": [
-                            {
-                                "model_name": "test/model",
-                                "aliases": ["testalias"],
-                                "context_window": 1024,
-                                "max_output_tokens": 512,
-                            }
-                        ]
-                    },
-                    indent=2,
-                )
-            )
-
-            original_exists = Path.exists
-
-            def fake_exists(path_self):
-                if str(path_self).endswith("conf/openrouter_models.json") and path_self != config_path:
-                    return False
-                if path_self == config_path:
-                    return True
-                return original_exists(path_self)
-
-            with patch("pathlib.Path.cwd", return_value=temp_dir), patch("pathlib.Path.exists", fake_exists):
-                registry = OpenRouterModelRegistry()
-
-            assert not registry.use_resources
-            assert registry.config_path == config_path
-            assert "test/model" in registry.list_models()
-
-    def test_missing_config_handling(self):
-        """Test behavior when config file is missing."""
-        # Use a non-existent path
-        with patch.dict("os.environ", {}, clear=True):
-            registry = OpenRouterModelRegistry(config_path="/nonexistent/path/config.json")
-
-        # Should gracefully handle missing config
-        assert len(registry.list_models()) == 0
-        assert len(registry.list_aliases()) == 0
-
-    def test_resource_loading_success(self):
-        """Test successful resource loading via importlib.resources."""
-        # Just test that the registry works normally in our environment
-        # This validates the resource loading mechanism indirectly
-        registry = OpenRouterModelRegistry()
-
-        # Should load successfully using either resources or file system fallback
-        assert len(registry.list_models()) > 0
-        assert len(registry.list_aliases()) > 0
-
-    def test_use_resources_attribute(self):
-        """Test that the use_resources attribute is properly set."""
-        registry = OpenRouterModelRegistry()
-
-        # Should have the use_resources attribute
-        assert hasattr(registry, "use_resources")
-        assert isinstance(registry.use_resources, bool)
+def test_codex_resource_retains_license_notice_and_modification_provenance():
+    directory = files("clink").joinpath("resources")
+    license_text = directory.joinpath("CODEX-LICENSE").read_text()
+    notice = directory.joinpath("CODEX-NOTICE").read_text()
+    provenance = directory.joinpath("PROVENANCE.md").read_text()
+    assert "Apache License" in license_text
+    assert "OpenAI" in notice
+    assert "tool_mode" in provenance
+    assert "9e01cd50ec8c4ba6d782413d1154cb2dbe1da63e014d622631b0603bc19659d6" in provenance
