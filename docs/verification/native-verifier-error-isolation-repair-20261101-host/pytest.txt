@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.2.0, pluggy-1.7.0 -- /Users/d/Tools/clink-mcp-server/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/d/Tools/clink-mcp-server
+configfile: pytest.ini
+plugins: mock-3.17.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collecting ... collected 2 items
+
+tests/test_native_verifier.py::test_run_once_records_explicit_error_without_retry PASSED [ 50%]
+tests/test_native_verifier.py::test_cancel_records_partial_effect_and_reaps_process PASSED [100%]
+
+- generated xml file: /Users/d/Tools/clink-mcp-server/docs/verification/native-verifier-error-isolation-repair-20261101-host/junit.xml -
+============================== 2 passed in 0.18s ===============================

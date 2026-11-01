@@ -1,0 +1,9 @@
+{
+  "adapter": "agy",
+  "executable_sha256": "34423fc9b0af3841e7646aa72a2d40ffeab8218b22d1cb99eac7355f9eba31e3",
+  "fixture_config_sha256": "253d9ec3a5a8818293d45af3c1de62984d67e64581efdc855d9e9ed83c2aa2fc",
+  "native_recipe_sha256": "da740ab92a35b480344a4dc07a517681dfbd5768f18ea01fbb65074337659a4f",
+  "observed_version": "1.4.12",
+  "project_root_sha256": "f9a51dd043cc7ddcaff54ff68ba960fa932f02e527eca0b34ff09c777091acfb",
+  "scope": "native_adapter_candidate_preflight"
+}

@@ -169,9 +169,18 @@ def test_permission_denial_prevents_treating_success_envelope_as_success():
     )
 
 
-def test_run_once_records_explicit_error_without_retry(tmp_path):
+def test_run_once_records_explicit_error_without_retry(tmp_path, monkeypatch):
     target = tmp_path / "calls.txt"
     code = "import pathlib,sys; p=pathlib.Path(sys.argv[1]); p.write_text('one launch'); sys.exit(7)"
+    reaped = []
+
+    def reap_error_child(process):
+        # This test owns exit/no-retry metadata; the cancellation test below exercises real group cleanup.
+        assert process.wait(timeout=3) == 7
+        reaped.append(process.pid)
+        return False  # Group absence was not probed, so the synthetic cleanup result remains unverified.
+
+    monkeypatch.setattr(verifier, "stop_group", reap_error_child)
     summary, events = verifier.run_once(
         [sys.executable, "-c", code, str(target)], tmp_path, dict(os.environ), "", timeout=5
     )
@@ -179,7 +188,8 @@ def test_run_once_records_explicit_error_without_retry(tmp_path):
     assert summary["launch_count"] == 1
     assert summary["automatic_retries"] == 0
     assert summary["returncode"] == 7
-    assert summary["process_group_absent_after_cleanup"] is True
+    assert len(reaped) == 1
+    assert summary["process_group_absent_after_cleanup"] is False
     assert events == []
 
 
