@@ -1,0 +1,30 @@
+{
+  "actual_model_reported_by_dialect": false,
+  "dialect": "json_single_document",
+  "documented_status_values": [
+    "SUCCESS",
+    "ERROR",
+    "CANCELED",
+    "INTERRUPTED",
+    "INVALID",
+    "WAITING",
+    "RUNNING"
+  ],
+  "fixture_kind": "synthetic_documented_shape_not_captured_native_output",
+  "fixture_sha256": {
+    "agy-1.4.12-json-error.synthetic.json": "6d689a9fbbd421ca0eb7911628cd863d0d604284adea9893b91d31bfe8d456de",
+    "agy-1.4.12-json-success.synthetic.json": "dbd18c48263db41141a6e30011d0ec7c368d64ac491cb3cb05c273cb2abeb1da"
+  },
+  "limitation": "Synthetic parser coverage only. Names identify the investigated installed CLI, not captured version-specific native output. Native process exit and execution policy require separate backend admission evidence.",
+  "live_execution_verified": false,
+  "native_exit_status_included": false,
+  "native_output_captured": false,
+  "observed_installed_cli_version": "1.4.12",
+  "optional_error_null_policy": "Tolerated as absent; not claimed as a documented success example. Every non-null error value is rejected.",
+  "protocol_source": {
+    "kind": "official_current_documentation_not_installed_implementation",
+    "url": "https://antigravity.google/docs/cli/headless"
+  },
+  "schema_version": 1,
+  "success_predicate": "Status exactly SUCCESS and nonempty response, without an explicit error."
+}

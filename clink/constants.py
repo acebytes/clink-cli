@@ -66,12 +66,12 @@ INTERNAL_DEFAULTS: dict[str, CLIInternalDefaults] = {
         runner="claude",
     ),
     "agy": CLIInternalDefaults(
-        parser="plain_text",
+        parser="agy_json",
         default_role_prompt=str(BUILTIN_PROMPTS_DIR / "default.txt"),
         runner="agy",
     ),
     "grok": CLIInternalDefaults(
-        parser="plain_text",
+        parser="grok_json",
         default_role_prompt=str(BUILTIN_PROMPTS_DIR / "default.txt"),
         runner="grok",
     ),
