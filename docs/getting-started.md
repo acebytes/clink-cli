@@ -1,6 +1,6 @@
 # Getting started with clink-mcp-server
 
-This fork preserves PAL's MCP workflows and obtains advisory analysis from installed CLI agents. Explicit `clink` native task actions can delegate edits and tests with configured native capabilities; Claude Code 2.1.304 has separate native admission for the exact recorded binary/recipe. Copyright 2025 Beehive Innovations; distributed under the [Apache 2.0 license](../LICENSE).
+This fork preserves PAL's MCP workflows and obtains advisory analysis from installed CLI agents. Explicit `clink` native task actions can delegate edits and tests with configured native capabilities; Claude Code 2.1.304 and Grok 1.0.70 have separate native admission for their exact recorded binaries/recipes. Copyright 2025 Beehive Innovations; distributed under the [Apache 2.0 license](../LICENSE).
 
 ## 1. Prepare the Python environment
 
@@ -37,7 +37,7 @@ The admitted snapshot accepts only its 12 exact native model IDs; unknown names 
 
 Native search is verified through an actual backend lookup that returned `search_performed=true` and 20 structured source URLs; `apilookup` uses recognized returned results rather than model recall or requested/open-page URLs. Claude 2.1.304, Gemini, Antigravity (`agy`), and xAI Grok Build (`grok`) consultations remain blocked by unverified policy gates.
 
-[Claude Code 2.1.304 native tasks are separately admitted](verification/native-claude-2.1.304-admission.json) for the exact recorded binary/recipe; the Codex receipt does not admit native execution. Other binaries/recipes require reverification and fail closed. Antigravity/Grok support remains parser/discovery-only. See [native lifecycle results](native-lifecycle-results.md) for passing gates and preserved failures/limits.
+[Claude Code 2.1.304 native tasks](verification/native-claude-2.1.304-admission.json) and [Grok 1.0.70 native tasks](verification/native-grok-1.0.70-admission.json) are separately admitted for their exact recorded binaries/recipes; Grok admission is scoped to macOS arm64. The Codex consultation receipt does not admit native execution. Antigravity and native Codex adapters are implemented but remain disabled pending their own live admission. Other binaries/recipes require reverification and fail closed. See [native lifecycle results](native-lifecycle-results.md) and [adapter results](native-adapters-results.md) for passing gates and preserved failures/limits.
 
 The [Codex/Claude verification report](verification/cli-policy/README.md), [Antigravity/Grok findings](clink-cli-admission.md), and [implementation results](clink-implementation-results.md) retain their separate consultation evidence. A failed gate returns an explicit error rather than trying another CLI. The [17-tool matrix](verification/live-tools-2/README.md) plus [separate lookup](verification/native-search-1/README.md) cover all 18 outcomes. Later parser hardening passed offline checks; the native call was not rerun under that final hardening and its raw output was not retained/replayed.
 
@@ -78,7 +78,7 @@ Only after a target is admitted, make an explicit consultation. For `clink`:
 
 A real consultation can consume native subscription/API quota. Proposed code is returned as text; the server does not create a generated project file. `planner`, `docgen`, `tracer`, and `challenge` guide local caller work without a delegated model call. Workflow tools preserve investigation steps and consult an expert at the final hook when requested.
 
-For delegated implementation, see [native CLI tasks](native-cli-tasks.md). Explicit `start`/`status`/`followup`/`cancel` actions use opaque task handles and private native sessions rather than PAL continuations. Configured tools, hooks, skills, plugins, MCP integrations, and subagents are intentionally retained under native permissions. Enabling a profile does not admit it; launch requires the recorded Claude binary/recipe to match its native admission or returns `policy_unverified` without launching. Live synthetic-project evidence covers edits/tests, hooks/subagent/MCP environment inheritance, same-session follow-up, permission handling, and cancellation after mutation; it does not establish every native configuration or complete detached/remote cleanup.
+For delegated implementation, see [native CLI tasks](native-cli-tasks.md). Explicit `start`/`status`/`followup`/`cancel` actions use opaque task handles and private native sessions rather than PAL continuations. Configured tools, hooks, skills, plugins, MCP integrations, and subagents are intentionally retained under native permissions. Enabling a profile does not admit it; launch requires the selected binary/recipe to match its separate native admission or returns `policy_unverified` without launching. Live synthetic-project evidence covers edits/tests, hooks/subagent/MCP environment inheritance, same-session follow-up, permission handling, and cancellation after mutation; it does not establish every native configuration or complete detached/remote cleanup.
 
 ## 5. Operate and update
 

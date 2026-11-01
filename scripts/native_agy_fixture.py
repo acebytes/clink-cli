@@ -353,8 +353,12 @@ if kind == "post_tool" and valid:
         )
     )
 if kind == "stop" and valid:
+    # Installed 1.4.12 NewStopHook strips the executor enum prefix without lowercasing.
+    record["stop_idle_matches"] = event.get("fullyIdle") is True
+    record["stop_reason_matches"] = event.get("terminationReason") == "NO_TOOL_CALL"
+    record["stop_error_empty"] = event.get("error", "") == ""
     record["loop_idle_stop_observed"] = (
-        event.get("fullyIdle") is True and event.get("terminationReason") == "model_stop" and event.get("error", "") == ""
+        record["stop_idle_matches"] and record["stop_reason_matches"] and record["stop_error_empty"]
     )
 if not write_observation("agy-hooks.jsonl", record, append=True):
     write_observation("agy-hook-log-limit", {"observation_limit_reached": True})

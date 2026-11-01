@@ -63,7 +63,7 @@ def child_stream(*children, root="PRIVATE_ROOT_CONVERSATION"):
     )
 
 
-def child_events(root, identity, *, read_error="", path=None):
+def child_events(root, identity, *, read_error="", path=None, stop_fields=None):
     assert hook(root, "session_start", {"conversationId": identity}) == {}
     assert (
         hook(
@@ -77,9 +77,9 @@ def child_events(root, identity, *, read_error="", path=None):
         )
         == {}
     )
-    assert hook(root, "stop", {"conversationId": identity, "fullyIdle": True, "terminationReason": "model_stop"}) == {
-        "decision": "stop"
-    }
+    if stop_fields is None:
+        stop_fields = {"fullyIdle": True, "terminationReason": "NO_TOOL_CALL"}
+    assert hook(root, "stop", {"conversationId": identity, **stop_fields}) == {"decision": "stop"}
 
 
 def test_builder_uses_supported_project_files_and_narrow_native_hooks(project):
@@ -793,6 +793,45 @@ def test_named_child_successful_exact_read_is_correlated_without_exporting_ident
         "conversation_fingerprint",
     ):
         assert private not in encoded
+    rows = [json.loads(line) for line in (project / "agy-hooks.jsonl").read_text().splitlines()]
+    stop = next(row for row in rows if row["event"] == "stop")
+    assert stop["stop_idle_matches"] is True
+    assert stop["stop_reason_matches"] is True
+    assert stop["stop_error_empty"] is True
+
+
+@pytest.mark.parametrize(
+    "change,missing",
+    [
+        ({"terminationReason": "model_stop"}, None),
+        ({"terminationReason": "no_tool_call"}, None),
+        ({"fullyIdle": False}, None),
+        ({"fullyIdle": 1}, None),
+        ({"error": "PRIVATE_STOP_ERROR"}, None),
+        ({"error": None}, None),
+        ({}, "fullyIdle"),
+        ({}, "terminationReason"),
+    ],
+)
+def test_child_stop_requires_installed_reason_real_idle_and_no_error(project, change, missing):
+    identity = "PRIVATE_CHILD_CONVERSATION"
+    fields = {"terminationReason": "NO_TOOL_CALL", "fullyIdle": True, "error": "", **change}
+    if missing is not None:
+        del fields[missing]
+    child_events(project, identity, stop_fields=fields)
+    fixture.observe_agy_stream(project, child_stream(("fixture-specialist", identity)))
+    observed = fixture.agy_fixture_observations(project)
+    assert observed["fixture_subagent_stopped"] is False
+    assert observed["fixture_subagent_read_observed"] is False
+    rows = [json.loads(line) for line in (project / "agy-hooks.jsonl").read_text().splitlines()]
+    stop = next(row for row in rows if row["event"] == "stop")
+    assert stop["loop_idle_stop_observed"] is False
+    assert all(type(stop[key]) is bool for key in ("stop_idle_matches", "stop_reason_matches", "stop_error_empty"))
+    encoded = json.dumps(rows)
+    assert identity not in encoded
+    assert "PRIVATE_STOP_ERROR" not in encoded
+    assert "NO_TOOL_CALL" not in encoded
+    assert "model_stop" not in encoded
 
 
 @pytest.mark.parametrize("extra", [{"ByteOffset": 1}, {"StartLine": 2}, {"EndLine": 1}])
@@ -807,12 +846,14 @@ def test_child_read_with_unverified_ranges_or_offsets_cannot_establish_canary_re
             "toolCall": {"name": "read_file", "args": {"Path": str(project / "specialist.txt"), **extra}},
         },
     )
-    hook(project, "stop", {"conversationId": identity, "fullyIdle": True, "terminationReason": "model_stop"})
+    hook(project, "stop", {"conversationId": identity, "fullyIdle": True, "terminationReason": "NO_TOOL_CALL"})
     fixture.observe_agy_stream(project, child_stream(("fixture-specialist", identity)))
     assert fixture.agy_fixture_observations(project)["fixture_subagent_read_observed"] is False
 
 
-@pytest.mark.parametrize("case", ["wrong_child", "root_identity", "wrong_file", "read_error", "missing_stop"])
+@pytest.mark.parametrize(
+    "case", ["wrong_child", "root_identity", "wrong_file", "read_error", "missing_stop", "missing_start"]
+)
 def test_child_read_proof_rejects_unrelated_or_incomplete_observations(project, case):
     identity = "PRIVATE_CHILD_CONVERSATION"
     if case == "root_identity":
@@ -823,10 +864,11 @@ def test_child_read_proof_rejects_unrelated_or_incomplete_observations(project, 
         read_error="native read failed" if case == "read_error" else "",
         path=project / "arithmetic.py" if case == "wrong_file" else None,
     )
-    if case == "missing_stop":
+    if case in ("missing_stop", "missing_start"):
         path = project / "agy-hooks.jsonl"
         rows = [json.loads(line) for line in path.read_text().splitlines()]
-        path.write_text("\n".join(json.dumps(row) for row in rows if row["event"] != "stop") + "\n")
+        missing = "stop" if case == "missing_stop" else "session_start"
+        path.write_text("\n".join(json.dumps(row) for row in rows if row["event"] != missing) + "\n")
     fixture.observe_agy_stream(
         project, child_stream(("unrelated" if case == "wrong_child" else "fixture-specialist", identity))
     )
@@ -844,7 +886,7 @@ def test_different_children_cannot_supply_combined_lifecycle_proof(project):
             "toolCall": {"name": "view_file", "args": {"AbsolutePath": str(project / "specialist.txt")}},
         },
     )
-    hook(project, "stop", {"conversationId": second, "fullyIdle": True, "terminationReason": "model_stop"})
+    hook(project, "stop", {"conversationId": second, "fullyIdle": True, "terminationReason": "NO_TOOL_CALL"})
     fixture.observe_agy_stream(project, child_stream(("fixture-specialist", first), ("fixture-specialist", second)))
     assert fixture.agy_fixture_observations(project)["fixture_subagent_read_observed"] is False
 
@@ -1021,7 +1063,7 @@ if "to observe failure" in prompt:
     child = str(uuid.uuid4())
     hook("session_start", {"conversationId": child})
     hook("post_tool", {"conversationId": child, "toolCall": {"name": "read_file", "args": {"Path": str(root / "specialist.txt")}}})
-    hook("stop", {"conversationId": child, "fullyIdle": True, "terminationReason": "model_stop"})
+    hook("stop", {"conversationId": child, "fullyIdle": True, "terminationReason": "NO_TOOL_CALL"})
     print(json.dumps({"event": "step_update", "step_update": {"conversation_id": session, "step_index": 0,
         "step_type": "SUBAGENT", "state": "DONE", "subagent_info": {"subagents": [{"type_name": "fixture-specialist", "conversation_id": child}]}}}), flush=True)
     (root / "fake-memory").write_text("NATIVE_FIXTURE_CONTEXT_274816")
@@ -1043,7 +1085,7 @@ elif "foreground shell operation" in prompt:
         raise SystemExit
     signal.signal(signal.SIGTERM, finish)
     child.wait()
-hook("stop", {"conversationId": session, "fullyIdle": True, "terminationReason": "model_stop"})
+hook("stop", {"conversationId": session, "fullyIdle": True, "terminationReason": "NO_TOOL_CALL"})
 print(json.dumps({"event": "result", "result": {"conversation_id": session, "status": "SUCCESS", "response": text, "denied_actions": denials}}))
 """.replace("@PERMISSION_HOOK@", repr(permission_hook_invoked)))
     executable.chmod(0o700)

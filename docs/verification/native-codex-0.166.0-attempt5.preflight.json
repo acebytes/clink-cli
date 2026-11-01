@@ -1,0 +1,9 @@
+{
+  "adapter": "codex",
+  "executable_sha256": "39acf979729dd290f9a24ee38b2914e036c91b65952872e28ae2a6b88a7db7c1",
+  "fixture_config_sha256": "6d5b6637b4bcf88de20375b2de2417625f0aedaf3e045b4f7cb34d888b220f36",
+  "native_recipe_sha256": "623312bcc2e1f45f831edc1eb4a77598d25460ff0f9a4ce52b0c6c3ec1fbb1ed",
+  "observed_version": "codex-cli 0.166.0",
+  "project_root_sha256": "a6769ad81e6774db0419cfa32885ff576a6fb531988052b8db2d89999ca73f9a",
+  "scope": "native_adapter_candidate_preflight"
+}
