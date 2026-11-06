@@ -21,8 +21,8 @@ from pathlib import Path
 
 try:
     import tomllib
-except ImportError:  # Verification runs on Python 3.11+; runtime still supports 3.10.
-    tomllib = None
+except ModuleNotFoundError:  # Development dependency on Python 3.10.
+    import tomli as tomllib
 
 MAX_STORE_BYTES = 1024 * 1024
 
@@ -32,8 +32,6 @@ class FixtureTrustError(RuntimeError):
 
 
 def _document(raw: bytes) -> dict:
-    if tomllib is None:
-        raise FixtureTrustError("Fixture trust verification requires Python 3.11 or newer.")
     try:
         return tomllib.loads(raw.decode("utf-8"))
     except (ValueError, UnicodeError):

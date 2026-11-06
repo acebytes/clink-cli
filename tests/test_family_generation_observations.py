@@ -46,7 +46,10 @@ def test_initial_and_started_observations_require_affirmative_cleanup(monkeypatc
 
 @pytest.mark.parametrize("failure_phase", ["production_cleanup", "process_group_probe"])
 @pytest.mark.parametrize("failure_type", [RuntimeError, PermissionError, asyncio.CancelledError])
-def test_cleanup_exception_is_preserved_and_uncertainty_survives_later_callbacks(cleanup, failure_phase, failure_type):
+@pytest.mark.asyncio
+async def test_cleanup_exception_is_preserved_and_uncertainty_survives_later_callbacks(
+    cleanup, failure_phase, failure_type
+):
     production, probe, process = cleanup
     error = failure_type(PRIVATE)
     if failure_phase == "production_cleanup":
@@ -55,12 +58,12 @@ def test_cleanup_exception_is_preserved_and_uncertainty_survives_later_callbacks
         probe.side_effect = error
     pool = verifier.ObservedPool()
     with pytest.raises(failure_type) as caught:
-        asyncio.run(pool._cleanup(process))
+        await pool._cleanup(process)
     assert caught.value is error
     assert pool.cleanup_confirmed is False
     production.side_effect = None
     probe.side_effect = ProcessLookupError
-    asyncio.run(pool._cleanup(process))
+    await pool._cleanup(process)
     assert pool.cleanup_confirmed is False
     assert pool.exception_observation == (
         None
@@ -415,7 +418,8 @@ def test_repeated_caller_cancellation_still_waits_for_production_cleanup(tmp_pat
 
 @pytest.mark.parametrize("capture_failure", [RuntimeError, asyncio.CancelledError])
 @pytest.mark.parametrize("original_type", [PermissionError, asyncio.CancelledError])
-def test_optional_diagnostics_cannot_replace_cleanup_exception(monkeypatch, capture_failure, original_type):
+@pytest.mark.asyncio
+async def test_optional_diagnostics_cannot_replace_cleanup_exception(monkeypatch, capture_failure, original_type):
     process = Mock(pid=123)
     original = original_type(PRIVATE)
     cleanup = AsyncMock(side_effect=original)
@@ -425,7 +429,7 @@ def test_optional_diagnostics_cannot_replace_cleanup_exception(monkeypatch, capt
     monkeypatch.setattr(diagnostics, "observe_exception", Mock(side_effect=capture_failure(PRIVATE)))
     pool = verifier.DiagnosticObservedPool(diagnostics)
     with pytest.raises(original_type) as caught:
-        asyncio.run(pool._cleanup(process))
+        await pool._cleanup(process)
     assert caught.value is original
     assert diagnostics.capture_failed is True
     assert pool.cleanup_confirmed is False and pool._cleanup_uncertain is True

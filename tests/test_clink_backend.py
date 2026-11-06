@@ -315,8 +315,11 @@ async def test_shutdown_rejects_granted_waiter_before_spawn(tmp_path, monkeypatc
     assert pool._waiters
     pool._release()
     await pool.shutdown()
-    with pytest.raises(asyncio.CancelledError):
+    # The queue can observe shutdown before task cancellation is delivered.
+    with pytest.raises((asyncio.CancelledError, BackendError)) as caught:
         await queued
+    if isinstance(caught.value, BackendError):
+        assert caught.value.code == "cancelled"
     assert calls == []
     assert pool.running == 0
     assert not pool._executions

@@ -1369,7 +1369,12 @@ _IDENTITY_FIELDS = {"pid", "pgid", "sid", "uid", "start_seconds", "start_microse
 def diagnostic_sidecar_destination(path: Path) -> Path:
     """Keep optional diagnostic output outside every authoritative evidence tree."""
     try:
-        destination = path.expanduser().resolve(strict=False)
+        expanded = path.expanduser()
+        try:
+            destination = expanded.resolve(strict=True)
+        except FileNotFoundError:
+            # Output directories may be created later. Other resolution errors must fail closed.
+            destination = expanded.resolve(strict=False)
         protected_roots = (LINEAGE_ROOT.resolve(), (PROJECT / "docs/verification").resolve())
     except (OSError, RuntimeError):
         raise ValueError("Cleanup diagnostics require a resolvable destination") from None
