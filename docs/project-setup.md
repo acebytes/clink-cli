@@ -4,13 +4,13 @@ Each repository can own its clink configuration. Project manifests override opti
 
 ## Standalone wheel installation
 
-Use the `clink-cli` wheel for version 0.2.1.
+Use the `clink-cli` wheel for version 0.2.2.
 
 Choose a persistent installation directory outside the source checkout, replace the wheel path, and configure an existing project:
 
 ```sh
 python3 -m venv /absolute/path/to/clink-runtime
-/absolute/path/to/clink-runtime/bin/python -m pip install /absolute/path/to/clink_cli-0.2.1-py3-none-any.whl
+/absolute/path/to/clink-runtime/bin/python -m pip install /absolute/path/to/clink_cli-0.2.2-py3-none-any.whl
 /absolute/path/to/clink-runtime/bin/python -m clink.setup --project /absolute/path/to/your-project
 ```
 

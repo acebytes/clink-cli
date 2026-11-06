@@ -1,7 +1,7 @@
 [project]
 name = "clink-cli"
-version = "0.2.1"
-description = "CLI consultation and native agent task delegation over the Model Context Protocol"
+version = "0.2.2"
+description = "Call installed CLI agents from scripts with JSON, or connect them to an MCP client"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "clink/resources/CODEX-LICENSE", "clink/resources/CODEX-NOTICE"]
