@@ -4,13 +4,13 @@ Each repository can own its clink configuration. Project manifests override opti
 
 ## Standalone wheel installation
 
-Use the `clink-cli` wheel for version 0.2.2.
+Use the `clink-cli` wheel for version 0.2.3.
 
 Choose a persistent installation directory outside the source checkout, replace the wheel path, and configure an existing project:
 
 ```sh
 python3 -m venv /absolute/path/to/clink-runtime
-/absolute/path/to/clink-runtime/bin/python -m pip install /absolute/path/to/clink_cli-0.2.2-py3-none-any.whl
+/absolute/path/to/clink-runtime/bin/python -m pip install /absolute/path/to/clink_cli-0.2.3-py3-none-any.whl
 /absolute/path/to/clink-runtime/bin/python -m clink.setup --project /absolute/path/to/your-project
 ```
 
@@ -36,7 +36,7 @@ The checkout-local Claude setup plugin described below is separate from the Pyth
 Use Python 3.10+ (Python 3.12 is the tested runtime). From your source checkout, first install runtime requirements explicitly, then configure an existing project:
 
 ```sh
-cd /absolute/path/to/clink-mcp-server
+cd /absolute/path/to/clink-cli
 ./run-server.sh --setup
 .venv/bin/python -m clink.setup --project /absolute/path/to/your-project
 ```
@@ -76,7 +76,7 @@ Reconnect the MCP client after setup, then call `listmodels`. Check the selected
 Load the small local plugin when starting Claude Code in your target project:
 
 ```sh
-claude --plugin-dir /absolute/path/to/clink-mcp-server/integrations/claude
+claude --plugin-dir /absolute/path/to/clink-cli/integrations/claude
 ```
 
 Then run:
@@ -106,7 +106,7 @@ Each later manifest replaces the whole named client, including its roles and nat
 The server reads project manifests only when explicitly launched with `--project`. It does not walk parent directories or load manifests from a request's `project_dir`. Existing launches without `--project` keep their previous behavior. You can bind a server manually:
 
 ```sh
-/absolute/path/to/clink-mcp-server/run-server.sh --project /absolute/path/to/your-project
+/absolute/path/to/clink-cli/run-server.sh --project /absolute/path/to/your-project
 ```
 
 The installed `clink-mcp-server --project /absolute/path/to/your-project` entrypoint also supports this binding. Project selection is independent of the server checkout's `.env`, logging directory, and process working directory. A different binding needs a separate process or restart, not an in-process registry switch.

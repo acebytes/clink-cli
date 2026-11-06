@@ -22,7 +22,7 @@ def test_package_has_clink_identity_entrypoint_and_supported_python_floor():
 
     project = project_metadata()
     assert project["name"] == "clink-cli"
-    assert project["version"] == __version__ == "0.2.2"
+    assert project["version"] == __version__ == "0.2.3"
     assert project["requires-python"] == ">=3.10"
     assert project["scripts"] == {"clink-mcp-server": "server:run", "clink": "clink.cli:main"}
 

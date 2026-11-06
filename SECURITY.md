@@ -1,10 +1,10 @@
 # Security policy
 
-This policy covers [clink-mcp-server](https://github.com/acebytes/clink-mcp-server), a CLI-only fork of PAL MCP Server. Security fixes target the current 0.2.x release line. Historical upstream PAL 9.x versions are not releases of this fork.
+This policy covers [clink-cli](https://github.com/acebytes/clink-cli), a CLI-only fork of PAL MCP Server. Security fixes target the current 0.2.x release line. Historical upstream PAL 9.x versions are not releases of this fork.
 
 ## Report a vulnerability privately
 
-Do not publish exploit details, credentials, private prompts, user records, or raw native sessions in an issue. Use this repository's [private vulnerability reporting](https://github.com/acebytes/clink-mcp-server/security/advisories/new) when available. If GitHub private reporting is unavailable, contact the repository maintainer through their public profile to arrange a private channel before sharing sensitive details. Do not send fork-specific reports to the upstream PAL project.
+Do not publish exploit details, credentials, private prompts, user records, or raw native sessions in an issue. Use this repository's [private vulnerability reporting](https://github.com/acebytes/clink-cli/security/advisories/new) when available. If GitHub private reporting is unavailable, contact the repository maintainer through their public profile to arrange a private channel before sharing sensitive details. Do not send fork-specific reports to the upstream PAL project.
 
 Include the affected clink version and operation (consultation, native task, generation, setup, or local discovery), operating system, Python and CLI versions, sanitized reproduction steps, expected and observed behavior, and potential impact. Use synthetic files and redact sensitive values. No response-time commitment is made.
 

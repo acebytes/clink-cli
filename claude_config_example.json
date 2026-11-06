@@ -3,9 +3,9 @@
   "comment2": "Run ./run-server.sh --setup explicitly first. Local discovery needs no CLI authentication; delegation requires its operation-specific admission.",
   "mcpServers": {
     "clink": {
-      "command": "/path/to/clink-mcp-server/.venv/bin/python",
+      "command": "/path/to/clink-cli/.venv/bin/python",
       "args": [
-        "/path/to/clink-mcp-server/server.py"
+        "/path/to/clink-cli/server.py"
       ]
     }
   }

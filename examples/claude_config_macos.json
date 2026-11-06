@@ -2,7 +2,7 @@
   "comment": "macOS project-bound stdio example; replace both absolute paths and run ./run-server.sh --setup explicitly first.",
   "mcpServers": {
     "clink": {
-      "command": "/absolute/path/to/clink-mcp-server/run-server.sh",
+      "command": "/absolute/path/to/clink-cli/run-server.sh",
       "args": [
         "--project",
         "/absolute/path/to/your-project"

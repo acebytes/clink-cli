@@ -1,6 +1,6 @@
 [project]
 name = "clink-cli"
-version = "0.2.2"
+version = "0.2.3"
 description = "Call installed CLI agents from scripts with JSON, or connect them to an MCP client"
 readme = "README.md"
 license = "Apache-2.0"
@@ -13,9 +13,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/acebytes/clink-mcp-server"
-Repository = "https://github.com/acebytes/clink-mcp-server"
-Issues = "https://github.com/acebytes/clink-mcp-server/issues"
+Homepage = "https://github.com/acebytes/clink-cli"
+Repository = "https://github.com/acebytes/clink-cli"
+Issues = "https://github.com/acebytes/clink-cli/issues"
 
 [project.scripts]
 clink-mcp-server = "server:run"
