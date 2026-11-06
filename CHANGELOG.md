@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+Update the PyPI description with the uv install command, project-local Claude Code setup, and the standalone JSON generation interface.
+
 ## 0.2.1
 
 The Python distribution is now named `clink-cli`. One installation provides the

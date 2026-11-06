@@ -1,10 +1,10 @@
-# clink-mcp-server
+# Clink CLI and MCP server
 
-Delegate work to installed CLI agents through MCP. Consultations return advice and proposed code. Explicit native tasks can edit files, run tests, and use the selected CLI's configured tools, hooks, skills, plugins, MCP integrations, and subagents under its native permissions.
+Use `clink generate` to send a JSON request to an installed CLI agent from a script and read the result on stdout. To use Clink from Claude Code or another MCP client, connect `clink-mcp-server` for access to 18 tools. One Python package, `clink-cli`, installs both commands.
 
-Version **0.2.1** preserves PAL's **18 MCP tools** and adds a separate `clink generate` command for bounded programmatic text generation. The Python distribution is named `clink-cli` and installs both `clink` and `clink-mcp-server`.
+Consultations return advice and proposed code. Explicit native tasks can edit files, run tests, and use the selected agent’s configured tools and permissions.
 
-Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-server), formerly Zen MCP. **Copyright 2025 Beehive Innovations.** Retains upstream attribution and the [Apache 2.0 license](LICENSE).
+Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-server), formerly Zen MCP. **Copyright 2025 Beehive Innovations.** Retains upstream attribution and the [Apache 2.0 license](https://github.com/acebytes/clink-mcp-server/blob/main/LICENSE).
 
 ## Install with uv
 
@@ -37,9 +37,9 @@ Admission is specific to an operation, executable, launch recipe, and parser. Su
 | Antigravity 1.4.12 (`agy`) | Unverified. | Admitted. | Implemented but unverified; execution is refused. |
 | Gemini | Unverified. | Not implemented. | Not implemented. |
 
-The recorded admissions cover exact macOS arm64 binaries. Other builds, operating systems, versions, or changed recipes require verification and fail closed. An installed executable or successful login alone is insufficient. Grok reported `grok-4.7-build` in the recorded successful generation text/action checks. Antigravity's native-task actual model remains unknown; its native-task admission does not admit generation. See [release evidence and limits](docs/release-evidence.md).
+The recorded admissions cover exact macOS arm64 binaries. Other builds, operating systems, versions, or changed recipes require verification and fail closed. An installed executable or successful login alone is insufficient. Grok reported `grok-4.7-build` in the recorded successful generation text/action checks. Antigravity's native-task actual model remains unknown; its native-task admission does not admit generation. See [release evidence and limits](https://github.com/acebytes/clink-mcp-server/blob/main/docs/release-evidence.md).
 
-Python 3.10+ is required; Python 3.12 is the tested runtime. Process supervision targets POSIX systems. Local discovery and offline tests can run without CLI credentials. Native Windows delegation is unavailable; the [container](docker/README.md) supports local tools without installing CLI agents.
+Python 3.10+ is required; Python 3.12 is the tested runtime. Process supervision targets POSIX systems. Local discovery and offline tests can run without CLI credentials. Native Windows delegation is unavailable; the [container](https://github.com/acebytes/clink-mcp-server/blob/main/docker/README.md) supports local tools without installing CLI agents.
 
 ## Install and connect
 
@@ -49,7 +49,7 @@ For a standalone wheel installation, replace the wheel path and choose a persist
 
 ```sh
 python3 -m venv /absolute/path/to/clink-runtime
-/absolute/path/to/clink-runtime/bin/python -m pip install /absolute/path/to/clink_cli-0.2.1-py3-none-any.whl
+/absolute/path/to/clink-runtime/bin/python -m pip install /absolute/path/to/clink_cli-0.2.2-py3-none-any.whl
 /absolute/path/to/clink-runtime/bin/python -m clink.setup --project /absolute/path/to/your-project
 ```
 
@@ -66,14 +66,14 @@ The installed package contains its manifests, prompts, and admission resources. 
 }
 ```
 
-Alternatively, from the reviewed 0.2.1 source tree:
+Alternatively, from the reviewed 0.2.2 source tree:
 
 ```sh
 cd /absolute/path/to/clink-mcp-server
 ./run-server.sh --setup
 ```
 
-This explicitly creates `.venv`, installs runtime requirements, and exits. Ordinary startup installs nothing. The launcher does not create `.env`, copy credentials, change native CLI configuration, or register MCP clients. Optional server settings are documented in [.env.example](.env.example). To build a wheel from this tree, install the development requirements and run `.venv/bin/python -m build`; the wheel is written under `dist/`.
+This explicitly creates `.venv`, installs runtime requirements, and exits. Ordinary startup installs nothing. The launcher does not create `.env`, copy credentials, change native CLI configuration, or register MCP clients. Optional server settings are documented in [.env.example](https://github.com/acebytes/clink-mcp-server/blob/main/.env.example). To build a wheel from this tree, install the development requirements and run `.venv/bin/python -m build`; the wheel is written under `dist/`.
 
 Configure an existing project from that source installation:
 
@@ -90,7 +90,7 @@ cd /absolute/path/to/your-project
 claude --plugin-dir /absolute/path/to/clink-mcp-server/integrations/claude
 ```
 
-Then run `/clink:setup`. This command is available only when that local plugin is loaded; MCP registration alone does not install it. See the [project setup guide](docs/project-setup.md) for selected clients, configuration precedence, conflicts, and recovery.
+Then run `/clink:setup`. This command is available only when that local plugin is loaded; MCP registration alone does not install it. See the [project setup guide](https://github.com/acebytes/clink-mcp-server/blob/main/docs/project-setup.md) for selected clients, configuration precedence, conflicts, and recovery.
 
 For another MCP client, adapt this stdio registration to its configuration format:
 
@@ -105,7 +105,7 @@ For another MCP client, adapt this stdio registration to its configuration forma
 }
 ```
 
-Authenticate the chosen CLI through its own login mechanism before an admitted model call. Ensure the MCP client's `PATH` can find it, or configure its executable path in a manifest. The server does not require hosted-provider API keys. See [getting started](docs/getting-started.md), [CLI configuration](docs/cli-configuration.md), and [migration from PAL](docs/migration.md).
+Authenticate the chosen CLI through its own login mechanism before an admitted model call. Ensure the MCP client's `PATH` can find it, or configure its executable path in a manifest. The server does not require hosted-provider API keys. See [getting started](https://github.com/acebytes/clink-mcp-server/blob/main/docs/getting-started.md), [CLI configuration](https://github.com/acebytes/clink-mcp-server/blob/main/docs/cli-configuration.md), and [migration from PAL](https://github.com/acebytes/clink-mcp-server/blob/main/docs/migration.md).
 
 ## Consult or delegate
 
@@ -142,7 +142,7 @@ Save the returned `task_handle`. Poll, follow up when `followup_available` is tr
 {"action":"cancel","task_handle":"<returned task_handle>"}
 ```
 
-A follow-up resumes the private native session with a new attempt; native handles are separate from consultation `continuation_id` values. Identical submissions with the same request key are deduplicated while retained. Changed input with that key returns `request_key_conflict`. Handles, session mapping, and deduplication are volatile and are lost on restart. See [native task usage](docs/native-cli-tasks.md) for states, bounds, and ownership rules.
+A follow-up resumes the private native session with a new attempt; native handles are separate from consultation `continuation_id` values. Identical submissions with the same request key are deduplicated while retained. Changed input with that key returns `request_key_conflict`. Handles, session mapping, and deduplication are volatile and are lost on restart. See [native task usage](https://github.com/acebytes/clink-mcp-server/blob/main/docs/native-cli-tasks.md) for states, bounds, and ownership rules.
 
 ## Programmatic generation
 
@@ -185,7 +185,7 @@ Schema 3 example `request.json`, using an existing canonical project path:
 
 Generation reads one JSON request followed by EOF and writes one terminal JSON result. Schema 3 uses `model_selection`: Codex and Claude require `{"kind":"explicit","id":"<native model ID>"}`; Grok and Antigravity accept only `{"kind":"native_default"}`. Antigravity still refuses execution because its generation admission is unverified. Schema 2 preserves Codex/Claude's explicit `model` field. The older no-tools schema 1 profile remains refused.
 
-Each accepted request makes at most one top-level CLI invocation, with no wrapper retry, resume, or fallback. Only `status: "completed"` with exit `0` is ordinary success; validate the result's request identity and hashes before using its text. Completion validates final-response transport, not fulfillment. Requested/effective model selection is distinct from CLI-reported actual identity, which remains `null` when unreported. See [generation setup](docs/generation-native-setup.md), [schema 2 protocol](docs/generation-native-protocol.md), and [schema 3 and family discovery](docs/generation-native-families.md).
+Each accepted request makes at most one top-level CLI invocation, with no wrapper retry, resume, or fallback. Only `status: "completed"` with exit `0` is ordinary success; validate the result's request identity and hashes before using its text. Completion validates final-response transport, not fulfillment. Requested/effective model selection is distinct from CLI-reported actual identity, which remains `null` when unreported. See [generation setup](https://github.com/acebytes/clink-mcp-server/blob/main/docs/generation-native-setup.md), [schema 2 protocol](https://github.com/acebytes/clink-mcp-server/blob/main/docs/generation-native-protocol.md), and [schema 3 and family discovery](https://github.com/acebytes/clink-mcp-server/blob/main/docs/generation-native-families.md).
 
 ## Tools and configuration
 
@@ -200,9 +200,9 @@ All 18 tools are enabled unless listed in `DISABLED_TOOLS`; `version` and `listm
 | `planner`, `docgen`, `tracer`, `challenge` | Local workflow guidance. |
 | `listmodels`, `version` | Local configuration discovery and provenance. |
 
-Manifest precedence is bundled defaults → legacy `~/.pal/cli_clients/` → user `~/.clink/cli_clients/` → explicitly bound project `.clink/cli_clients/` → `CLI_CLIENTS_CONFIG_PATH`. Each later manifest replaces the entire named client. Consultation and native task model defaults are separate; generation has its own request and admission contracts. See [CLI configuration](docs/cli-configuration.md).
+Manifest precedence is bundled defaults → legacy `~/.pal/cli_clients/` → user `~/.clink/cli_clients/` → explicitly bound project `.clink/cli_clients/` → `CLI_CLIENTS_CONFIG_PATH`. Each later manifest replaces the entire named client. Consultation and native task model defaults are separate; generation has its own request and admission contracts. See [CLI configuration](https://github.com/acebytes/clink-mcp-server/blob/main/docs/cli-configuration.md).
 
-**Risk & Mitigation:** Native execution can change files or external systems before failure or cancellation. Approved roots constrain project selection and supplied context, not all native authority. Cancellation does not roll back effects or guarantee detached/remote work stopped. Inspect actual changes and independently run checks before accepting work. Clink preserves native permission controls and provides no approval bypass or relay. See [security policy](SECURITY.md).
+**Risk & Mitigation:** Native execution can change files or external systems before failure or cancellation. Approved roots constrain project selection and supplied context, not all native authority. Cancellation does not roll back effects or guarantee detached/remote work stopped. Inspect actual changes and independently run checks before accepting work. Clink preserves native permission controls and provides no approval bypass or relay. See [security policy](https://github.com/acebytes/clink-mcp-server/blob/main/SECURITY.md).
 
 ## Development
 
@@ -215,4 +215,4 @@ Manifest precedence is bundled defaults → legacy `~/.pal/cli_clients/` → use
 .venv/bin/python -m build
 ```
 
-Ordinary verification uses synthetic executables and makes no live model calls. Historical live verification requires the private evidence and approval process; the public verification scripts do not submit model requests. See [release evidence](docs/release-evidence.md) and [changelog](CHANGELOG.md). Report bugs in this fork's [issue tracker](https://github.com/acebytes/clink-mcp-server/issues), excluding secrets and private transcripts.
+Ordinary verification uses synthetic executables and makes no live model calls. Historical live verification requires the private evidence and approval process; the public verification scripts do not submit model requests. See [release evidence](https://github.com/acebytes/clink-mcp-server/blob/main/docs/release-evidence.md) and [changelog](https://github.com/acebytes/clink-mcp-server/blob/main/CHANGELOG.md). Report bugs in this fork's [issue tracker](https://github.com/acebytes/clink-mcp-server/issues), excluding secrets and private transcripts.
