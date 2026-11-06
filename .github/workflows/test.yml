@@ -1,57 +1,110 @@
-name: Tests
+name: Offline checks and release artifacts
 
+# No credentials, publishing, tag creation, or authenticated model calls.
 on:
   pull_request:
+  push:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  unit:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
-
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-
-      - name: Run unit tests
-        run: |
-          # Run only unit tests (exclude simulation tests and integration tests)
-          # Integration tests require local-llama which isn't available in CI
-          python -m pytest tests/ -v --ignore=simulator_tests/ -m "not integration"
+          persist-credentials: false
+      - name: Download dependency wheels in a credential-free container
         env:
-          # Ensure no API key is accidentally used in CI
-          GEMINI_API_KEY: ""
-          OPENAI_API_KEY: ""
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
+          PYTHON_VERSION: ${{ matrix.python-version }}
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
+          mkdir -p "$RUNNER_TEMP/clink-wheels"
+          docker pull "python:$PYTHON_VERSION"
+          docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --tmpfs /tmp:exec,nosuid,size=1g --user "$(id -u):$(id -g)" \
+            -e HOME=/tmp/clink-home -e PIP_DISABLE_PIP_VERSION_CHECK=1 \
+            -v "$PWD:/work:ro" -v "$RUNNER_TEMP/clink-wheels:/wheels" \
+            "python:$PYTHON_VERSION" sh -ec \
+            'mkdir -p "$HOME"; python -m pip download --only-binary=:all: --dest /wheels \
+              -r /work/requirements.txt -r /work/requirements-dev.txt'
+      - name: Run unit tests offline as an unprivileged user
+        env:
+          PYTHON_VERSION: ${{ matrix.python-version }}
+        run: |
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --tmpfs /tmp:exec,nosuid,size=2g --user "$(id -u):$(id -g)" \
+            -e HOME=/tmp/clink-home -e PYTHONDONTWRITEBYTECODE=1 \
+            -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 -e PAL_MCP_FORCE_ENV_OVERRIDE=false \
+            -v "$PWD:/work:ro" -v "$RUNNER_TEMP/clink-wheels:/wheels:ro" -w /work \
+            "python:$PYTHON_VERSION" sh -ec \
+            'mkdir -p "$HOME"; python -m venv /tmp/test-venv; \
+              /tmp/test-venv/bin/pip install --no-index --find-links /wheels \
+                -r requirements.txt -r requirements-dev.txt; \
+              /tmp/test-venv/bin/python -m pytest tests/ -m "not integration and not real_cli" \
+                -p pytest_asyncio.plugin -p pytest_mock -p no:cacheprovider'
 
-      - name: Run black formatter check
-        run: black --check . --exclude="test_simulation_files/"
-
-      - name: Run ruff linter
-        run: ruff check . --exclude test_simulation_files
+  quality-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Check tracked public source tree
+        run: python3 scripts/verify_public_tree.py
+      - name: Download dependency and pinned build-tool wheels without host credentials
+        run: |
+          mkdir -p "$RUNNER_TEMP/clink-wheels" "$RUNNER_TEMP/clink-artifacts"
+          docker pull python:3.12
+          docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --tmpfs /tmp:exec,nosuid,size=1g --user "$(id -u):$(id -g)" \
+            -e HOME=/tmp/clink-home -e PIP_DISABLE_PIP_VERSION_CHECK=1 \
+            -v "$PWD:/work:ro" -v "$RUNNER_TEMP/clink-wheels:/wheels" \
+            python:3.12 sh -ec \
+            'mkdir -p "$HOME"; python -m pip download --only-binary=:all: --dest /wheels \
+              -r /work/requirements.txt -r /work/requirements-dev.txt \
+              build==1.6.1 setuptools==80.9.0 wheel==0.45.1'
+      - name: Check, build, inspect and install artifacts offline outside the checkout
+        run: |
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --tmpfs /tmp:exec,nosuid,size=2g --user "$(id -u):$(id -g)" \
+            -e HOME=/tmp/clink-home -e PYTHONDONTWRITEBYTECODE=1 -e PAL_MCP_FORCE_ENV_OVERRIDE=false \
+            -v "$PWD:/work:ro" -v "$RUNNER_TEMP/clink-wheels:/wheels:ro" \
+            -v "$RUNNER_TEMP/clink-artifacts:/artifacts" -w /tmp \
+            python:3.12 sh -ec \
+            'mkdir -p "$HOME"; python -m venv /tmp/build-venv; \
+              /tmp/build-venv/bin/pip install --no-index --find-links /wheels \
+                -r /work/requirements.txt -r /work/requirements-dev.txt \
+                build==1.6.1 setuptools==80.9.0 wheel==0.45.1; \
+              cd /work; \
+              /tmp/build-venv/bin/python -m ruff check --no-cache .; \
+              /tmp/build-venv/bin/python -m black --check .; \
+              /tmp/build-venv/bin/python -m isort --check-only .; \
+              mkdir /tmp/build-source; cp -R /work/. /tmp/build-source/; \
+              cd /tmp/build-source; \
+              /tmp/build-venv/bin/python -m build --no-isolation --outdir /artifacts; \
+              /tmp/build-venv/bin/python /work/scripts/verify_distribution.py /artifacts; \
+              cd /tmp; \
+              /tmp/build-venv/bin/python /work/scripts/verify_installed_artifacts.py /artifacts \
+                --wheelhouse /wheels --source-root /work'
+      - name: Retain checked artifacts for manual review
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: checked-release-artifacts
+          path: |
+            ${{ runner.temp }}/clink-artifacts/*.whl
+            ${{ runner.temp }}/clink-artifacts/*.tar.gz
+          if-no-files-found: error
+          retention-days: 7

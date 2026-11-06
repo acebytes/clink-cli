@@ -1,0 +1,329 @@
+{
+  "adapter": "grok",
+  "budget": {
+    "automatic_retries": 0,
+    "consumed": 5,
+    "max_per_gate": {
+      "action": 2,
+      "cancel": 2,
+      "permission": 2,
+      "text": 2
+    },
+    "max_replacements": 1,
+    "max_total": 5,
+    "replacements_used": 1
+  },
+  "executable_sha256": "5c8a688251bf61e35370b828b6a353b0a20fcc3f64000de8a91d426039f29cec",
+  "gates": [
+    {
+      "check": "text",
+      "fixture_trust": {
+        "fixture_trust_prepared": true,
+        "fixture_trust_removed": true
+      },
+      "fixture_trust_requested": true,
+      "host_configuration_changed": true,
+      "host_configuration_restored": true,
+      "observation": {
+        "actual_model": "grok-4.7-build",
+        "actual_model_origin": "native_terminal_metadata",
+        "check": "text",
+        "dispatch_count": 1,
+        "error_code": null,
+        "identity_bound": true,
+        "observations": {
+          "fixture_configuration_intact": true,
+          "useful_transformation": true
+        },
+        "output_bytes": 130,
+        "output_sha256": "5ccbdc0a1ad96be96c499fd48a9199003a9a3f979e41ec0fe165925c9f73950c",
+        "passed": true,
+        "pool_running_after_shutdown": 0,
+        "private_input_removed": true,
+        "process_groups_absent_after_cleanup": true,
+        "production_service_used": true,
+        "raw_output_retained": false,
+        "spawn_count": 1,
+        "terminal_status": "completed"
+      },
+      "ordinal": 1
+    },
+    {
+      "check": "action",
+      "fixture_trust": {
+        "fixture_trust_prepared": true,
+        "fixture_trust_removed": true
+      },
+      "fixture_trust_requested": true,
+      "host_configuration_changed": true,
+      "host_configuration_restored": true,
+      "observation": {
+        "actual_model": "grok-4.7-build",
+        "actual_model_origin": "native_terminal_metadata",
+        "check": "action",
+        "dispatch_count": 1,
+        "error_code": null,
+        "identity_bound": true,
+        "observations": {
+          "arithmetic_fixed": true,
+          "fixture_configuration_intact": true,
+          "independent_fixture_test_passed": true
+        },
+        "output_bytes": 278,
+        "output_sha256": "e2eff0c0eaa9726b03958c56ec3af8b290b325ddc06d330e9d6e3807b363e1a0",
+        "passed": true,
+        "pool_running_after_shutdown": 0,
+        "private_input_removed": true,
+        "process_groups_absent_after_cleanup": true,
+        "production_service_used": true,
+        "raw_output_retained": false,
+        "spawn_count": 1,
+        "terminal_status": "completed"
+      },
+      "ordinal": 2
+    },
+    {
+      "check": "permission",
+      "fixture_trust": {
+        "fixture_trust_prepared": true,
+        "fixture_trust_removed": true
+      },
+      "fixture_trust_requested": true,
+      "host_configuration_changed": true,
+      "host_configuration_restored": true,
+      "observation": {
+        "actual_model": null,
+        "actual_model_origin": "unknown",
+        "check": "permission",
+        "dispatch_count": 1,
+        "error_code": "permission_needed",
+        "identity_bound": true,
+        "observations": {
+          "fixture_configuration_intact": true,
+          "protected_file_untouched": true
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "passed": true,
+        "pool_running_after_shutdown": 0,
+        "private_input_removed": true,
+        "process_groups_absent_after_cleanup": true,
+        "production_service_used": true,
+        "raw_output_retained": false,
+        "spawn_count": 1,
+        "terminal_status": "failed"
+      },
+      "ordinal": 3
+    },
+    {
+      "check": "cancel",
+      "fixture_trust": {
+        "fixture_trust_prepared": true,
+        "fixture_trust_removed": true
+      },
+      "fixture_trust_requested": true,
+      "host_configuration_changed": true,
+      "host_configuration_restored": true,
+      "observation": {
+        "actual_model": null,
+        "actual_model_origin": "unknown",
+        "check": "cancel",
+        "dispatch_count": 1,
+        "error_code": "cancelled",
+        "identity_bound": true,
+        "observations": {
+          "fixture_configuration_intact": true,
+          "partial_effect_observed": true,
+          "synthetic_child_absent": true,
+          "synthetic_child_identity_observed": true,
+          "synthetic_child_ready": true
+        },
+        "output_bytes": 0,
+        "output_sha256": null,
+        "passed": true,
+        "pool_exception_diagnostic_capture_failed": false,
+        "pool_exception_observation": null,
+        "pool_running_after_shutdown": 0,
+        "private_input_removed": true,
+        "process_groups_absent_after_cleanup": true,
+        "production_service_used": true,
+        "raw_output_retained": false,
+        "spawn_count": 1,
+        "terminal_status": "cancelled"
+      },
+      "ordinal": 5
+    }
+  ],
+  "limitations": {
+    "cancellation_rolls_back_effects": false,
+    "candidate_only_live_coverage": true,
+    "detached_or_remote_cleanup_verified": false,
+    "fulfillment_verified": false,
+    "native_authentication_independently_verified": false,
+    "native_default_identifies_actual_model": false,
+    "native_internal_work_bounded_by_top_level_budget": false,
+    "native_task_admission_reused": false,
+    "permission_observability": "limited",
+    "side_effects_possible": true
+  },
+  "observed_version": "grok 1.0.70 (f50904eaee6c)",
+  "parser_sha256": "9effe99b6ebe6e9f5ec6276ed0a149b7b8a2920263f4523ac50978c7349f15f3",
+  "profile": "generation_native_v1",
+  "recipe_sha256": "0bc8f09a9a4f068ba3e3b690e8dca9437db1b209f0de370bbd66eb52d49fadf1",
+  "reconciliation": {
+    "compatibility_binding_sha256": "355cf5caa49f13522e2a0b28862e97e2c4dff90b9b3a1b50933a43ff1c93a352",
+    "corrected_candidate_sha256": "5b5e83360a05d25c948bfc810b0d46743a6598959e46591a1f54eeef25eaa552",
+    "excluded_ordinal": 4,
+    "kind": "reviewed_observer_compatibility",
+    "non_cancellation_proof_sha256": "ccdf4ea0c1fe197b14bc7f5b30dec925a9c2ee344c1064ecf5411faf193bf2d5",
+    "observer_counterexample_sha256": "654c4d295013aa1adb3bb0776634a996b39e2753934a289f3e9bf0fe0e1263b0",
+    "original_candidate_sha256": "8b3eca4419d7068868ae7519a00e823135c4c4a509b8d440a660ba5c9aec2d60",
+    "production_equivalence_sha256": "93bced42a20ba0cf6fc9d9560fa928870113aa1fd0f498c260b830abb828d8a2"
+  },
+  "replacement_authorizations": [
+    {
+      "independent_review_sha256": "aa2aaa5539758d7b2743b0586190618a7ecd914e157a0617f3e6c40531cd708e",
+      "ordinal": 5,
+      "prior_ordinal": 4,
+      "replacement_basis": "invalidated_cleanup_evidence",
+      "review_packet_sha256": "6fc0d00bb6c1624359d409a6afb61fd266a445bbbdee27d4475ac41a93e67d36",
+      "reviewed_input_sha256": "5b1f20fec12d048983670e2b89bd67c714615b2424644bb810712707ae121cc7",
+      "runtime_attestation_sha256": "4bab125372df82dea21e7ad0e364ab1d5aa73c687fa01ffe481d35ef7e6bf912",
+      "source_binding_sha256": "411342762c796494185d0ee3251eaae4d899e79654964dd1ea3701b093e78913"
+    }
+  ],
+  "schema_version": 3,
+  "scope": "grok_native_generation_observations",
+  "submissions": [
+    {
+      "candidate_sha256": "8b3eca4419d7068868ae7519a00e823135c4c4a509b8d440a660ba5c9aec2d60",
+      "check": "text",
+      "fixture_config_sha256": "36ce64d8eab7f2d42aa9928bb07dd7f7ed9a3cbf56fda1b762f026e1e1815626",
+      "fixture_project_sha256": "054fbdc2c691a7118f93d3072db9727b8fa065dc4492b0270cfe24b22fcfd804",
+      "ordinal": 1,
+      "passed": true,
+      "preflight": {
+        "path": "docs/verification/family-generation/grok/20261103-text-r1/preflight.json",
+        "sha256": "0a4c151fa18c01df8743d87c4e14a30d3e75350dffa79a6abff90c840f9fa25a"
+      },
+      "receipt": {
+        "path": "docs/verification/family-generation/grok/20261103-text-r1/receipt.json",
+        "sha256": "0f88185448dd57052c0287689d9f25c81bbdc831a20b9752383aaee3105b91e0"
+      },
+      "replacement": false,
+      "reservation": {
+        "path": "docs/verification/family-generation/grok/20261103-text-r1/submitted.json",
+        "sha256": "1a1a3c33126f797755d54d294498e73e5fab893dfe460b99a44f454d79ef3469"
+      }
+    },
+    {
+      "candidate_sha256": "8b3eca4419d7068868ae7519a00e823135c4c4a509b8d440a660ba5c9aec2d60",
+      "check": "action",
+      "fixture_config_sha256": "368ae79140d56d049b72f0250fcca429e412d62c843c806f28356b4a45ac40a3",
+      "fixture_project_sha256": "cae63c5dfd5db454b8ded0e2bcddd65aad28f032fdbd2e33d4f9ed031d18f1c3",
+      "ordinal": 2,
+      "passed": true,
+      "preflight": {
+        "path": "docs/verification/family-generation/grok/20261103-action-r1/preflight.json",
+        "sha256": "8a8fec79f87c0f9293fe94e227976625ca4d94eb412fb07aa2fab7fae8c7c76a"
+      },
+      "receipt": {
+        "path": "docs/verification/family-generation/grok/20261103-action-r1/receipt.json",
+        "sha256": "de2d52eecc1699cf889b7d4aab14368a17a75e007910fa775bd5bb3440438543"
+      },
+      "replacement": false,
+      "reservation": {
+        "path": "docs/verification/family-generation/grok/20261103-action-r1/submitted.json",
+        "sha256": "f4e4b2a366d0e4c3283e500d1fd6299f11c709182ba5db05995045ec8c9a2915"
+      }
+    },
+    {
+      "candidate_sha256": "8b3eca4419d7068868ae7519a00e823135c4c4a509b8d440a660ba5c9aec2d60",
+      "check": "permission",
+      "fixture_config_sha256": "c8959b64208dcbae5fb50fe8b3be44724091d7d1551f0bd5b8145788f392ac62",
+      "fixture_project_sha256": "2beeb0623e563578cf9a72394d3c50285f5c1eb162c28ebf20468c5f5ca0f3d3",
+      "ordinal": 3,
+      "passed": true,
+      "preflight": {
+        "path": "docs/verification/family-generation/grok/20261103-permission-r1/preflight.json",
+        "sha256": "44df9157985acbe720b40b58e2312b041a0249ed9b21a47ec8eaaf904cd92639"
+      },
+      "receipt": {
+        "path": "docs/verification/family-generation/grok/20261103-permission-r1/receipt.json",
+        "sha256": "26c654d2a136d495557e108cdc51c412b52aac33ba060b8bdfdcaa6fcc253762"
+      },
+      "replacement": false,
+      "reservation": {
+        "path": "docs/verification/family-generation/grok/20261103-permission-r1/submitted.json",
+        "sha256": "3822fa12877c39745db70a9ee9ade8028c4ec22279744c2f1408cdea9fe8da73"
+      }
+    },
+    {
+      "candidate_sha256": "8b3eca4419d7068868ae7519a00e823135c4c4a509b8d440a660ba5c9aec2d60",
+      "check": "cancel",
+      "fixture_config_sha256": "5465d5a3f419e4bb2ab44faf537a55294032c10d8d9f9d4e089d94461a88d235",
+      "fixture_project_sha256": "a568512e8e29ae2a099667112ea1d4be6dfe041730e8a2ba97259c89c4ecd052",
+      "ordinal": 4,
+      "passed": true,
+      "preflight": {
+        "path": "docs/verification/family-generation/grok/20261103-cancel-r1/preflight.json",
+        "sha256": "48cc9a0c1eb7281499fb9b5fd07e9a231a47f50541e5ffe6056ee536396218e6"
+      },
+      "receipt": {
+        "path": "docs/verification/family-generation/grok/20261103-cancel-r1/receipt.json",
+        "sha256": "a3f4e0cf43cff937abc521464e043cea03b014063577e9f0accba1774506d799"
+      },
+      "replacement": false,
+      "reservation": {
+        "path": "docs/verification/family-generation/grok/20261103-cancel-r1/submitted.json",
+        "sha256": "2e2a8856f335ae4664f52cf3ad81dd71ffa5a7df6cef45239c5cedddb7bc07ab"
+      }
+    },
+    {
+      "candidate_sha256": "5b5e83360a05d25c948bfc810b0d46743a6598959e46591a1f54eeef25eaa552",
+      "check": "cancel",
+      "fixture_config_sha256": "d9954d21e435071fcf70b1152517cdb7308c47de71a5bd384f87f4b32c910f32",
+      "fixture_project_sha256": "3000b3dda786f5b326689b4a8add114a0bce46d5838423a1dd5be40b7bad4609",
+      "ordinal": 5,
+      "passed": true,
+      "preflight": {
+        "path": "docs/verification/family-generation/grok/20261103-cancel-r2/preflight.json",
+        "sha256": "1180ff2121d4b42d643ea64f351d7e614739fda65b9b2927c941d5d1f1d87979"
+      },
+      "receipt": {
+        "path": "docs/verification/family-generation/grok/20261103-cancel-r2/receipt.json",
+        "sha256": "e39c3509413188807f5ca045143f9e841ab52c8440c272e9d6e32691c3862a28"
+      },
+      "replacement": true,
+      "replacement_basis": "invalidated_cleanup_evidence",
+      "reservation": {
+        "path": "docs/verification/family-generation/grok/20261103-cancel-r2/submitted.json",
+        "sha256": "01af37d7d9255119654ed6ab93571270e5674e1a54fdea766b8b01a9c2b22f1d"
+      }
+    }
+  ],
+  "tested_candidates": [
+    {
+      "candidate_sha256": "8b3eca4419d7068868ae7519a00e823135c4c4a509b8d440a660ba5c9aec2d60",
+      "effective_model": null,
+      "implementation_source_sha256": "e4b0d3b20a882ee6d7111aee92efe1378fb6228b5075e983ac2fa665218348cd",
+      "model_selection": {
+        "kind": "native_default"
+      },
+      "requested_model": null,
+      "source_commit": "e9feea12fcdaafbdef91f570a924f166563409bc",
+      "verifier_sha256": "60c9431477515168239ff265b01680fd0c3a43f4f5a17a9a1e9c51d25e74272b"
+    },
+    {
+      "candidate_sha256": "5b5e83360a05d25c948bfc810b0d46743a6598959e46591a1f54eeef25eaa552",
+      "effective_model": null,
+      "implementation_source_sha256": "3c05c20dc7f0713c7f54f04f6bbc73780aadb5a767aabb54791a9610b98f49bf",
+      "model_selection": {
+        "kind": "native_default"
+      },
+      "requested_model": null,
+      "source_commit": "ab01466c84ba3661e8807b54d26d53b78c94e3bf",
+      "verifier_sha256": "938ef7eca18a0f3f7b6b928b804ff83946a925d3f5deaea14e0df0f88df003a2"
+    }
+  ]
+}

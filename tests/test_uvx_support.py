@@ -1,184 +1,83 @@
-"""
-Test cases for uvx support and environment handling.
-"""
+"""Verify CLI package identity, dependency parity, and installed entrypoint."""
 
-import os
+import json
+import subprocess
 import sys
-import tempfile
 from pathlib import Path
-from unittest import mock
 
-import pytest
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
-
-class TestUvxEnvironmentHandling:
-    """Test uvx-specific environment handling features."""
-
-    def test_dotenv_import_success(self):
-        """Test that dotenv is imported successfully when available."""
-        # Mock successful dotenv import
-        mock_load = mock.MagicMock()
-        mock_values = mock.MagicMock(return_value={})
-        fake_dotenv = mock.MagicMock(load_dotenv=mock_load, dotenv_values=mock_values)
-
-        with mock.patch.dict("sys.modules", {"dotenv": fake_dotenv}):
-            if "utils.env" in sys.modules:
-                del sys.modules["utils.env"]
-            if "server" in sys.modules:
-                del sys.modules["server"]
-
-            import importlib
-
-            import utils.env as env_config
-
-            with tempfile.NamedTemporaryFile("w", delete=False) as tmp_env:
-                temp_env_path = Path(tmp_env.name)
-                tmp_env.write("PAL_MCP_FORCE_ENV_OVERRIDE=false\n")
-
-            try:
-                importlib.reload(env_config)
-                env_config._ENV_PATH = temp_env_path
-                env_config.reload_env()
-                import server  # noqa: F401
-
-                assert mock_load.call_count >= 1
-                _, kwargs = mock_load.call_args
-                assert "dotenv_path" in kwargs
-            finally:
-                temp_env_path.unlink(missing_ok=True)
-
-    def test_dotenv_import_failure_graceful_handling(self):
-        """Test that ImportError for dotenv is handled gracefully (uvx scenario)."""
-        # Mock only the dotenv import to fail
-        original_import = __builtins__["__import__"]
-
-        def mock_import(name, *args, **kwargs):
-            if name == "dotenv":
-                raise ImportError("No module named 'dotenv'")
-            return original_import(name, *args, **kwargs)
-
-        with mock.patch("builtins.__import__", side_effect=mock_import):
-            # This should not raise an exception when trying to import dotenv
-            try:
-                from dotenv import load_dotenv  # noqa: F401
-
-                pytest.fail("Should have raised ImportError for dotenv")
-            except ImportError:
-                # Expected behavior - ImportError should be caught gracefully in server.py
-                pass
-
-    def test_env_file_path_resolution(self):
-        """Test that .env file path is correctly resolved relative to server.py."""
-        import server
-
-        # Test that the server module correctly resolves .env path
-        script_dir = Path(server.__file__).parent
-        expected_env_file = script_dir / ".env"
-
-        # The logic should create a path relative to server.py
-        assert expected_env_file.name == ".env"
-        assert expected_env_file.parent == script_dir
-
-    def test_environment_variables_still_work_without_dotenv(self):
-        """Test that environment variables work even when dotenv is not available."""
-        # Set a test environment variable
-        test_key = "TEST_PAL_MCP_VAR"
-        test_value = "test_value_123"
-
-        with mock.patch.dict(os.environ, {test_key: test_value}):
-            # Environment variable should still be accessible regardless of dotenv
-            assert os.getenv(test_key) == test_value
-
-    def test_dotenv_graceful_fallback_behavior(self):
-        """Test the actual graceful fallback behavior in server module."""
-        # Test that server module handles missing dotenv gracefully
-        # This is tested by the fact that the server can be imported even if dotenv fails
-        import server
-
-        # If we can import server, the graceful handling works
-        assert hasattr(server, "run")
-
-        # Test that environment variables still work
-        test_key = "TEST_FALLBACK_VAR"
-        test_value = "fallback_test_123"
-
-        with mock.patch.dict(os.environ, {test_key: test_value}):
-            assert os.getenv(test_key) == test_value
+ROOT = Path(__file__).resolve().parent.parent
 
 
-class TestUvxProjectConfiguration:
-    """Test uvx-specific project configuration features."""
+def project_metadata():
+    return tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
 
-    def test_pyproject_toml_has_required_uvx_fields(self):
-        """Test that pyproject.toml has all required fields for uvx support."""
-        try:
-            import tomllib
-        except ImportError:
-            # tomllib is only available in Python 3.11+
-            # For older versions, use tomli or skip the test
-            try:
-                import tomli as tomllib
-            except ImportError:
-                pytest.skip("tomllib/tomli not available for TOML parsing")
 
-        pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
-        assert pyproject_path.exists(), "pyproject.toml should exist"
+def test_package_has_clink_identity_entrypoint_and_supported_python_floor():
+    from config import __version__
 
-        with open(pyproject_path, "rb") as f:
-            pyproject_data = tomllib.load(f)
+    project = project_metadata()
+    assert project["name"] == "clink-mcp-server"
+    assert project["version"] == __version__ == "0.2.0"
+    assert project["requires-python"] == ">=3.10"
+    assert project["scripts"] == {"clink-mcp-server": "server:run", "clink": "clink.cli:main"}
 
-        # Check required uvx fields
-        assert "project" in pyproject_data
-        project = pyproject_data["project"]
 
-        # Essential fields for uvx
-        assert "name" in project
-        assert project["name"] == "pal-mcp-server"
-        assert "dependencies" in project
-        assert "requires-python" in project
+def test_dependencies_match_minimal_requirements_exactly():
+    requirements = {
+        line.strip()
+        for line in (ROOT / "requirements.txt").read_text().splitlines()
+        if line.strip() and not line.startswith("#")
+    }
+    assert (
+        set(project_metadata()["dependencies"])
+        == requirements
+        == {"mcp>=1.0.0,<2", "pydantic>=2.0.0", "python-dotenv>=1.0.0"}
+    )
 
-        # Script entry point for uvx
-        assert "scripts" in project
-        assert "pal-mcp-server" in project["scripts"]
-        assert project["scripts"]["pal-mcp-server"] == "server:run"
 
-    def test_pyproject_dependencies_match_requirements(self):
-        """Test that pyproject.toml dependencies align with requirements.txt."""
-        try:
-            import tomllib
-        except ImportError:
-            # tomllib is only available in Python 3.11+
-            try:
-                import tomli as tomllib
-            except ImportError:
-                pytest.skip("tomllib/tomli not available for TOML parsing")
+def test_entrypoint_imports_from_arbitrary_cwd_without_keys_or_cli(tmp_path):
+    environment = {
+        "PATH": str(tmp_path),
+        "HOME": str(tmp_path),
+        "PYTHONPATH": str(ROOT),
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PAL_MCP_FORCE_ENV_OVERRIDE": "false",
+    }
+    result = subprocess.run(
+        [sys.executable, "-c", "import json,server; print(json.dumps({'callable':callable(server.run)}))"],
+        cwd=tmp_path,
+        env=environment,
+        text=True,
+        capture_output=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == {"callable": True}
 
-        # Read pyproject.toml
-        pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
-        with open(pyproject_path, "rb") as f:
-            pyproject_data = tomllib.load(f)
 
-        pyproject_deps = set(pyproject_data["project"]["dependencies"])
-
-        # Read requirements.txt
-        requirements_path = Path(__file__).parent.parent / "requirements.txt"
-        if requirements_path.exists():
-            # Note: We primarily validate pyproject.toml has core dependencies
-            # requirements.txt might have additional dev dependencies
-
-            # Core dependencies should be present in both
-            core_packages = {"mcp", "openai", "google-genai", "pydantic", "python-dotenv"}
-
-            for pkg in core_packages:
-                pyproject_has = any(pkg in dep for dep in pyproject_deps)
-
-                assert pyproject_has, f"{pkg} should be in pyproject.toml dependencies"
-                # requirements.txt might have additional dev dependencies
-
-    def test_uvx_entry_point_callable(self):
-        """Test that the uvx entry point (server:run) is callable."""
-        import server
-
-        # The entry point should reference a callable function
-        assert hasattr(server, "run"), "server module should have a 'run' function"
-        assert callable(server.run), "server.run should be callable"
+def test_optional_dotenv_fallback_preserves_runtime_environment(tmp_path):
+    code = """import builtins, json, os
+original = builtins.__import__
+def guarded(name, *args, **kwargs):
+    if name == "dotenv":
+        raise ImportError("unavailable")
+    return original(name, *args, **kwargs)
+builtins.__import__ = guarded
+import utils.env
+print(json.dumps({"value": utils.env.get_env("CLINK_SYNTHETIC_TEST_VALUE")}))
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=tmp_path,
+        env={"PYTHONPATH": str(ROOT), "HOME": str(tmp_path), "CLINK_SYNTHETIC_TEST_VALUE": "retained"},
+        text=True,
+        capture_output=True,
+        timeout=10,
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == {"value": "retained"}

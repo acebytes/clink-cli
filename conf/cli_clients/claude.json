@@ -1,24 +1,38 @@
 {
+  "schema_version": 1,
   "name": "claude",
+  "adapter": "claude",
   "command": "claude",
-  "additional_args": [
-    "--permission-mode",
-    "acceptEdits",
-    "--model",
-    "sonnet"
-  ],
+  "default_model": "sonnet",
+  "additional_args": [],
   "env": {},
+  "native_task": {
+    "enabled": true,
+    "inherit_env": [],
+    "required_env": [],
+    "roles": {
+      "default": {
+        "prompt_path": "../../systemprompts/clink/native_default.txt"
+      },
+      "planner": {
+        "prompt_path": "../../systemprompts/clink/native_planner.txt"
+      },
+      "codereviewer": {
+        "prompt_path": "../../systemprompts/clink/native_codereviewer.txt"
+      }
+    }
+  },
   "roles": {
     "default": {
-      "prompt_path": "systemprompts/clink/default.txt",
+      "prompt_path": "../../systemprompts/clink/default.txt",
       "role_args": []
     },
     "planner": {
-      "prompt_path": "systemprompts/clink/default_planner.txt",
+      "prompt_path": "../../systemprompts/clink/default_planner.txt",
       "role_args": []
     },
     "codereviewer": {
-      "prompt_path": "systemprompts/clink/default_codereviewer.txt",
+      "prompt_path": "../../systemprompts/clink/default_codereviewer.txt",
       "role_args": []
     }
   }

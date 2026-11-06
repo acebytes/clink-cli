@@ -1,64 +1,46 @@
-# Git
-.git
-.gitignore
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.venv/
-.pal_venv/
-ENV/
-env.bak/
-venv.bak/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-logs/*.log*
-*.log
-
-# Docker
-Dockerfile*
-docker-compose*
-.dockerignore
-
-# Documentation
-docs/
-README.md
-*.md
-
-# Tests
-tests/
-simulator_tests/
-test_simulation_files/
-pytest.ini
-
-# Development
-.env
-.env.local
-examples/
-code_quality_checks.sh
-run_integration_tests.sh
-
-# Security - Sensitive files
-*.key
-*.pem
-*.p12
-*.pfx
-*.crt
-*.csr
-secrets/
-private/
+# An allowlist keeps credentials, local state, evidence, provider catalogs,
+# tests and Git history out of the build context.
+**
+!Dockerfile
+!pyproject.toml
+!requirements.txt
+!README.md
+!LICENSE
+!MANIFEST.in
+!server.py
+!config.py
+!clink/
+!clink/**/
+!clink/**/*.py
+!clink/resources/
+!clink/resources/codex-0.166.0-models-direct.json
+!clink/resources/codex-0.166.0-models-generation.json
+!clink/resources/native-claude-2.1.304-admission.json
+!clink/resources/native-grok-1.0.70-admission.json
+!clink/resources/native-agy-1.4.12-admission.json
+!clink/resources/native-generation-codex-0.166.0-admission.json
+!clink/resources/native-generation-claude-2.1.304-admission.json
+!clink/resources/native-generation-grok-1.0.70-admission.json
+!clink/resources/PROVENANCE.md
+!clink/resources/CODEX-LICENSE
+!clink/resources/CODEX-NOTICE
+!tools/
+!tools/**/
+!tools/**/*.py
+!utils/
+!utils/**/
+!utils/**/*.py
+!systemprompts/
+!systemprompts/**/
+!systemprompts/**/*.py
+!systemprompts/clink/
+!systemprompts/clink/*.txt
+!conf/
+!conf/__init__.py
+!conf/cli_clients/
+!conf/cli_clients/*.json
+!docker/
+!docker/scripts/
+!docker/scripts/healthcheck.py
+**/__pycache__/
+**/*.py[cod]

@@ -1,11 +1,12 @@
 {
-  "comment": "Example Claude Desktop configuration for PAL MCP Server",
-  "comment2": "Run './run-server.sh -c' to get the exact configuration for your system",
-  "comment3": "For platform-specific examples, see the examples/ directory",
+  "comment": "Example Claude Desktop configuration for clink-mcp-server; replace absolute paths for your checkout",
+  "comment2": "Run ./run-server.sh --setup explicitly first. Local discovery needs no CLI authentication; delegation requires its operation-specific admission.",
   "mcpServers": {
-    "pal": {
-      "command": "/path/to/pal-mcp-server/.pal_venv/bin/python",
-      "args": ["/path/to/pal-mcp-server/server.py"]
+    "clink": {
+      "command": "/path/to/clink-mcp-server/.venv/bin/python",
+      "args": [
+        "/path/to/clink-mcp-server/server.py"
+      ]
     }
   }
 }

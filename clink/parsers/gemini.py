@@ -1,98 +1,110 @@
-"""Parser for Gemini CLI JSON output."""
+"""Parser for Gemini CLI JSON output; execution availability is adapter policy."""
 
 from __future__ import annotations
 
-import json
 from typing import Any
 
-from .base import BaseParser, ParsedCLIResponse, ParserError
+from .base import (
+    BaseParser,
+    ParsedCLIResponse,
+    ParserError,
+    bounded_counts,
+    bounded_number,
+    cli_failure,
+    load_json,
+    model_identifier,
+)
+
+_TOKEN_FIELDS = ("prompt", "candidates", "total", "cached", "thoughts", "tool")
 
 
 class GeminiJSONParser(BaseParser):
-    """Parse stdout produced by `gemini -o json`."""
+    """Require response text and reject explicit Gemini errors."""
 
     name = "gemini_json"
 
     def parse(self, stdout: str, stderr: str) -> ParsedCLIResponse:
         if not stdout.strip():
-            raise ParserError("Gemini CLI returned empty stdout while JSON output was expected")
+            raise cli_failure(stderr, message="Gemini CLI returned empty stdout")
 
-        try:
-            payload: dict[str, Any] = json.loads(stdout)
-        except json.JSONDecodeError as exc:  # pragma: no cover - defensive logging
-            raise ParserError(f"Failed to decode Gemini CLI JSON output: {exc}") from exc
+        payload = load_json(stdout)
+        if not isinstance(payload, dict):
+            raise ParserError("Gemini CLI JSON must be an object")
+        if "type" in payload and not isinstance(payload["type"], str):
+            raise ParserError("Gemini CLI response type must be textual")
+        if "status" in payload and not isinstance(payload["status"], str):
+            raise ParserError("Gemini CLI response status must be textual")
+        if (
+            payload.get("type") in ("error", "failed")
+            or payload.get("status") in ("error", "failed", "cancelled", "aborted", "interrupted")
+            or payload.get("error") is not None
+            or payload.get("errors")
+            or payload.get("is_error", False) is not False
+        ):
+            raise cli_failure(payload, stderr, message="Gemini CLI reported a failure")
+        if payload.get("status", "success") not in ("completed", "success"):
+            raise ParserError("Gemini CLI response status did not indicate success")
 
+        metadata = self._metadata(payload, stderr)
         response = payload.get("response")
-        response_text = response.strip() if isinstance(response, str) else ""
+        if not isinstance(response, str):
+            raise ParserError("Gemini CLI response must be textual")
+        if not response.strip():
+            raise cli_failure(stderr, message="Gemini CLI response was empty", code="empty_response")
 
-        metadata: dict[str, Any] = {"raw": payload}
+        return ParsedCLIResponse(content=response.strip(), metadata=metadata)
 
-        stats = payload.get("stats")
-        if isinstance(stats, dict):
-            metadata["stats"] = stats
-            models = stats.get("models")
-            if isinstance(models, dict) and models:
-                model_name = next(iter(models.keys()))
-                metadata["model_used"] = model_name
-                model_stats = models.get(model_name) or {}
-                tokens = model_stats.get("tokens")
-                if isinstance(tokens, dict):
-                    metadata["token_usage"] = tokens
-                api_stats = model_stats.get("api")
-                if isinstance(api_stats, dict):
-                    metadata["latency_ms"] = api_stats.get("totalLatencyMs")
+    def _metadata(self, payload: dict[str, Any], stderr: str) -> dict[str, Any]:
+        stats = payload.get("stats", {})
+        if not isinstance(stats, dict):
+            raise ParserError("Gemini CLI stats must be an object")
+        pending: list[object] = [stats]
+        while pending:
+            record = pending.pop()
+            if isinstance(record, list):
+                pending.extend(record)
+            elif isinstance(record, dict):
+                if "status" in record and not isinstance(record["status"], str):
+                    raise ParserError("Gemini CLI stats status must be textual")
+                if (
+                    record.get("type") in ("error", "failed")
+                    or record.get("status") in ("error", "failed", "cancelled", "aborted", "interrupted")
+                    or record.get("error") is not None
+                    or record.get("errors")
+                    or record.get("is_error", False) is not False
+                ):
+                    raise cli_failure(record, stderr, message="Gemini CLI stats reported a failure")
+                for field in ("totalErrors", "totalFail", "fail"):
+                    if field not in record:
+                        continue
+                    errors = record[field]
+                    if not isinstance(errors, int) or isinstance(errors, bool) or errors < 0:
+                        raise ParserError("Gemini CLI failure counts must be nonnegative integers")
+                    if errors:
+                        raise cli_failure(stderr, message="Gemini CLI stats reported a failure")
+                pending.extend(record.values())
+        models = stats.get("models", {})
+        if not isinstance(models, dict):
+            raise ParserError("Gemini CLI model stats must be objects")
 
-        if response_text:
-            if stderr and stderr.strip():
-                metadata["stderr"] = stderr.strip()
-            return ParsedCLIResponse(content=response_text, metadata=metadata)
+        metadata: dict[str, Any] = {}
+        for model_stats in models.values():
+            if not isinstance(model_stats, dict):
+                raise ParserError("Gemini CLI model stats must be objects")
+            api_stats = model_stats.get("api", {})
+            if not isinstance(api_stats, dict):
+                raise ParserError("Gemini CLI API stats must be an object")
 
-        fallback_message, extra_metadata = self._build_fallback_message(payload, stderr)
-        if fallback_message:
-            metadata.update(extra_metadata)
-            if stderr and stderr.strip():
-                metadata["stderr"] = stderr.strip()
-            return ParsedCLIResponse(content=fallback_message, metadata=metadata)
+        if len(models) == 1:
+            model_name, model_stats = next(iter(models.items()))
+            actual_model = model_identifier(model_name)
+            if actual_model:
+                metadata["actual_model"] = actual_model
+            tokens = bounded_counts(model_stats.get("tokens"), _TOKEN_FIELDS)
+            if tokens:
+                metadata["usage"] = tokens
+            latency = bounded_number(model_stats.get("api", {}).get("totalLatencyMs"))
+            if latency is not None:
+                metadata["latency_ms"] = latency
 
-        raise ParserError("Gemini CLI response is missing a textual 'response' field")
-
-    def _build_fallback_message(self, payload: dict[str, Any], stderr: str) -> tuple[str | None, dict[str, Any]]:
-        """Derive a human friendly message when Gemini returns empty content."""
-
-        stderr_text = stderr.strip() if stderr else ""
-        stderr_lower = stderr_text.lower()
-        extra_metadata: dict[str, Any] = {"empty_response": True}
-
-        if "429" in stderr_lower or "rate limit" in stderr_lower:
-            extra_metadata["rate_limit_status"] = 429
-            message = (
-                "Gemini request returned no content because the API reported a 429 rate limit. "
-                "Retry after reducing the request size or waiting for quota to replenish."
-            )
-            return message, extra_metadata
-
-        stats = payload.get("stats")
-        if isinstance(stats, dict):
-            models = stats.get("models")
-            if isinstance(models, dict) and models:
-                first_model = next(iter(models.values()))
-                if isinstance(first_model, dict):
-                    api_stats = first_model.get("api")
-                    if isinstance(api_stats, dict):
-                        total_errors = api_stats.get("totalErrors")
-                        total_requests = api_stats.get("totalRequests")
-                        if isinstance(total_errors, int) and total_errors > 0:
-                            extra_metadata["api_total_errors"] = total_errors
-                            if isinstance(total_requests, int):
-                                extra_metadata["api_total_requests"] = total_requests
-                            message = (
-                                "Gemini CLI returned no textual output. The API reported "
-                                f"{total_errors} error(s); see stderr for details."
-                            )
-                            return message, extra_metadata
-
-        if stderr_text:
-            message = "Gemini CLI returned no textual output. Raw stderr was preserved for troubleshooting."
-            return message, extra_metadata
-
-        return None, extra_metadata
+        return metadata

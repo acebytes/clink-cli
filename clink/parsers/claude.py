@@ -2,136 +2,103 @@
 
 from __future__ import annotations
 
-import json
 from typing import Any
 
-from .base import BaseParser, ParsedCLIResponse, ParserError
+from .base import (
+    BaseParser,
+    ParsedCLIResponse,
+    ParserError,
+    bounded_counts,
+    bounded_number,
+    cli_failure,
+    load_json,
+    model_identifier,
+)
+
+_USAGE_FIELDS = ("input_tokens", "output_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")
 
 
 class ClaudeJSONParser(BaseParser):
-    """Parse stdout produced by `claude --output-format json`."""
+    """Require a successful terminal result from Claude's JSON envelope."""
 
     name = "claude_json"
 
     def parse(self, stdout: str, stderr: str) -> ParsedCLIResponse:
         if not stdout.strip():
-            raise ParserError("Claude CLI returned empty stdout while JSON output was expected")
+            raise cli_failure(stderr, message="Claude CLI returned empty stdout")
 
-        try:
-            loaded = json.loads(stdout)
-        except json.JSONDecodeError as exc:  # pragma: no cover - defensive logging
-            raise ParserError(f"Failed to decode Claude CLI JSON output: {exc}") from exc
-
-        events: list[dict[str, Any]] | None = None
-        assistant_entry: dict[str, Any] | None = None
-
+        loaded = load_json(stdout)
         if isinstance(loaded, dict):
-            payload: dict[str, Any] = loaded
-        elif isinstance(loaded, list):
-            events = [item for item in loaded if isinstance(item, dict)]
-            result_entry = next(
-                (item for item in events if item.get("type") == "result" or "result" in item),
-                None,
-            )
-            assistant_entry = next(
-                (item for item in reversed(events) if item.get("type") == "assistant"),
-                None,
-            )
-            payload = result_entry or assistant_entry or (events[-1] if events else {})
-            if not payload:
-                raise ParserError("Claude CLI JSON array did not contain any parsable objects")
+            events = [loaded]
+        elif isinstance(loaded, list) and loaded and all(isinstance(event, dict) for event in loaded):
+            events = loaded
         else:
-            raise ParserError("Claude CLI returned unexpected JSON payload")
+            raise ParserError("Claude CLI JSON must be an object or a nonempty array of objects")
 
-        metadata = self._build_metadata(payload, stderr)
-        if events is not None:
-            metadata["raw_events"] = events
-            metadata["raw"] = loaded
+        for index, event in enumerate(events):
+            event_type = event.get("type")
+            subtype = event.get("subtype")
+            if (
+                not isinstance(event_type, str)
+                or not event_type
+                or (subtype is not None and not isinstance(subtype, str))
+            ):
+                raise ParserError("Claude CLI events must contain valid type fields")
+            if "status" in event and not isinstance(event["status"], str):
+                raise ParserError("Claude CLI event status must be textual")
+            if (
+                event_type == "error"
+                or event.get("status") in ("error", "failed", "cancelled", "aborted", "interrupted")
+                or event.get("is_error", False) is not False
+                or event.get("error") is not None
+                or event.get("errors")
+                or (isinstance(subtype, str) and subtype.lower().startswith("error"))
+            ):
+                raise cli_failure(event, event.get("result"), stderr, message="Claude CLI reported a failed result")
+            if event_type == "result" and index != len(events) - 1:
+                raise ParserError("Claude CLI emitted events after its terminal result")
+            message = event.get("message")
+            blocks = message.get("content") if isinstance(message, dict) else None
+            if isinstance(blocks, list):
+                for block in blocks:
+                    if not isinstance(block, dict):
+                        continue
+                    subtype = block.get("subtype")
+                    if block.get("type") == "error" or (
+                        block.get("type") == "tool_result"
+                        and (
+                            block.get("is_error", False) is not False
+                            or block.get("error") is not None
+                            or (isinstance(subtype, str) and subtype.lower().startswith("error"))
+                        )
+                    ):
+                        raise cli_failure(block, stderr, message="Claude CLI tool execution failed")
+
+        payload = events[-1]
+        if payload["type"] != "result" or payload.get("subtype") != "success":
+            raise cli_failure(payload, stderr, message="Claude CLI did not include a successful terminal result")
+        if payload.get("status", "success") not in ("completed", "success"):
+            raise ParserError("Claude CLI terminal status did not indicate success")
 
         result = payload.get("result")
-        content: str = ""
-        if isinstance(result, str):
-            content = result.strip()
-        elif isinstance(result, list):
-            # Some CLI flows may emit a list of strings; join them conservatively.
-            joined = [part.strip() for part in result if isinstance(part, str) and part.strip()]
-            content = "\n".join(joined)
+        if not isinstance(result, str):
+            raise ParserError("Claude CLI result must be textual")
+        if not result.strip():
+            raise cli_failure(stderr, message="Claude CLI result was empty", code="empty_response")
 
-        if content:
-            return ParsedCLIResponse(content=content, metadata=metadata)
-
-        message = self._extract_message(payload)
-        if message is None and assistant_entry and assistant_entry is not payload:
-            message = self._extract_message(assistant_entry)
-        if message:
-            return ParsedCLIResponse(content=message, metadata=metadata)
-
-        stderr_text = stderr.strip()
-        if stderr_text:
-            metadata.setdefault("stderr", stderr_text)
-            return ParsedCLIResponse(
-                content="Claude CLI returned no textual result. Raw stderr was preserved for troubleshooting.",
-                metadata=metadata,
-            )
-
-        raise ParserError("Claude CLI response did not contain a textual result")
-
-    def _build_metadata(self, payload: dict[str, Any], stderr: str) -> dict[str, Any]:
-        metadata: dict[str, Any] = {
-            "raw": payload,
-            "is_error": bool(payload.get("is_error")),
-        }
-
-        type_field = payload.get("type")
-        if isinstance(type_field, str):
-            metadata["type"] = type_field
-        subtype_field = payload.get("subtype")
-        if isinstance(subtype_field, str):
-            metadata["subtype"] = subtype_field
-
-        duration_ms = payload.get("duration_ms")
-        if isinstance(duration_ms, (int, float)):
-            metadata["duration_ms"] = duration_ms
-        api_duration = payload.get("duration_api_ms")
-        if isinstance(api_duration, (int, float)):
-            metadata["duration_api_ms"] = api_duration
-
-        usage = payload.get("usage")
-        if isinstance(usage, dict):
+        metadata: dict[str, Any] = {}
+        for field in ("duration_ms", "duration_api_ms", "num_turns"):
+            number = bounded_number(payload.get(field))
+            if number is not None:
+                metadata[field] = number
+        usage = bounded_counts(payload.get("usage"), _USAGE_FIELDS)
+        if usage:
             metadata["usage"] = usage
 
         model_usage = payload.get("modelUsage")
-        if isinstance(model_usage, dict) and model_usage:
-            metadata["model_usage"] = model_usage
-            first_model = next(iter(model_usage.keys()))
-            metadata["model_used"] = first_model
+        if isinstance(model_usage, dict) and len(model_usage) == 1:
+            actual_model = model_identifier(next(iter(model_usage)))
+            if actual_model and isinstance(model_usage[actual_model], dict):
+                metadata["actual_model"] = actual_model
 
-        permission_denials = payload.get("permission_denials")
-        if isinstance(permission_denials, list) and permission_denials:
-            metadata["permission_denials"] = permission_denials
-
-        session_id = payload.get("session_id")
-        if isinstance(session_id, str) and session_id:
-            metadata["session_id"] = session_id
-        uuid_field = payload.get("uuid")
-        if isinstance(uuid_field, str) and uuid_field:
-            metadata["uuid"] = uuid_field
-
-        stderr_text = stderr.strip()
-        if stderr_text:
-            metadata.setdefault("stderr", stderr_text)
-
-        return metadata
-
-    def _extract_message(self, payload: dict[str, Any]) -> str | None:
-        message = payload.get("message")
-        if isinstance(message, str) and message.strip():
-            return message.strip()
-
-        error_field = payload.get("error")
-        if isinstance(error_field, dict):
-            error_message = error_field.get("message")
-            if isinstance(error_message, str) and error_message.strip():
-                return error_message.strip()
-
-        return None
+        return ParsedCLIResponse(content=result.strip(), metadata=metadata)

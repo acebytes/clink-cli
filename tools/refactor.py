@@ -332,7 +332,7 @@ class RefactorTool(WorkflowTool):
     def prepare_expert_analysis_context(self, consolidated_findings) -> str:
         """Prepare context for external model call for final refactoring validation."""
         context_parts = [
-            f"=== REFACTORING ANALYSIS REQUEST ===\\n{self.initial_request or 'Refactoring workflow initiated'}\\n=== END REQUEST ==="
+            f"=== REFACTORING ANALYSIS REQUEST ===\\n{self.get_expert_initial_request(self.initial_request, 'Refactoring workflow initiated')}\\n=== END REQUEST ==="
         ]
 
         # Add investigation summary

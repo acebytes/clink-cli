@@ -1,0 +1,8 @@
+{
+  "conversation_id": "",
+  "status": "ERROR",
+  "response": "",
+  "duration_seconds": 0.01,
+  "num_turns": 0,
+  "error": "Synthetic failure."
+}

@@ -1,0 +1,80 @@
+[
+  {
+    "name": "grok",
+    "request": {
+      "schema_version": 3,
+      "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+      "cli": "grok",
+      "model_selection": {
+        "kind": "native_default"
+      },
+      "instructions": "Keep Unicode café and whitespace\r\n",
+      "input": "  source 🦉\n",
+      "execution_mode": "native",
+      "project_dir": "/private/tmp",
+      "timeout_seconds": 120.125
+    },
+    "timeout_ms": 120125,
+    "canonical_utf8_hex": "7b22636c69223a2267726f6b222c22657865637574696f6e5f6d6f6465223a226e6174697665222c22696e707574223a222020736f7572636520f09fa6895c6e222c22696e737472756374696f6e73223a224b65657020556e69636f646520636166c3a920616e6420776869746573706163655c725c6e222c226d6f64656c5f73656c656374696f6e223a7b226b696e64223a226e61746976655f64656661756c74227d2c2270726f6a6563745f646972223a222f707269766174652f746d70222c22736368656d615f76657273696f6e223a332c2274696d656f75745f6d73223a3132303132357d",
+    "request_sha256": "6c65acdcc6937b56b6f6afd6c6fc1da1e1e475112dfb0721e38f1f9255dbe8de"
+  },
+  {
+    "name": "agy",
+    "request": {
+      "schema_version": 3,
+      "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+      "cli": "agy",
+      "model_selection": {
+        "kind": "native_default"
+      },
+      "instructions": "Keep Unicode café and whitespace\r\n",
+      "input": "  source 🦉\n",
+      "execution_mode": "native",
+      "project_dir": "/private/tmp",
+      "timeout_seconds": 120.125
+    },
+    "timeout_ms": 120125,
+    "canonical_utf8_hex": "7b22636c69223a22616779222c22657865637574696f6e5f6d6f6465223a226e6174697665222c22696e707574223a222020736f7572636520f09fa6895c6e222c22696e737472756374696f6e73223a224b65657020556e69636f646520636166c3a920616e6420776869746573706163655c725c6e222c226d6f64656c5f73656c656374696f6e223a7b226b696e64223a226e61746976655f64656661756c74227d2c2270726f6a6563745f646972223a222f707269766174652f746d70222c22736368656d615f76657273696f6e223a332c2274696d656f75745f6d73223a3132303132357d",
+    "request_sha256": "d7f00749f48adbfc98401f23a86e7d376d1ee1413c697ba8b4d10d0337c5f962"
+  },
+  {
+    "name": "codex",
+    "request": {
+      "schema_version": 3,
+      "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+      "cli": "codex",
+      "model_selection": {
+        "kind": "explicit",
+        "id": "gpt-6.1-sol"
+      },
+      "instructions": "Keep Unicode café and whitespace\r\n",
+      "input": "  source 🦉\n",
+      "execution_mode": "native",
+      "project_dir": "/private/tmp",
+      "timeout_seconds": 120.125
+    },
+    "timeout_ms": 120125,
+    "canonical_utf8_hex": "7b22636c69223a22636f646578222c22657865637574696f6e5f6d6f6465223a226e6174697665222c22696e707574223a222020736f7572636520f09fa6895c6e222c22696e737472756374696f6e73223a224b65657020556e69636f646520636166c3a920616e6420776869746573706163655c725c6e222c226d6f64656c5f73656c656374696f6e223a7b226964223a226770742d362e312d736f6c222c226b696e64223a226578706c69636974227d2c2270726f6a6563745f646972223a222f707269766174652f746d70222c22736368656d615f76657273696f6e223a332c2274696d656f75745f6d73223a3132303132357d",
+    "request_sha256": "6531d8a8179817a583d2c3453b90a48cfcdae35db3a592a178cf55812c27386c"
+  },
+  {
+    "name": "claude",
+    "request": {
+      "schema_version": 3,
+      "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+      "cli": "claude",
+      "model_selection": {
+        "kind": "explicit",
+        "id": "claude-opus-5-5"
+      },
+      "instructions": "Keep Unicode café and whitespace\r\n",
+      "input": "  source 🦉\n",
+      "execution_mode": "native",
+      "project_dir": "/private/tmp",
+      "timeout_seconds": 120.125
+    },
+    "timeout_ms": 120125,
+    "canonical_utf8_hex": "7b22636c69223a22636c61756465222c22657865637574696f6e5f6d6f6465223a226e6174697665222c22696e707574223a222020736f7572636520f09fa6895c6e222c22696e737472756374696f6e73223a224b65657020556e69636f646520636166c3a920616e6420776869746573706163655c725c6e222c226d6f64656c5f73656c656374696f6e223a7b226964223a22636c617564652d6f7075732d352d35222c226b696e64223a226578706c69636974227d2c2270726f6a6563745f646972223a222f707269766174652f746d70222c22736368656d615f76657273696f6e223a332c2274696d656f75745f6d73223a3132303132357d",
+    "request_sha256": "6b5de799eeb91bb4c7f8164f0bddf013dd6bb31f80fdbc757fbcfacfe87caeed"
+  }
+]

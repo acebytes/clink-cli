@@ -1,300 +1,270 @@
-"""Integration test for ConsensusTool using OpenAI and Gemini recordings."""
-
-from __future__ import annotations
-
-import json
-import os
-from pathlib import Path
+"""Offline server/state integration for blinded CLI consensus."""
 
 import pytest
+from mcp.types import TextContent
 
-from providers.registry import ModelProviderRegistry
-from providers.shared import ProviderType
-from tests.transport_helpers import inject_transport
-from tools.consensus import ConsensusTool
-
-# Directories for recorded HTTP interactions
-CASSETTE_DIR = Path(__file__).parent / "openai_cassettes"
-CASSETTE_DIR.mkdir(exist_ok=True)
-
-# Mapping of OpenAI model names to their cassette files
-CONSENSUS_CASSETTES = {
-    "gpt-5": CASSETTE_DIR / "consensus_step1_gpt5_for.json",
-    "gpt-5.2": CASSETTE_DIR / "consensus_step1_gpt52_for.json",
-}
-
-GEMINI_REPLAY_DIR = Path(__file__).parent / "gemini_cassettes"
-GEMINI_REPLAY_DIR.mkdir(exist_ok=True)
-GEMINI_REPLAY_ID = "consensus/step2_gemini25_flash_against/mldev"
-GEMINI_REPLAY_PATH = GEMINI_REPLAY_DIR / "consensus" / "step2_gemini25_flash_against" / "mldev.json"
+from clink.contracts import BackendError
+from tests.test_consensus import FakeBackend, arguments, payload
+from tools.shared.exceptions import ToolExecutionError
+from utils.call_state import conversation_call
+from utils.conversation_memory import get_thread
 
 
-@pytest.mark.integration
+@pytest.fixture
+def backend(tmp_path, monkeypatch):
+    fake = FakeBackend(tmp_path)
+    monkeypatch.setattr("clink.backend.get_backend", lambda: fake)
+    return fake
+
+
 @pytest.mark.asyncio
-@pytest.mark.no_mock_provider
-@pytest.mark.parametrize("openai_model", ["gpt-5", "gpt-5.2"])
-async def test_consensus_multi_model_consultations(monkeypatch, openai_model):
-    """Exercise ConsensusTool against OpenAI model (supporting) and gemini-2.5-flash (critical).
+async def test_server_keeps_cross_tool_history_private_and_restores_sequential_consensus(backend):
+    import server
 
-    Tests both gpt-5 and gpt-5.2 to ensure regression coverage for both model families.
-    """
+    async with conversation_call("chat", {"prompt": "HISTORY_PRIVATE_CALLER"}) as call:
+        call.commit(
+            [TextContent(type="text", text="HISTORY_PRIVATE_ASSISTANT")],
+            user_content="HISTORY_PRIVATE_CALLER",
+            assistant_content="HISTORY_PRIVATE_ASSISTANT",
+        )
+        continuation_id = call.continuation_id
+    first_args = arguments(continuation_id=continuation_id)
+    first = payload(await server.handle_call_tool("consensus", first_args))
+    assert first["model_response"]["status"] == "success"
+    assert first["current_model_index"] == 1
+    next_args = arguments(step="PRIVATE_CALLER_SYNTHESIS_NOTES", step_number=2, continuation_id=continuation_id)
+    next_args.pop("models")
+    final = payload(await server.handle_call_tool("consensus", next_args))
+    assert final["consensus_status"] == "complete"
+    assert len(backend.requests) == 2
+    for request in backend.requests:
+        assert request.prompt == first_args["step"]
+        assert "HISTORY_PRIVATE" not in request.prompt + request.system_prompt
+        assert "PRIVATE_CALLER_SYNTHESIS" not in request.prompt + request.system_prompt
+        assert request.history_turns == ()
 
-    # Get the cassette path for this model
-    consensus_cassette_path = CONSENSUS_CASSETTES[openai_model]
 
-    env_updates = {
-        "DEFAULT_MODEL": "auto",
-        "OPENAI_API_KEY": os.getenv("OPENAI_API_KEY", ""),
-        "GEMINI_API_KEY": os.getenv("GEMINI_API_KEY", ""),
+@pytest.mark.asyncio
+async def test_server_exact_repeat_validates_context_without_relaunch(backend):
+    import server
+
+    context = backend.root / "context.py"
+    context.write_text("first")
+    first_args = arguments(execution_mode="parallel", relevant_files=[str(context)])
+    first = payload(await server.handle_call_tool("consensus", first_args))
+    replay_args = {**first_args, "continuation_id": first["continuation_id"]}
+    replay = payload(await server.handle_call_tool("consensus", replay_args))
+    assert replay == first
+    assert len(backend.requests) == 2
+    context.write_text("changed")
+    with pytest.raises(ToolExecutionError) as error:
+        await server.handle_call_tool("consensus", replay_args)
+    import json
+
+    invalid = json.loads(str(error.value))
+    assert invalid["error"]["code"] == "consensus_invalidated"
+    assert len(backend.requests) == 2
+    state = get_thread(first["continuation_id"]).workflow_states["consensus"]
+    assert state["invalidated"]
+    assert all(outcome["valid"] is False for outcome in state["outcomes"])
+
+
+@pytest.mark.asyncio
+async def test_server_partial_outcomes_are_terminal_failed_attempt_without_successful_turn(backend):
+    import server
+
+    async def handler(request):
+        if request.target.cli_name == "second":
+            raise BackendError("rate_limited", "Rate limited.")
+        return backend.result(request)
+
+    backend.handler = handler
+    result = payload(await server.handle_call_tool("consensus", arguments(execution_mode="parallel")))
+    assert result["consensus_status"] == "partial"
+    assert result["attempt_success"] is False
+    thread = get_thread(result["continuation_id"])
+    assert thread.successful_turns == 0
+    assert thread.attempts[-1]["success"] is False
+    assert thread.attempts[-1]["status"] == "partial"
+    assert len(thread.turns) == 2
+    assert all(turn.attempt_status == "partial" for turn in thread.turns)
+    assert thread.workflow_states["consensus"]["outcomes"][0]["status"] == "success"
+    assert thread.workflow_states["consensus"]["outcomes"][1]["error"]["code"] == "rate_limited"
+
+
+@pytest.mark.asyncio
+async def test_partial_consensus_can_be_synthesized_cross_tool_without_disclosing_peer_history_to_consultants(backend):
+    import server
+
+    async def handler(request):
+        if request.target.cli_name == "second":
+            raise BackendError("rate_limited", "Rate limited.")
+        return backend.result(request)
+
+    backend.handler = handler
+    first_args = arguments(execution_mode="parallel")
+    partial = payload(await server.handle_call_tool("consensus", first_args))
+    continuation_id = partial["continuation_id"]
+    assert partial["consensus_status"] == "partial"
+    assert get_thread(continuation_id).successful_turns == 0
+
+    await server.handle_call_tool(
+        "clink",
+        {
+            "prompt": "Synthesize the valid partial consensus and identify the missing perspective.",
+            "cli_name": "synthesizer",
+            "continuation_id": continuation_id,
+        },
+    )
+    consultant_requests = backend.requests[:2]
+    assert len(backend.requests) == 3
+    for request in consultant_requests:
+        assert request.history_turns == ()
+        assert request.prompt == first_args["step"]
+        assert "PEER_" not in request.prompt + request.system_prompt
+        assert "CALLER_PRIVATE_FINDINGS" not in request.prompt + request.system_prompt
+    synthesis = backend.requests[2]
+    assert synthesis.tool_name == "clink"
+    assert synthesis.history_turns
+    history = "\n".join(synthesis.history_turns)
+    assert first_args["step"] in history
+    assert "PEER_first" in history
+    assert '"valid": true' in history
+    assert '"consensus_status": "partial"' in history
+    assert "rate_limited" in history
+    assert "partial/incomplete attempt" in history
+    assert get_thread(continuation_id).successful_turns == 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("execution_mode", ["parallel", "sequential"])
+async def test_invalidated_consensus_verdicts_are_not_usable_cross_tool_history(backend, execution_mode):
+    import server
+
+    context = backend.root / "context.py"
+    context.write_text("original context")
+    first_args = arguments(execution_mode=execution_mode, relevant_files=[str(context)])
+    complete = payload(await server.handle_call_tool("consensus", first_args))
+    continuation_id = complete["continuation_id"]
+    if execution_mode == "sequential":
+        later_args = arguments(
+            step="Private notes summarize PEER_first for later synthesis.",
+            step_number=2,
+            continuation_id=continuation_id,
+        )
+        later_args.pop("models")
+        complete = payload(await server.handle_call_tool("consensus", later_args))
+    assert complete["consensus_status"] == "complete"
+    assert "PEER_first" in get_thread(continuation_id).turns[-1].content
+
+    context.write_text("changed context")
+    prior_successful_turns = get_thread(continuation_id).successful_turns
+    with pytest.raises(ToolExecutionError):
+        await server.handle_call_tool("consensus", {**first_args, "continuation_id": continuation_id})
+    assert get_thread(continuation_id).successful_turns == prior_successful_turns
+    await server.handle_call_tool(
+        "clink",
+        {
+            "prompt": "Explain which context remains usable after the consensus was invalidated.",
+            "cli_name": "synthesizer",
+            "continuation_id": continuation_id,
+        },
+    )
+    assert len(backend.requests) == 3
+    for request in backend.requests[:2]:
+        assert request.history_turns == ()
+    history = "\n".join(backend.requests[2].history_turns)
+    assert first_args["step"] in history
+    assert "PEER_first" not in history
+    assert "PEER_second" not in history
+    assert "invalidat" in history.lower()
+    assert "unusab" in history.lower() or "invalid" in history.lower()
+    retained = get_thread(continuation_id)
+    assert any("PEER_first" in turn.content for turn in retained.turns)
+    assert retained.successful_turns == prior_successful_turns + 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("prune_consensus", [False, True])
+async def test_file_invalidation_masks_prior_clink_synthesis_even_after_consensus_pruning(backend, prune_consensus):
+    import server
+    from utils.conversation_memory import CONVERSATION_TIMEOUT_SECONDS, get_storage
+
+    async def handler(request):
+        content = "DERIVED_SYNTHESIS_QUOTES_PEER_first" if request.target.cli_name == "synthesizer" else None
+        return backend.result(request, content=content)
+
+    backend.handler = handler
+    context = backend.root / "context.py"
+    context.write_text("original context")
+    first_args = arguments(execution_mode="parallel", relevant_files=[str(context)])
+    complete = payload(await server.handle_call_tool("consensus", first_args))
+    continuation = complete["continuation_id"]
+    await server.handle_call_tool(
+        "clink", {"prompt": "Synthesize the consultation", "cli_name": "synthesizer", "continuation_id": continuation}
+    )
+    assert "PEER_first" in "\n".join(backend.requests[-1].history_turns)
+    saved = get_thread(continuation)
+    assert "DERIVED_SYNTHESIS_QUOTES_PEER_first" in saved.turns[-1].content
+    if prune_consensus:
+        saved.turns = saved.turns[2:]
+        saved.omitted_turns += 2
+        get_storage().setex(f"thread:{continuation}", CONVERSATION_TIMEOUT_SECONDS, saved.model_dump_json())
+    historical_turns = [turn.model_dump() for turn in get_thread(continuation).turns]
+    prior_count = get_thread(continuation).successful_turns
+    context.write_text("changed context")
+    with pytest.raises(ToolExecutionError):
+        await server.handle_call_tool("consensus", {**first_args, "continuation_id": continuation})
+    assert [turn.model_dump() for turn in get_thread(continuation).turns] == historical_turns
+    assert get_thread(continuation).successful_turns == prior_count
+    response = payload(
+        await server.handle_call_tool(
+            "clink", {"prompt": "Explain usable context", "cli_name": "fresh-reader", "continuation_id": continuation}
+        )
+    )
+    replay = "\n".join(backend.requests[-1].history_turns)
+    assert "PEER_first" not in replay and "PEER_second" not in replay
+    assert "DERIVED_SYNTHESIS" not in replay
+    assert "downstream synthesis are unusable" in replay
+    assert response["metadata"]["replay"]["warnings"]
+    assert response["metadata"]["replay"]["consensus_invalidated"] is True
+    assert len(backend.requests) == 4
+
+
+@pytest.mark.asyncio
+async def test_file_invalidation_rejects_saved_debug_findings_and_cached_step_before_delegation(backend):
+    import server
+
+    context = backend.root / "context.py"
+    context.write_text("original context")
+    first_args = arguments(execution_mode="parallel", relevant_files=[str(context)])
+    complete = payload(await server.handle_call_tool("consensus", first_args))
+    continuation = complete["continuation_id"]
+    debug_args = {
+        "step": "Investigate a finding from PEER_first",
+        "step_number": 1,
+        "total_steps": 2,
+        "next_step_required": True,
+        "findings": "NAMESPACE_FINDINGS_DERIVED_FROM_PEER_first",
+        "use_assistant_model": False,
+        "continuation_id": continuation,
     }
-    keys_to_clear = [
-        "XAI_API_KEY",
-        "OPENROUTER_API_KEY",
-        "ANTHROPIC_API_KEY",
-        "MISTRAL_API_KEY",
-        "CUSTOM_API_KEY",
-        "CUSTOM_API_URL",
-    ]
+    await server.handle_call_tool("debug", debug_args)
+    before = get_thread(continuation)
+    assert "NAMESPACE_FINDINGS_DERIVED" in str(before.workflow_states["debug"])
+    context.write_text("changed context")
+    with pytest.raises(ToolExecutionError):
+        await server.handle_call_tool("consensus", {**first_args, "continuation_id": continuation})
+    for request in (
+        debug_args,
+        {**debug_args, "step_number": 2, "next_step_required": False, "use_assistant_model": True},
+    ):
+        with pytest.raises(ToolExecutionError) as error:
+            await server.handle_call_tool("debug", request)
+        import json
 
-    recording_mode = not consensus_cassette_path.exists() or not GEMINI_REPLAY_PATH.exists()
-    if recording_mode:
-        openai_key = env_updates["OPENAI_API_KEY"].strip()
-        gemini_key = env_updates["GEMINI_API_KEY"].strip()
-        if (not openai_key or openai_key.startswith("dummy")) or (not gemini_key or gemini_key.startswith("dummy")):
-            pytest.skip(
-                "Consensus cassette missing and OPENAI_API_KEY/GEMINI_API_KEY "
-                "not configured. Provide real keys to record."
-            )
-
-    GEMINI_REPLAY_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-    with monkeypatch.context() as m:
-        m.setenv("DEFAULT_MODEL", env_updates["DEFAULT_MODEL"])
-
-        if recording_mode:
-            m.setenv("OPENAI_API_KEY", env_updates["OPENAI_API_KEY"])
-            m.setenv("GEMINI_API_KEY", env_updates["GEMINI_API_KEY"])
-            m.setenv("GOOGLE_GENAI_CLIENT_MODE", "record")
-        else:
-            m.setenv("OPENAI_API_KEY", "dummy-key-for-replay")
-            m.setenv("GEMINI_API_KEY", "dummy-key-for-replay")
-            m.setenv("GOOGLE_GENAI_CLIENT_MODE", "replay")
-
-        # Ensure restriction policies allow the latest OpenAI models under test
-        m.setenv("OPENAI_ALLOWED_MODELS", openai_model)
-
-        m.setenv("GOOGLE_GENAI_REPLAYS_DIRECTORY", str(GEMINI_REPLAY_DIR))
-        m.setenv("GOOGLE_GENAI_REPLAY_ID", GEMINI_REPLAY_ID)
-
-        for key in keys_to_clear:
-            m.delenv(key, raising=False)
-
-        # Ensure we use the built-in OpenAI catalogue rather than leftovers from
-        # other tests that patch OPENAI_MODELS_CONFIG_PATH.
-        m.delenv("OPENAI_MODELS_CONFIG_PATH", raising=False)
-
-        # Reset providers/restrictions and register only OpenAI & Gemini for deterministic behavior
-        ModelProviderRegistry.reset_for_testing()
-        import utils.model_restrictions as model_restrictions
-
-        model_restrictions._restriction_service = None
-        from providers.gemini import GeminiModelProvider
-        from providers.openai import OpenAIModelProvider
-
-        # Earlier tests may override the OpenAI provider's registry by pointing
-        # OPENAI_MODELS_CONFIG_PATH at fixtures. Force a reload so model
-        # metadata is restored from conf/openai_models.json.
-        OpenAIModelProvider.reload_registry()
-        assert openai_model in OpenAIModelProvider.MODEL_CAPABILITIES
-
-        ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
-        ModelProviderRegistry.register_provider(ProviderType.GOOGLE, GeminiModelProvider)
-
-        # Inject HTTP transport for OpenAI interactions
-        inject_transport(monkeypatch, str(consensus_cassette_path))
-
-        tool = ConsensusTool()
-
-        models_to_consult = [
-            {"model": openai_model, "stance": "for"},
-            {"model": "gemini-2.5-flash", "stance": "against"},
-        ]
-
-        # Step 1: CLI agent analysis followed by first model consultation
-        step1_arguments = {
-            "step": "Evaluate SwiftUI vs UIKit adoption and recommend ONE word (SwiftUI or UIKit).",
-            "step_number": 1,
-            "total_steps": len(models_to_consult),
-            "next_step_required": True,
-            "findings": "SwiftUI momentum is strong but UIKit remains battle-tested.",
-            "models": models_to_consult,
-        }
-
-        step1_response = await tool.execute(step1_arguments)
-        assert step1_response and step1_response[0].type == "text"
-        step1_data = json.loads(step1_response[0].text)
-
-        assert step1_data["status"] == "analysis_and_first_model_consulted"
-        assert step1_data["model_consulted"] == openai_model
-        assert step1_data["model_response"]["status"] == "success"
-        assert step1_data["model_response"]["metadata"]["provider"] == "openai"
-        assert step1_data["model_response"]["verdict"]
-
-        continuation_offer = step1_data.get("continuation_offer")
-        assert continuation_offer is not None
-        continuation_id = continuation_offer["continuation_id"]
-
-        # Prepare step 2 inputs using the first model's response summary
-        summary_for_step2 = step1_data["model_response"]["verdict"][:200]
-
-        step2_arguments = {
-            "step": f"Incorporated {openai_model} perspective: {summary_for_step2}",
-            "step_number": 2,
-            "total_steps": len(models_to_consult),
-            "next_step_required": False,
-            "findings": "Ready to gather opposing stance before synthesis.",
-            "continuation_id": continuation_id,
-            "current_model_index": step1_data.get("current_model_index", 1),
-            "model_responses": step1_data.get("model_responses", []),
-        }
-
-        step2_response = await tool.execute(step2_arguments)
-
-    assert step2_response and step2_response[0].type == "text"
-    step2_data = json.loads(step2_response[0].text)
-
-    assert step2_data["status"] == "consensus_workflow_complete"
-    assert step2_data["model_consulted"] == "gemini-2.5-flash"
-    assert step2_data["model_response"]["metadata"]["provider"] == "google"
-    assert step2_data["model_response"]["verdict"]
-    assert step2_data["complete_consensus"]["models_consulted"] == [
-        f"{openai_model}:for",
-        "gemini-2.5-flash:against",
-    ]
-    assert step2_data["consensus_complete"] is True
-
-    continuation_offer_final = step2_data.get("continuation_offer")
-    assert continuation_offer_final is not None
-    assert continuation_offer_final["continuation_id"] == continuation_id
-
-    # Ensure Gemini replay session is flushed to disk before verification
-    gemini_provider = ModelProviderRegistry.get_provider_for_model("gemini-2.5-flash")
-    if gemini_provider is not None:
-        try:
-            client = gemini_provider.client
-            if hasattr(client, "close"):
-                client.close()
-        finally:
-            if hasattr(gemini_provider, "_client"):
-                gemini_provider._client = None
-
-    # Ensure cassettes exist for future replays
-    assert consensus_cassette_path.exists()
-    assert GEMINI_REPLAY_PATH.exists()
-
-    # Clean up provider registry state after test
-    ModelProviderRegistry.reset_for_testing()
-
-
-@pytest.mark.asyncio
-@pytest.mark.no_mock_provider
-async def test_consensus_auto_mode_with_openrouter_and_gemini(monkeypatch):
-    """Ensure continuation flow resolves to real models instead of leaking 'auto'."""
-
-    gemini_key = os.getenv("GEMINI_API_KEY", "").strip() or "dummy-key-for-replay"
-    openrouter_key = os.getenv("OPENROUTER_API_KEY", "").strip() or "dummy-key-for-replay"
-
-    with monkeypatch.context() as m:
-        m.setenv("DEFAULT_MODEL", "auto")
-        m.setenv("GEMINI_API_KEY", gemini_key)
-        m.setenv("OPENROUTER_API_KEY", openrouter_key)
-
-        for key in [
-            "OPENAI_API_KEY",
-            "XAI_API_KEY",
-            "DIAL_API_KEY",
-            "CUSTOM_API_KEY",
-            "CUSTOM_API_URL",
-        ]:
-            m.delenv(key, raising=False)
-
-        import importlib
-
-        import config
-
-        m.setattr(config, "DEFAULT_MODEL", "auto")
-
-        import server as server_module
-
-        server = importlib.reload(server_module)
-        m.setattr(server, "DEFAULT_MODEL", "auto", raising=False)
-
-        ModelProviderRegistry.reset_for_testing()
-        from providers.gemini import GeminiModelProvider
-        from providers.openrouter import OpenRouterProvider
-
-        ModelProviderRegistry.register_provider(ProviderType.GOOGLE, GeminiModelProvider)
-        ModelProviderRegistry.register_provider(ProviderType.OPENROUTER, OpenRouterProvider)
-
-        from utils.storage_backend import get_storage_backend
-
-        # Clear conversation storage to avoid cross-test leakage
-        storage = get_storage_backend()
-        storage._store.clear()
-
-        models_to_consult = [
-            {"model": "claude-3-5-flash-20241022", "stance": "neutral"},
-            {"model": "gpt-5-mini", "stance": "neutral"},
-        ]
-
-        step1_args = {
-            "step": "Evaluate framework options.",
-            "step_number": 1,
-            "total_steps": len(models_to_consult),
-            "next_step_required": True,
-            "findings": "Initial analysis requested.",
-            "models": models_to_consult,
-        }
-
-        step1_output = await server.handle_call_tool("consensus", step1_args)
-        assert step1_output and step1_output[0].type == "text"
-        step1_payload = json.loads(step1_output[0].text)
-
-        assert step1_payload["status"] == "analysis_and_first_model_consulted"
-        assert step1_payload["model_consulted"] == "claude-3-5-flash-20241022"
-        assert step1_payload["model_response"]["status"] == "error"
-        assert "claude-3-5-flash-20241022" in step1_payload["model_response"]["error"]
-
-        continuation_offer = step1_payload.get("continuation_offer")
-        assert continuation_offer is not None
-        continuation_id = continuation_offer["continuation_id"]
-
-        step2_args = {
-            "step": "Continue consultation sequence.",
-            "step_number": 2,
-            "total_steps": len(models_to_consult),
-            "next_step_required": False,
-            "findings": "Ready for next model.",
-            "continuation_id": continuation_id,
-            "models": models_to_consult,
-        }
-
-        try:
-            step2_output = await server.handle_call_tool("consensus", step2_args)
-        finally:
-            # Reset provider registry regardless of outcome to avoid cross-test bleed
-            ModelProviderRegistry.reset_for_testing()
-
-    assert step2_output and step2_output[0].type == "text"
-    step2_payload = json.loads(step2_output[0].text)
-
-    serialized = json.dumps(step2_payload)
-    assert "auto" not in serialized.lower(), "Auto model leakage should be resolved"
-    assert "gpt-5-mini" in serialized or "claude-3-5-flash-20241022" in serialized
-
-    # Restore server module to reflect original configuration for other tests
-    import importlib
-
-    import server as server_module
-
-    importlib.reload(server_module)
+        assert json.loads(str(error.value))["error"]["code"] == "consensus_invalidated"
+    after = get_thread(continuation)
+    assert after.workflow_states["debug"] == before.workflow_states["debug"]
+    assert after.successful_turns == before.successful_turns
+    assert len(backend.requests) == 2

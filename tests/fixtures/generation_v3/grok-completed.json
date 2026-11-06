@@ -1,0 +1,32 @@
+{
+  "schema_version": 3,
+  "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+  "status": "completed",
+  "output": "  final café 🦉\r\n",
+  "truncated": false,
+  "error": null,
+  "duration_ms": 4321,
+  "request_sha256": "6c65acdcc6937b56b6f6afd6c6fc1da1e1e475112dfb0721e38f1f9255dbe8de",
+  "instructions_sha256": "768428d1d9ee80b96441f79f43c1f68ce84407385bcf35f6c074287182eb39af",
+  "input_sha256": "32ec8f1efcc552f953b557788a00f7c2886dd6538076b3edd0e7d56ef7a8ac1c",
+  "execution": {
+    "cli": "grok",
+    "profile": "generation_native_v1",
+    "requested_model": null,
+    "effective_model": null,
+    "actual_model": null,
+    "recipe_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "executable_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "catalog_sha256": null,
+    "admission": "verified",
+    "execution_mode": "native",
+    "project_dir": "/private/tmp",
+    "side_effects_possible": true,
+    "permission_observability": "limited",
+    "fulfillment_verified": false,
+    "model_selection": {
+      "kind": "native_default"
+    }
+  },
+  "warnings": []
+}

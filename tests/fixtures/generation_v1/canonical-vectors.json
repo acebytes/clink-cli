@@ -1,0 +1,47 @@
+[
+  {
+    "name": "escapes",
+    "request": {
+      "schema_version": 1,
+      "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+      "cli": "codex",
+      "model": "gpt-6.1-sol",
+      "instructions": "Keep / literal then continue",
+      "input": "A/B\b\t\n\f\r\u0001\u001f\\\"🧪",
+      "timeout_seconds": 2.007
+    },
+    "timeout_ms": 2008,
+    "canonical_utf8_hex": "7b22636c69223a22636f646578222c22696e707574223a22412f425c625c745c6e5c665c725c75303030315c75303031665c5c5c22f09fa7aa222c22696e737472756374696f6e73223a224b656570202f206c69746572616ce280a87468656ee280a9636f6e74696e7565222c226d6f64656c223a226770742d362e312d736f6c222c22736368656d615f76657273696f6e223a312c2274696d656f75745f6d73223a323030387d",
+    "request_sha256": "5b08d15fd0257319be41c0d57d5e02b23bff824d4cefe01838d6d11b14ad134b"
+  },
+  {
+    "name": "rounded-integer",
+    "request": {
+      "schema_version": 1,
+      "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+      "cli": "codex",
+      "model": "gpt-6.1-sol",
+      "instructions": "Rewrite",
+      "input": "source",
+      "timeout_seconds": 2.0
+    },
+    "timeout_ms": 2000,
+    "canonical_utf8_hex": "7b22636c69223a22636f646578222c22696e707574223a22736f75726365222c22696e737472756374696f6e73223a2252657772697465222c226d6f64656c223a226770742d362e312d736f6c222c22736368656d615f76657273696f6e223a312c2274696d656f75745f6d73223a323030307d",
+    "request_sha256": "c53ba311107dacd8c69c871d1fb96fb4757af1608299a63a504332d708ee4bdc"
+  },
+  {
+    "name": "adjacent-lower",
+    "request": {
+      "schema_version": 1,
+      "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+      "cli": "codex",
+      "model": "gpt-6.1-sol",
+      "instructions": "Rewrite",
+      "input": "source",
+      "timeout_seconds": 2.0069999999999997
+    },
+    "timeout_ms": 2007,
+    "canonical_utf8_hex": "7b22636c69223a22636f646578222c22696e707574223a22736f75726365222c22696e737472756374696f6e73223a2252657772697465222c226d6f64656c223a226770742d362e312d736f6c222c22736368656d615f76657273696f6e223a312c2274696d656f75745f6d73223a323030377d",
+    "request_sha256": "bf38686df410c90c005e9aa1e416e5faab1ab80339736a0951af08fe04370076"
+  }
+]

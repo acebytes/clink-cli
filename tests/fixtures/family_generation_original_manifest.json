@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "path": "clink/__init__.py",
+      "sha256": "16b8a7f9ed17c92e5a18d1c3f4dfe439f459342c1c745c2b1ad28d6a21881713"
+    },
+    {
+      "path": "clink/agents/__init__.py",
+      "sha256": "6d046292852c7ce097a4759ea8ea58358ae055293c3a513c39f16bb36edb5627"
+    },
+    {
+      "path": "clink/agents/base.py",
+      "sha256": "3a34737baf6eadad6f05bae0eae48c6dfa6f52084364a2b3995551ee29a6fc0f"
+    },
+    {
+      "path": "clink/agents/claude.py",
+      "sha256": "4c0b06a00c6cb1c500ff03cee8ab60a3f234e8b3b9b52ef05d0a46d8a9eda359"
+    },
+    {
+      "path": "clink/agents/codex.py",
+      "sha256": "a41b52fd8592b6166a590b6da5a05e1afa051d5550bc98738e9437248afbd909"
+    },
+    {
+      "path": "clink/agents/gemini.py",
+      "sha256": "2ba03d24d4639b61fca69623f9d9f07eb63faade3ee76dfb825c6cee529a67fc"
+    },
+    {
+      "path": "clink/allowed_roots.py",
+      "sha256": "56b21f77b8a7659c47535b491f4fd91c395bec682c126b651f71dd29396070be"
+    },
+    {
+      "path": "clink/backend.py",
+      "sha256": "6dddc3314ac9a6e09509434e55e2acedce38c77323baf1aa018bddaf0dbf43df"
+    },
+    {
+      "path": "clink/cli.py",
+      "sha256": "80f97a77f7cd5e01e2addfe0e77c3018e3991dd92bdecf999d9ab604d983530d"
+    },
+    {
+      "path": "clink/constants.py",
+      "sha256": "2b34da469263b1c8db46c3790b72bc3aca00cc6c1e21013163e3c7da912e0bc1"
+    },
+    {
+      "path": "clink/contracts.py",
+      "sha256": "59b1da6271ff9f4ee6879ecf91ac7123e25babf6cbf78a6780774ed06f1561db"
+    },
+    {
+      "path": "clink/files.py",
+      "sha256": "02b1f3f86bc0926f14da673fb2669a06b8d28ea28f9e3238bc7944819ec2d19d"
+    },
+    {
+      "path": "clink/generation.py",
+      "sha256": "f438351b6f7db69f0a7fe45ede9493c230670ef7538a1f80881871b9e2d2b648"
+    },
+    {
+      "path": "clink/generation_capabilities.py",
+      "sha256": "064de4e1db59418a0e8879aed742d2c46f11873d375051572df560a876ddb044"
+    },
+    {
+      "path": "clink/generation_contracts.py",
+      "sha256": "20e3b603385f5deacb6240ce7e6aa2945b6f034d52b8ae73a326ba58c8bc84fd"
+    },
+    {
+      "path": "clink/generation_policy.py",
+      "sha256": "2df576f915c7fca26ff73596e2de8174d11e3d582587d7776db7ac8b138e070e"
+    },
+    {
+      "path": "clink/models.py",
+      "sha256": "60cbbf99b2440547a4fd81ea56c961feb08343f20b96f30099bb095ddd722e3a"
+    },
+    {
+      "path": "clink/native.py",
+      "sha256": "a0bed2372e4bb47243391e5c992820726ec19f786ab2c5396b612b5050948e98"
+    },
+    {
+      "path": "clink/native_adapters.py",
+      "sha256": "7a3daf32369e0492a69d307333441e8c27e936ffd0b156322fc5e7294a8d251f"
+    },
+    {
+      "path": "clink/native_contracts.py",
+      "sha256": "4b62bee1167e4026526f34b4890b3aee81948644031679691c4535990ee9745c"
+    },
+    {
+      "path": "clink/native_generation.py",
+      "sha256": "6dacc91a7aa21a202bffc0d260d8eb20d76320b39ad7803614dbb5b6193beed7"
+    },
+    {
+      "path": "clink/native_generation_claude_policy.py",
+      "sha256": "27ee20cdbffa9a021667384fac31b3c5fa19e657427679f2b83bfdc612a4d49c"
+    },
+    {
+      "path": "clink/native_generation_contracts.py",
+      "sha256": "a819884718c5691bd230e9234af348c487f65922fa488c915ced9cab5ab1abfa"
+    },
+    {
+      "path": "clink/native_generation_families.py",
+      "sha256": "5a1332cc95baea484660b2022460e62ade9590e070fdc24000dd1593080e4e58"
+    },
+    {
+      "path": "clink/native_generation_family_policy.py",
+      "sha256": "055dcf3905f0e20482c19ea8b9c78f796d66102a2521268e125b71e997e70315"
+    },
+    {
+      "path": "clink/native_generation_files.py",
+      "sha256": "989a37484d0371335d3c94da79b38e3fbd35bb1fdb38f68049ab67653de26c80"
+    },
+    {
+      "path": "clink/native_generation_policy.py",
+      "sha256": "ebf22333c9bb84cd353ff360d8cc357d622686f380e174ef66905be3f0687833"
+    },
+    {
+      "path": "clink/native_policy.py",
+      "sha256": "ec295f6450d53d1362dd87a51cb5551942f26868b48b5e88a252c8cefe4234c4"
+    },
+    {
+      "path": "clink/parsers/__init__.py",
+      "sha256": "827dad23d8a5f619a07c634158099cab1ac8fb8b1477fa99cf9943bc8e5746cd"
+    },
+    {
+      "path": "clink/parsers/agy.py",
+      "sha256": "35e1a75b765b668cb6f420583988534c3285278abc136f927883b8b2aff58d3c"
+    },
+    {
+      "path": "clink/parsers/agy_native.py",
+      "sha256": "53090e591d518f18a65a9c4dfbf39d975e9072f65c9a1e687f56cf4e0489960e"
+    },
+    {
+      "path": "clink/parsers/agy_native_generation.py",
+      "sha256": "72848d032a74423b802481008ac177e49fe2f35397d67b285e9fa94af4a2446f"
+    },
+    {
+      "path": "clink/parsers/base.py",
+      "sha256": "8ca1b793199ee4e21b1e2bd3e2997bc07e18accb25b8eecb40bd24f2cbb905d9"
+    },
+    {
+      "path": "clink/parsers/claude.py",
+      "sha256": "d536fd0315c306a489ae54357e42acd3200c217c13e543066a6f9002f69cd7e2"
+    },
+    {
+      "path": "clink/parsers/claude_native.py",
+      "sha256": "621248359cced3782525d03716b4f64c55547b6dbc32eaedda168adf1e5cae06"
+    },
+    {
+      "path": "clink/parsers/claude_native_generation.py",
+      "sha256": "0984257ffc0810b2ce67475d54fd278427e8a26db19cefc84b1ab6a8226a06d4"
+    },
+    {
+      "path": "clink/parsers/codex.py",
+      "sha256": "994a46698c51a12d443a86ae374a4fab37d8acdcd384b130098444313901d9a9"
+    },
+    {
+      "path": "clink/parsers/codex_generation.py",
+      "sha256": "4c08478a68430ed94334fc5ce53ca98ffb85556f102fe9ffd5085769625dd334"
+    },
+    {
+      "path": "clink/parsers/codex_native.py",
+      "sha256": "b552f3b087351f9cdca1b53b1635f6f6f34f3e5f417be174c3aa057ca006b77b"
+    },
+    {
+      "path": "clink/parsers/codex_native_generation.py",
+      "sha256": "ff2b7a13607429a20307a95c75cb16c6c79673ed744f3fc8629280c6ce16a16b"
+    },
+    {
+      "path": "clink/parsers/gemini.py",
+      "sha256": "88d0ec327ebf716ec84ce9488bacc46c9636e27fe500ca362f0c118cc390acc1"
+    },
+    {
+      "path": "clink/parsers/grok.py",
+      "sha256": "09bb69ef0d631ff423a7f81cef24a8a0ac91cfcb065b01efa366504401d1328c"
+    },
+    {
+      "path": "clink/parsers/grok_native.py",
+      "sha256": "940f05404389f27b79eda917fe831ace6b2c64bc085faf1872f927aeb5c8644d"
+    },
+    {
+      "path": "clink/parsers/grok_native_generation.py",
+      "sha256": "c83c107e6f6c37e341b2b37373c037d8d7552ee764da23caa854797ef7c3fbb0"
+    },
+    {
+      "path": "clink/policy.py",
+      "sha256": "ebf24596bd7ce98e23a2abc7d1821196117b50d89dd8937ce2a79baabffec35a"
+    },
+    {
+      "path": "clink/registry.py",
+      "sha256": "9896075e0a6b10ad0f5b646bcfdc039caf346293de01cd4cb2e34dafec0718e1"
+    },
+    {
+      "path": "clink/runner.py",
+      "sha256": "7fe67698f57ec1539ad3751f25dd0300166361d5d0b9159946836937f76a7632"
+    },
+    {
+      "path": "clink/setup.py",
+      "sha256": "29cdbe0a446befff8f3b09cb2d599140d097c122d8c3136bd72cf9726aadb554"
+    },
+    {
+      "path": "clink/tasks.py",
+      "sha256": "e6335a562ed4a5e0f002a7c5a6d4dc302aeb849ccd7e2fb00853ef033c9714e9"
+    },
+    {
+      "path": "scripts/verify_cli_policy.py",
+      "sha256": "7dbbfa6d0b7131844e4a3ca84824ac0f035060474d890e3021a6f7a7ae665535"
+    },
+    {
+      "path": "scripts/verify_generation_policy.py",
+      "sha256": "25d5be42a770a485cc5351553993c6e9552771bc53ab15581d782119c9b5c5be"
+    },
+    {
+      "path": "scripts/verify_native_generation.py",
+      "sha256": "618352df811e63949caeb3c4e19eb86de5ace3f894f3581dd3a1d6f7ccadec1d"
+    },
+    {
+      "path": "scripts/verify_family_generation.py",
+      "sha256": "60c9431477515168239ff265b01680fd0c3a43f4f5a17a9a1e9c51d25e74272b"
+    },
+    {
+      "path": "scripts/verify_native_adapters.py",
+      "sha256": "0feb0760d95cf3eceec57269155be47be2753723b3e470f88d0c8210787d5b6b"
+    },
+    {
+      "path": "scripts/verify_native_cli.py",
+      "sha256": "f235be557a345ee4552b6e312d71b3e354f5423a4b144b671cbad7f723fc6d2f"
+    },
+    {
+      "path": "scripts/native_agy_fixture.py",
+      "sha256": "86f595502f4660bcd5788d09cbb1861da9d344e1026205ca67921001456cf761"
+    },
+    {
+      "path": "scripts/native_codex_fixture.py",
+      "sha256": "6619dd9f8a9f6c30d6ac0a11cf757707e3613c86a6006f637d07ef43355c93b5"
+    },
+    {
+      "path": "scripts/native_codex_trust.py",
+      "sha256": "ce03f69945752c3ddec5d3ce5c7ea3514c504475bafaf1c15aecc809fb2798a9"
+    },
+    {
+      "path": "scripts/native_denial_diagnostics.py",
+      "sha256": "e63f6b01ed561f807ec013c3cd048cbfee4b21d89266d0a24e9c7f0e18e25633"
+    },
+    {
+      "path": "scripts/native_diagnostics.py",
+      "sha256": "4606c24e5075c2fe168c50288673438bd185f83abb2d4b3c23b6b50038df52c1"
+    },
+    {
+      "path": "scripts/native_fixture_trust.py",
+      "sha256": "b6d1ce2b948ac273257c7e99571f70330341540550c7b0a45b14a03b73f0625a"
+    },
+    {
+      "path": "scripts/native_mcp_fixture.py",
+      "sha256": "ebdbd420bf04cac3ca1cb2ee55126f695ada85aba51dbed1633a56d7cd26713a"
+    }
+  ]
+}

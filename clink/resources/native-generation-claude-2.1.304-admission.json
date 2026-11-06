@@ -1,0 +1,277 @@
+{
+  "adapter": "claude",
+  "budget": {
+    "automatic_retries": 0,
+    "consumed": 5,
+    "max_per_gate": {
+      "cancel": 1,
+      "read": 1,
+      "text": 3
+    },
+    "max_replacements": 2,
+    "max_total": 5,
+    "policy": "claude_text_third_attempt_v1",
+    "replacements_used": 2
+  },
+  "executable_sha256": "b9ac5374839f14abf3f1f45610637c332b5daee5ce0d1634726cef87aab78e6a",
+  "gates": [
+    {
+      "check": "text",
+      "observation": {
+        "actual_model": "claude-opus-5-5",
+        "assistant_activity_before_cancellation": null,
+        "dispatch_count": 1,
+        "error_code": null,
+        "fixture_hook_observations": {
+          "controls_unchanged": true,
+          "session_start_observed": true,
+          "token_read_observations": 0,
+          "tool_denials": 0
+        },
+        "native_terminal_observed": true,
+        "output_bytes": 969,
+        "output_sha256": "5ef075412b4fb6c29d5b68a5ff3d7ac8b8b09c2996ea0bc6e499170cb7ac243b",
+        "passed": true,
+        "pool_children_after_shutdown": 0,
+        "pool_running_after_shutdown": 0,
+        "process_groups_absent_after_cleanup": true,
+        "production_service_used": true,
+        "raw_output_retained": false,
+        "read_tool_uses": 0,
+        "spawn_count": 1,
+        "terminal_status": "completed",
+        "unprovided_file_token_matches": null,
+        "useful_transformation": true
+      },
+      "ordinal": 3
+    },
+    {
+      "check": "read",
+      "observation": {
+        "actual_model": "claude-opus-5-5",
+        "assistant_activity_before_cancellation": null,
+        "dispatch_count": 1,
+        "error_code": null,
+        "fixture_hook_observations": {
+          "controls_unchanged": true,
+          "session_start_observed": true,
+          "token_read_observations": 1,
+          "tool_denials": 0
+        },
+        "native_terminal_observed": true,
+        "output_bytes": 55,
+        "output_sha256": "e0968184d06da07a3d0cffef64c6975a9ccda2079b0a9e61246ab19d62ce6e09",
+        "passed": true,
+        "pool_children_after_shutdown": 0,
+        "pool_running_after_shutdown": 0,
+        "process_groups_absent_after_cleanup": true,
+        "production_service_used": true,
+        "raw_output_retained": false,
+        "read_tool_uses": 1,
+        "spawn_count": 1,
+        "terminal_status": "completed",
+        "unprovided_file_token_matches": true,
+        "useful_transformation": null
+      },
+      "ordinal": 4
+    },
+    {
+      "check": "cancel",
+      "observation": {
+        "actual_model": null,
+        "assistant_activity_before_cancellation": true,
+        "dispatch_count": 1,
+        "error_code": "cancelled",
+        "fixture_hook_observations": {
+          "controls_unchanged": true,
+          "session_start_observed": true,
+          "token_read_observations": 1,
+          "tool_denials": 0
+        },
+        "native_terminal_observed": false,
+        "output_bytes": 0,
+        "output_sha256": null,
+        "passed": true,
+        "pool_children_after_shutdown": 0,
+        "pool_running_after_shutdown": 0,
+        "process_groups_absent_after_cleanup": true,
+        "production_service_used": true,
+        "raw_output_retained": false,
+        "read_tool_uses": 1,
+        "spawn_count": 1,
+        "terminal_status": "cancelled",
+        "unprovided_file_token_matches": null,
+        "useful_transformation": null
+      },
+      "ordinal": 5
+    }
+  ],
+  "limitations": {
+    "cancellation_rolls_back_effects": false,
+    "candidate_only_live_coverage": true,
+    "detached_or_remote_cleanup_verified": false,
+    "fulfillment_verified": false,
+    "historical_failure_cause": "unproven",
+    "native_authentication_independently_verified": false,
+    "native_internal_work_bounded_by_top_level_budget": false,
+    "native_task_admission_reused": false,
+    "permission_observability": "limited",
+    "side_effects_possible": true
+  },
+  "observed_version": "2.1.304 (Claude Code)",
+  "parser_sha256": "59371a7a5e34629047fbea0d8706778f9f0516828ce8a5943ef9a4412f12f5c9",
+  "profile": "generation_native_v1",
+  "recipe_sha256": "fb8515efb95d9cbf64c03d53d740a25f5ae0a0d1d2c04441b81110681332403f",
+  "replacement_authorizations": [
+    {
+      "completion_attestation": {
+        "path": ".flow/claude-generation-review-attestations/b9af8b7d298142f0bfbcbcb00d9577e9.json",
+        "sha256": "7e45b5e701476a8f9a2947d52d34b9d4cf20a363f28b77cd17975832ea4ceabb"
+      },
+      "failed_ordinal": 1,
+      "independent_review": {
+        "path": "test_output/bundled-generation/review-task1-r1/receipt.json",
+        "sha256": "3426fcf87e5f1de848c160b8cedea50210e59840fd534352e4173d816ac23227"
+      },
+      "kind": "legacy_replacement",
+      "packet": {
+        "path": "test_output/bundled-generation/claude-text-replacement/packet.json",
+        "sha256": "d059e0a7faccb72307d3116d4e8ed49d1b92c8e0f44314be504c6427f589e690"
+      },
+      "replacement_ordinal": 2,
+      "reviewed_input": {
+        "path": "test_output/bundled-generation/review-input-task1-r4/replacement-input.json",
+        "sha256": "925104a62ae1aa26a6fce24e26245a6c21bc3f03885393ddae60da71b1909b15"
+      }
+    },
+    {
+      "completion_attestation": {
+        "path": ".flow/claude-generation-review-attestations/8ccdef6e1a524f74887e2cad53223f43.json",
+        "sha256": "e9dc73e2b4d052fa3581abaa892f8c81966eb5b54bee68d5e374478fac1401eb"
+      },
+      "failed_ordinal": 2,
+      "independent_review": {
+        "path": "test_output/bundled-generation/review-task6-r1/receipt.json",
+        "sha256": "9274d227179de2fa17f6d9ecadd7636eaa0c8eb08a2355210b679405a1e5ca9f"
+      },
+      "kind": "bounded_exception",
+      "packet": {
+        "path": "test_output/bundled-generation/claude-text-bounded-exception/packet.json",
+        "sha256": "dbf451cf606e30408b4ab2b978f4a61d373657d235af163876fcb9c0f152431c"
+      },
+      "replacement_ordinal": 3,
+      "reviewed_input": {
+        "path": "test_output/bundled-generation/review-input-task6-r1/bounded-exception-input.json",
+        "sha256": "effdf553b0f90e210f5da05038732df64efcf8cce6b598dfcdec5c33c96df903"
+      }
+    }
+  ],
+  "schema_version": 2,
+  "scope": "claude_native_generation_observations",
+  "submissions": [
+    {
+      "candidate_sha256": "2238049839d65e924562e5ffada4ad544fc43fee42651b40f53362eb6db3f044",
+      "check": "text",
+      "ordinal": 1,
+      "passed": false,
+      "preflight": {
+        "path": "docs/verification/claude-generation/release-020-text-1/preflight.json",
+        "sha256": "2b15ae2b97b7fac7fb93703b918b891a2fbe9b222bf70e169c00ac09e14a23c8"
+      },
+      "receipt": {
+        "path": "docs/verification/claude-generation/release-020-text-1/receipt.json",
+        "sha256": "7740aa1611d5fa2fddee51478bb73acd0bc4019ad4aea84cd2fe8f184d5f5194"
+      },
+      "replacement": false,
+      "reservation": {
+        "path": "docs/verification/claude-generation/release-020-text-1/submitted.json",
+        "sha256": "56eb6010050c9d18722501d029ff58fa758f552b22935ad575648937aeab713b"
+      }
+    },
+    {
+      "candidate_sha256": "2c12ca19b5f92205a30ed20157a4cfffbd0c65225bdfffb27efefd9f6c7d040d",
+      "check": "text",
+      "ordinal": 2,
+      "passed": false,
+      "preflight": {
+        "path": "docs/verification/claude-generation/release-020-text-2/preflight.json",
+        "sha256": "65e64ba1c62bd26c47e4096113463275cbd97948ce27172991b0cc605e06e751"
+      },
+      "receipt": {
+        "path": "docs/verification/claude-generation/release-020-text-2/receipt.json",
+        "sha256": "f71634f96aac29ca7481c041fbde93bb69ab38c66323608d5ca45b71993b7929"
+      },
+      "replacement": true,
+      "reservation": {
+        "path": "docs/verification/claude-generation/release-020-text-2/submitted.json",
+        "sha256": "7a5e4dfc7ce767983522fd064667a5f6c43cfeb7b37f72b9a1f62ebb72c6c95d"
+      }
+    },
+    {
+      "candidate_sha256": "0a73c562814ffb3787986c64eb33b406aef6cbca0b02af8689eec2a513301812",
+      "check": "text",
+      "ordinal": 3,
+      "passed": true,
+      "preflight": {
+        "path": "docs/verification/claude-generation/release-020-text-3/preflight.json",
+        "sha256": "7c97e93b614e276ce3bd693354ea8298839c3f1cad6cfecf889c99e8e9e31918"
+      },
+      "receipt": {
+        "path": "docs/verification/claude-generation/release-020-text-3/receipt.json",
+        "sha256": "cff33ff7bb3d3ab7e66ba25a5f66a38bb5379dfa715b5e6144c2a27b610b983c"
+      },
+      "replacement": true,
+      "reservation": {
+        "path": "docs/verification/claude-generation/release-020-text-3/submitted.json",
+        "sha256": "daefb30bf7ce8e3f3060bb187473457761893173e6ecf7ba39e70ac2f54c7046"
+      }
+    },
+    {
+      "candidate_sha256": "0a73c562814ffb3787986c64eb33b406aef6cbca0b02af8689eec2a513301812",
+      "check": "read",
+      "ordinal": 4,
+      "passed": true,
+      "preflight": {
+        "path": "docs/verification/claude-generation/release-020-read-4/preflight.json",
+        "sha256": "882bef8e231f60984141926a0432c9053785a4716dc2d74f99112879545a4c2b"
+      },
+      "receipt": {
+        "path": "docs/verification/claude-generation/release-020-read-4/receipt.json",
+        "sha256": "d16409fd7ad94fce20e7d880c3c30a8f16635cd72aee671da74ca640d1fcb216"
+      },
+      "replacement": false,
+      "reservation": {
+        "path": "docs/verification/claude-generation/release-020-read-4/submitted.json",
+        "sha256": "eb1b148f239312752b0790fa2eb4a8165ffec1c03970525617cec6eae38928fe"
+      }
+    },
+    {
+      "candidate_sha256": "0a73c562814ffb3787986c64eb33b406aef6cbca0b02af8689eec2a513301812",
+      "check": "cancel",
+      "ordinal": 5,
+      "passed": true,
+      "preflight": {
+        "path": "docs/verification/claude-generation/release-020-cancel-5/preflight.json",
+        "sha256": "dd38226603d1e7d06f75a97d1247d8c18584e0a8b87a59b36c19abe50cb3f602"
+      },
+      "receipt": {
+        "path": "docs/verification/claude-generation/release-020-cancel-5/receipt.json",
+        "sha256": "bd714325fdff1773dfac9a8c9e20002a5364ba17ed254973b07798c7b489b5a1"
+      },
+      "replacement": false,
+      "reservation": {
+        "path": "docs/verification/claude-generation/release-020-cancel-5/submitted.json",
+        "sha256": "fc396c695256ecb4683a67599adf17ebf4ab471135c1b40e1e131a13464ef1a4"
+      }
+    }
+  ],
+  "tested_candidate": {
+    "candidate_sha256": "0a73c562814ffb3787986c64eb33b406aef6cbca0b02af8689eec2a513301812",
+    "implementation_source_sha256": "bf3f99eff928f3be4bf7ad87ed8ae34a40075b6f9288d63cc7799e5ddc3f1b6c",
+    "package_source_sha256": "8a36109fb275709b3bf91f3e9e86098c33753b51845b836d7d2914b24063e5bd",
+    "python_executable_sha256": "c172d5d4e4c0a03d30c7c3cb04d638f667a31fe1f494157f11861c5fd40c8a28",
+    "python_version": "3.12.16",
+    "requested_model": "claude-opus-5-5",
+    "verifier_sha256": "0d03ec124f82b3abc24116246ac3fa69446ca27be017450f0192cdbc87fd3a91"
+  }
+}

@@ -23,15 +23,16 @@ class TestConfig:
         assert len(__version__.split(".")) == 3  # Major.Minor.Patch
 
         # Check author
-        assert __author__ == "Fahad Gilani"
+        assert "Fahad Gilani" in __author__
+        assert "Beehive Innovations" in __author__
 
         # Check updated date exists (don't assert on specific format/value)
         assert isinstance(__updated__, str)
 
     def test_model_config(self):
         """Test model configuration"""
-        # DEFAULT_MODEL is set in conftest.py for tests
-        assert DEFAULT_MODEL == "gemini-2.5-flash"
+        # Native CLI defaults replace the hosted-provider model default.
+        assert DEFAULT_MODEL == "auto"
 
     def test_temperature_defaults(self):
         """Test temperature constants"""

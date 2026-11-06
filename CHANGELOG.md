@@ -1,6 +1,21 @@
-# CHANGELOG
+# Changelog
 
-<!-- version list -->
+## 0.2.0
+
+This is the CLI-only clink-mcp-server release line. The repository and locally built distribution use version 0.2.0; this entry does not assert publication to PyPI or a container registry.
+
+- Preserve PAL's 18 MCP tools with installed-CLI consultations and local discovery, without hosted-provider dependencies.
+- Add explicit `clink` native task start, status, follow-up, and cancellation with bounded process supervision, request-key deduplication, and volatile private sessions.
+- Provide project-local manifests, prompts, and MCP registration through `python -m clink.setup`, plus a checkout-local Claude Code setup plugin.
+- Provide separate native programmatic generation contracts: schema 2 for explicit Codex/Claude selection, and schema 3 with typed model selection and read-only family capabilities discovery.
+- Admit exact recorded Codex, Claude, and Grok generation binaries/recipes. Grok generation uses native-default selection. Antigravity generation remains unverified and refused; its separately admitted native-task profile is unchanged. Native-task Codex remains disabled for its prelaunch-refusal output limitation. The older no-tools generation profile remains refused.
+- Keep setup and ordinary startup separate; remove obsolete PAL installers and provider-key examples. Provide a restricted container for provider-free discovery/local tools.
+
+See [release evidence](docs/release-evidence.md) for operation-specific admissions and limits. Native operations may change files or external systems; cancellation does not roll back effects.
+
+## Upstream PAL history
+
+The entries below are preserved upstream history, with their original PAL version numbers and links. They are attribution and provenance, not clink release or current support claims. Copyright 2025 Beehive Innovations; Apache 2.0.
 
 ## v9.8.2 (2025-12-15)
 
@@ -128,7 +143,7 @@
 
 ### Bug Fixes
 
-- Rebranding, see [docs/name-change.md](docs/name-change.md) for details
+- Rebranding, see [docs/name-change.md](https://github.com/BeehiveInnovations/pal-mcp-server/blob/7afc7c1cc96e23992c8f105f960132c657883bb1/docs/name-change.md) for details
   ([`b2dc849`](https://github.com/BeehiveInnovations/pal-mcp-server/commit/b2dc84992d70839b29b611178b3871f4922b747f))
 
 ### Chores

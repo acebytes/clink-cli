@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+  "status": "completed",
+  "output": "Explain how {{name}} works at C:\\work\\src. Include café and 😀.\n",
+  "truncated": false,
+  "error": null,
+  "duration_ms": 12,
+  "request_sha256": "e1b933e3e3eedcd0317bbaa75661a0a91875037a1e30773ae2b7ed3fbb98ed31",
+  "instructions_sha256": "63764e4486b94f9c67f3d43b35cce451f7b68fe189f2a924bcdb323023ac2bdb",
+  "input_sha256": "4d19611014160f527fa5de99bf7dde251dad245a67260e6b1d1700f99dde491b",
+  "execution": {
+    "cli": "codex",
+    "profile": "generation_v1",
+    "requested_model": "gpt-6.1-sol",
+    "effective_model": "gpt-6.1-sol",
+    "actual_model": null,
+    "recipe_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "executable_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "catalog_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "admission": "verified"
+  },
+  "warnings": []
+}

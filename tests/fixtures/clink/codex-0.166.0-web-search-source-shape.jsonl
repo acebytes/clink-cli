@@ -1,0 +1,8 @@
+{"type":"thread.started","thread_id":"synthetic_thread"}
+{"type":"turn.started"}
+{"type":"item.started","item":{"id":"item_1","type":"web_search","id":"synthetic_search","query":"synthetic query","action":{"type":"search","queries":["synthetic query"]}}}
+{"type":"item.completed","item":{"id":"item_1","type":"web_search","id":"synthetic_search","query":"synthetic query","action":{"type":"search","query":null,"queries":["synthetic query"]},"results":[{"type":"text_result","ref_id":"turn0search0","url":"https://example.com/result","future_field":{"preserved":true}}]}}
+{"type":"item.started","item":{"id":"item_2","type":"web_search","id":"synthetic_open","query":"","action":{"type":"open_page"}}}
+{"type":"item.completed","item":{"id":"item_2","type":"web_search","id":"synthetic_open","query":"","action":{"type":"open_page","url":null},"results":[]}}
+{"type":"item.completed","item":{"id":"item_3","type":"agent_message","text":"Synthetic source found."}}
+{"type":"turn.completed","usage":{"input_tokens":10,"cached_input_tokens":0,"cache_write_input_tokens":0,"output_tokens":5,"reasoning_output_tokens":2}}

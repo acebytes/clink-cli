@@ -1,0 +1,53 @@
+[
+  {
+    "name": "escapes",
+    "request": {
+      "schema_version": 2,
+      "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+      "cli": "codex",
+      "model": "gpt-6.1-sol",
+      "instructions": "Keep / literal then continue",
+      "input": "A/B\b\t\n\f\r\u0001\u001f\\\"🧪",
+      "timeout_seconds": 2.007,
+      "execution_mode": "native",
+      "project_dir": "/private/tmp"
+    },
+    "timeout_ms": 2008,
+    "canonical_utf8_hex": "7b22636c69223a22636f646578222c22657865637574696f6e5f6d6f6465223a226e6174697665222c22696e707574223a22412f425c625c745c6e5c665c725c75303030315c75303031665c5c5c22f09fa7aa222c22696e737472756374696f6e73223a224b656570202f206c69746572616ce280a87468656ee280a9636f6e74696e7565222c226d6f64656c223a226770742d362e312d736f6c222c2270726f6a6563745f646972223a222f707269766174652f746d70222c22736368656d615f76657273696f6e223a322c2274696d656f75745f6d73223a323030387d",
+    "request_sha256": "00de41ca5e1bc078c4d5dde3111bce147abf2d18eb93c1106eac09fe1706cc91"
+  },
+  {
+    "name": "rounded-integer",
+    "request": {
+      "schema_version": 2,
+      "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+      "cli": "codex",
+      "model": "gpt-6.1-sol",
+      "instructions": "Rewrite",
+      "input": "source",
+      "timeout_seconds": 2.0,
+      "execution_mode": "native",
+      "project_dir": "/private/tmp"
+    },
+    "timeout_ms": 2000,
+    "canonical_utf8_hex": "7b22636c69223a22636f646578222c22657865637574696f6e5f6d6f6465223a226e6174697665222c22696e707574223a22736f75726365222c22696e737472756374696f6e73223a2252657772697465222c226d6f64656c223a226770742d362e312d736f6c222c2270726f6a6563745f646972223a222f707269766174652f746d70222c22736368656d615f76657273696f6e223a322c2274696d656f75745f6d73223a323030307d",
+    "request_sha256": "44fef7f6149cff05be8174fdde343d738a0513bc47a3e8e7a75d2eff3d4242db"
+  },
+  {
+    "name": "adjacent-lower",
+    "request": {
+      "schema_version": 2,
+      "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+      "cli": "codex",
+      "model": "gpt-6.1-sol",
+      "instructions": "Rewrite",
+      "input": "source",
+      "timeout_seconds": 2.0069999999999997,
+      "execution_mode": "native",
+      "project_dir": "/private/tmp"
+    },
+    "timeout_ms": 2007,
+    "canonical_utf8_hex": "7b22636c69223a22636f646578222c22657865637574696f6e5f6d6f6465223a226e6174697665222c22696e707574223a22736f75726365222c22696e737472756374696f6e73223a2252657772697465222c226d6f64656c223a226770742d362e312d736f6c222c2270726f6a6563745f646972223a222f707269766174652f746d70222c22736368656d615f76657273696f6e223a322c2274696d656f75745f6d73223a323030377d",
+    "request_sha256": "f41f84ca269c718126b9812cca6ab2d70daf4e2f4c9c290ab2fa055e868b12c9"
+  }
+]

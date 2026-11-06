@@ -1,0 +1,33 @@
+{
+  "schema_version": 3,
+  "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+  "status": "completed",
+  "output": "  final café 🦉\r\n",
+  "truncated": false,
+  "error": null,
+  "duration_ms": 4321,
+  "request_sha256": "6531d8a8179817a583d2c3453b90a48cfcdae35db3a592a178cf55812c27386c",
+  "instructions_sha256": "768428d1d9ee80b96441f79f43c1f68ce84407385bcf35f6c074287182eb39af",
+  "input_sha256": "32ec8f1efcc552f953b557788a00f7c2886dd6538076b3edd0e7d56ef7a8ac1c",
+  "execution": {
+    "cli": "codex",
+    "profile": "generation_native_v1",
+    "requested_model": "gpt-6.1-sol",
+    "effective_model": "gpt-6.1-sol",
+    "actual_model": null,
+    "recipe_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "executable_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "catalog_sha256": null,
+    "admission": "verified",
+    "execution_mode": "native",
+    "project_dir": "/private/tmp",
+    "side_effects_possible": true,
+    "permission_observability": "limited",
+    "fulfillment_verified": false,
+    "model_selection": {
+      "kind": "explicit",
+      "id": "gpt-6.1-sol"
+    }
+  },
+  "warnings": []
+}

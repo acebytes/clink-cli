@@ -1,5 +1,5 @@
 """
-PAL MCP Server - Main server implementation
+clink-mcp-server — CLI consultations and native task delegation
 
 This module implements the core MCP (Model Context Protocol) server that provides
 AI-powered tools for code analysis, review, and assistance using multiple AI models.
@@ -12,21 +12,24 @@ Key Components:
 - MCP Server: Handles protocol communication and tool discovery
 - Tool Registry: Maps tool names to their implementations
 - Request Handler: Processes incoming tool calls and returns formatted responses
-- Configuration: Manages API keys and model settings
+- Configuration: Manages CLI profiles and model selection
 
 The server runs on stdio (standard input/output) and communicates using JSON-RPC messages
 as defined by the MCP protocol.
 """
 
+import argparse
 import asyncio
-import atexit
+import json
 import logging
 import os
+import re
 import sys
 import time
+import uuid
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from mcp.server import Server  # noqa: E402
 from mcp.server.models import InitializationOptions  # noqa: E402
@@ -42,11 +45,9 @@ from mcp.types import (  # noqa: E402
     ToolAnnotations,
     ToolsCapability,
 )
+from pydantic import ValidationError
 
-from config import (  # noqa: E402
-    DEFAULT_MODEL,
-    __version__,
-)
+from config import __version__
 from tools import (  # noqa: E402
     AnalyzeTool,
     ChallengeTool,
@@ -67,13 +68,12 @@ from tools import (  # noqa: E402
     TracerTool,
     VersionTool,
 )
-from tools.models import ToolOutput  # noqa: E402
 from tools.shared.exceptions import ToolExecutionError  # noqa: E402
 from utils.env import env_override_enabled, get_env  # noqa: E402
 
 # Configure logging for server operations
 # Can be controlled via LOG_LEVEL environment variable (DEBUG, INFO, WARNING, ERROR)
-log_level = (get_env("LOG_LEVEL", "DEBUG") or "DEBUG").upper()
+log_level = (get_env("LOG_LEVEL", "INFO") or "INFO").upper()
 
 # Create timezone-aware formatter
 
@@ -162,7 +162,7 @@ else:
 
 # Create the MCP server instance with a unique name identifier
 # This name is used by MCP clients to identify and connect to this specific server
-server: Server = Server("pal-server")
+server: Server = Server("clink-mcp-server")
 
 
 # Constants for tool filtering
@@ -257,7 +257,7 @@ def filter_disabled_tools(all_tools: dict[str, Any]) -> dict[str, Any]:
 
 # Initialize the tool registry with all available AI-powered tools
 # Each tool provides specialized functionality for different development tasks
-# Tools are instantiated once and reused across requests (stateless design)
+# These instances describe schemas; execution constructs a fresh instance per call.
 TOOLS = {
     "chat": ChatTool(),  # Interactive development chat and brainstorming
     "clink": CLinkTool(),  # Bridge requests to configured AI CLIs
@@ -289,7 +289,7 @@ PROMPT_TEMPLATES = {
     },
     "clink": {
         "name": "clink",
-        "description": "Forward a request to a configured AI CLI (e.g., Gemini)",
+        "description": "Forward a request to a configured AI CLI (e.g., Codex)",
         "template": "Use clink with cli_name=<cli> to run this prompt",
     },
     "thinkdeep": {
@@ -375,258 +375,6 @@ PROMPT_TEMPLATES = {
 }
 
 
-def configure_providers():
-    """
-    Configure and validate AI providers based on available API keys.
-
-    This function checks for API keys and registers the appropriate providers.
-    At least one valid API key (Gemini or OpenAI) is required.
-
-    Raises:
-        ValueError: If no valid API keys are found or conflicting configurations detected
-    """
-    # Log environment variable status for debugging
-    logger.debug("Checking environment variables for API keys...")
-    api_keys_to_check = ["OPENAI_API_KEY", "OPENROUTER_API_KEY", "GEMINI_API_KEY", "XAI_API_KEY", "CUSTOM_API_URL"]
-    for key in api_keys_to_check:
-        value = get_env(key)
-        logger.debug(f"  {key}: {'[PRESENT]' if value else '[MISSING]'}")
-    from providers import ModelProviderRegistry
-    from providers.azure_openai import AzureOpenAIProvider
-    from providers.custom import CustomProvider
-    from providers.dial import DIALModelProvider
-    from providers.gemini import GeminiModelProvider
-    from providers.openai import OpenAIModelProvider
-    from providers.openrouter import OpenRouterProvider
-    from providers.shared import ProviderType
-    from providers.xai import XAIModelProvider
-    from utils.model_restrictions import get_restriction_service
-
-    valid_providers = []
-    has_native_apis = False
-    has_openrouter = False
-    has_custom = False
-
-    # Check for Gemini API key
-    gemini_key = get_env("GEMINI_API_KEY")
-    if gemini_key and gemini_key != "your_gemini_api_key_here":
-        valid_providers.append("Gemini")
-        has_native_apis = True
-        logger.info("Gemini API key found - Gemini models available")
-
-    # Check for OpenAI API key
-    openai_key = get_env("OPENAI_API_KEY")
-    logger.debug(f"OpenAI key check: key={'[PRESENT]' if openai_key else '[MISSING]'}")
-    if openai_key and openai_key != "your_openai_api_key_here":
-        valid_providers.append("OpenAI")
-        has_native_apis = True
-        logger.info("OpenAI API key found")
-    else:
-        if not openai_key:
-            logger.debug("OpenAI API key not found in environment")
-        else:
-            logger.debug("OpenAI API key is placeholder value")
-
-    # Check for Azure OpenAI configuration
-    azure_key = get_env("AZURE_OPENAI_API_KEY")
-    azure_endpoint = get_env("AZURE_OPENAI_ENDPOINT")
-    azure_models_available = False
-    if azure_key and azure_key != "your_azure_openai_key_here" and azure_endpoint:
-        try:
-            from providers.registries.azure import AzureModelRegistry
-
-            azure_registry = AzureModelRegistry()
-            if azure_registry.list_models():
-                valid_providers.append("Azure OpenAI")
-                has_native_apis = True
-                azure_models_available = True
-                logger.info("Azure OpenAI configuration detected")
-            else:
-                logger.warning(
-                    "Azure OpenAI models configuration is empty. Populate conf/azure_models.json or set AZURE_MODELS_CONFIG_PATH."
-                )
-        except Exception as exc:
-            logger.warning(f"Failed to load Azure OpenAI models: {exc}")
-
-    # Check for X.AI API key
-    xai_key = get_env("XAI_API_KEY")
-    if xai_key and xai_key != "your_xai_api_key_here":
-        valid_providers.append("X.AI (GROK)")
-        has_native_apis = True
-        logger.info("X.AI API key found - GROK models available")
-
-    # Check for DIAL API key
-    dial_key = get_env("DIAL_API_KEY")
-    if dial_key and dial_key != "your_dial_api_key_here":
-        valid_providers.append("DIAL")
-        has_native_apis = True
-        logger.info("DIAL API key found - DIAL models available")
-
-    # Check for OpenRouter API key
-    openrouter_key = get_env("OPENROUTER_API_KEY")
-    logger.debug(f"OpenRouter key check: key={'[PRESENT]' if openrouter_key else '[MISSING]'}")
-    if openrouter_key and openrouter_key != "your_openrouter_api_key_here":
-        valid_providers.append("OpenRouter")
-        has_openrouter = True
-        logger.info("OpenRouter API key found - Multiple models available via OpenRouter")
-    else:
-        if not openrouter_key:
-            logger.debug("OpenRouter API key not found in environment")
-        else:
-            logger.debug("OpenRouter API key is placeholder value")
-
-    # Check for custom API endpoint (Ollama, vLLM, etc.)
-    custom_url = get_env("CUSTOM_API_URL")
-    if custom_url:
-        # IMPORTANT: Always read CUSTOM_API_KEY even if empty
-        # - Some providers (vLLM, LM Studio, enterprise APIs) require authentication
-        # - Others (Ollama) work without authentication (empty key)
-        # - DO NOT remove this variable - it's needed for provider factory function
-        custom_key = get_env("CUSTOM_API_KEY", "") or ""  # Default to empty (Ollama doesn't need auth)
-        custom_model = get_env("CUSTOM_MODEL_NAME", "llama3.2") or "llama3.2"
-        valid_providers.append(f"Custom API ({custom_url})")
-        has_custom = True
-        logger.info(f"Custom API endpoint found: {custom_url} with model {custom_model}")
-        if custom_key:
-            logger.debug("Custom API key provided for authentication")
-        else:
-            logger.debug("No custom API key provided (using unauthenticated access)")
-
-    # Register providers in priority order:
-    # 1. Native APIs first (most direct and efficient)
-    registered_providers = []
-
-    if has_native_apis:
-        if gemini_key and gemini_key != "your_gemini_api_key_here":
-            ModelProviderRegistry.register_provider(ProviderType.GOOGLE, GeminiModelProvider)
-            registered_providers.append(ProviderType.GOOGLE.value)
-            logger.debug(f"Registered provider: {ProviderType.GOOGLE.value}")
-        if openai_key and openai_key != "your_openai_api_key_here":
-            ModelProviderRegistry.register_provider(ProviderType.OPENAI, OpenAIModelProvider)
-            registered_providers.append(ProviderType.OPENAI.value)
-            logger.debug(f"Registered provider: {ProviderType.OPENAI.value}")
-        if azure_models_available:
-            ModelProviderRegistry.register_provider(ProviderType.AZURE, AzureOpenAIProvider)
-            registered_providers.append(ProviderType.AZURE.value)
-            logger.debug(f"Registered provider: {ProviderType.AZURE.value}")
-        if xai_key and xai_key != "your_xai_api_key_here":
-            ModelProviderRegistry.register_provider(ProviderType.XAI, XAIModelProvider)
-            registered_providers.append(ProviderType.XAI.value)
-            logger.debug(f"Registered provider: {ProviderType.XAI.value}")
-        if dial_key and dial_key != "your_dial_api_key_here":
-            ModelProviderRegistry.register_provider(ProviderType.DIAL, DIALModelProvider)
-            registered_providers.append(ProviderType.DIAL.value)
-            logger.debug(f"Registered provider: {ProviderType.DIAL.value}")
-
-    # 2. Custom provider second (for local/private models)
-    if has_custom:
-        # Factory function that creates CustomProvider with proper parameters
-        def custom_provider_factory(api_key=None):
-            # api_key is CUSTOM_API_KEY (can be empty for Ollama), base_url from CUSTOM_API_URL
-            base_url = get_env("CUSTOM_API_URL", "") or ""
-            return CustomProvider(api_key=api_key or "", base_url=base_url)  # Use provided API key or empty string
-
-        ModelProviderRegistry.register_provider(ProviderType.CUSTOM, custom_provider_factory)
-        registered_providers.append(ProviderType.CUSTOM.value)
-        logger.debug(f"Registered provider: {ProviderType.CUSTOM.value}")
-
-    # 3. OpenRouter last (catch-all for everything else)
-    if has_openrouter:
-        ModelProviderRegistry.register_provider(ProviderType.OPENROUTER, OpenRouterProvider)
-        registered_providers.append(ProviderType.OPENROUTER.value)
-        logger.debug(f"Registered provider: {ProviderType.OPENROUTER.value}")
-
-    # Log all registered providers
-    if registered_providers:
-        logger.info(f"Registered providers: {', '.join(registered_providers)}")
-
-    # Require at least one valid provider
-    if not valid_providers:
-        raise ValueError(
-            "At least one API configuration is required. Please set either:\n"
-            "- GEMINI_API_KEY for Gemini models\n"
-            "- OPENAI_API_KEY for OpenAI models\n"
-            "- XAI_API_KEY for X.AI GROK models\n"
-            "- DIAL_API_KEY for DIAL models\n"
-            "- OPENROUTER_API_KEY for OpenRouter (multiple models)\n"
-            "- CUSTOM_API_URL for local models (Ollama, vLLM, etc.)"
-        )
-
-    logger.info(f"Available providers: {', '.join(valid_providers)}")
-
-    # Log provider priority
-    priority_info = []
-    if has_native_apis:
-        priority_info.append("Native APIs (Gemini, OpenAI)")
-    if has_custom:
-        priority_info.append("Custom endpoints")
-    if has_openrouter:
-        priority_info.append("OpenRouter (catch-all)")
-
-    if len(priority_info) > 1:
-        logger.info(f"Provider priority: {' → '.join(priority_info)}")
-
-    # Register cleanup function for providers
-    def cleanup_providers():
-        """Clean up all registered providers on shutdown."""
-        try:
-            registry = ModelProviderRegistry()
-            if hasattr(registry, "_initialized_providers"):
-                # Iterate over provider instances (values), not (type, instance) tuples
-                for provider in list(registry._initialized_providers.values()):
-                    try:
-                        if provider and hasattr(provider, "close"):
-                            provider.close()
-                    except Exception:
-                        # Logger might be closed during shutdown
-                        pass
-        except Exception:
-            # Silently ignore any errors during cleanup
-            pass
-
-    atexit.register(cleanup_providers)
-
-    # Check and log model restrictions
-    restriction_service = get_restriction_service()
-    restrictions = restriction_service.get_restriction_summary()
-
-    if restrictions:
-        logger.info("Model restrictions configured:")
-        for provider_name, allowed_models in restrictions.items():
-            if isinstance(allowed_models, list):
-                logger.info(f"  {provider_name}: {', '.join(allowed_models)}")
-            else:
-                logger.info(f"  {provider_name}: {allowed_models}")
-
-        # Validate restrictions against known models
-        provider_instances = {}
-        provider_types_to_validate = [ProviderType.GOOGLE, ProviderType.OPENAI, ProviderType.XAI, ProviderType.DIAL]
-        for provider_type in provider_types_to_validate:
-            provider = ModelProviderRegistry.get_provider(provider_type)
-            if provider:
-                provider_instances[provider_type] = provider
-
-        if provider_instances:
-            restriction_service.validate_against_known_models(provider_instances)
-    else:
-        logger.info("No model restrictions configured - all models allowed")
-
-    # Check if auto mode has any models available after restrictions
-    from config import IS_AUTO_MODE
-
-    if IS_AUTO_MODE:
-        available_models = ModelProviderRegistry.get_available_models(respect_restrictions=True)
-        if not available_models:
-            logger.error(
-                "Auto mode is enabled but no models are available after applying restrictions. "
-                "Please check your OPENAI_ALLOWED_MODELS and GOOGLE_ALLOWED_MODELS settings."
-            )
-            raise ValueError(
-                "No models available for auto mode due to restrictions. "
-                "Please adjust your allowed model settings or disable auto mode."
-            )
-
-
 @server.list_tools()
 async def handle_list_tools() -> list[Tool]:
     """
@@ -680,612 +428,251 @@ async def handle_list_tools() -> list[Tool]:
             )
         )
 
-    # Log cache efficiency info
-    openrouter_key_for_cache = get_env("OPENROUTER_API_KEY")
-    if openrouter_key_for_cache and openrouter_key_for_cache != "your_openrouter_api_key_here":
-        logger.debug("OpenRouter registry cache used efficiently across all tool schemas")
-
     logger.debug(f"Returning {len(tools)} tools to MCP client")
     return tools
 
 
-@server.call_tool()
-async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
-    """
-    Handle incoming tool execution requests from MCP clients.
+def _json_response(payload: dict[str, Any]) -> list[TextContent]:
+    return [TextContent(type="text", text=json.dumps(payload, ensure_ascii=False))]
 
-    This is the main request dispatcher that routes tool calls to their appropriate handlers.
-    It supports both AI-powered tools (from TOOLS registry) and utility tools (implemented as
-    static functions).
 
-    CONVERSATION LIFECYCLE MANAGEMENT:
-    This function serves as the central orchestrator for multi-turn AI-to-AI conversations:
+def _failure(
+    code: str, message: str, request_id: str, remedy: str = "", *, missing_environment_names: Any = None
+) -> list[TextContent]:
+    error = {"code": code, "message": message, "remedy": remedy}
+    if isinstance(missing_environment_names, list):
+        # Expose only bounded identifiers, never arbitrary backend metadata or values.
+        error["missing_environment_names"] = [
+            name
+            for name in missing_environment_names[:64]
+            if isinstance(name, str) and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,127}", name)
+        ]
+    return _json_response({"status": "error", "error": error, "request_id": request_id})
 
-    1. THREAD RESUMPTION: When continuation_id is present, it reconstructs complete conversation
-       context from in-memory storage including conversation history and file references
 
-    2. CROSS-TOOL CONTINUATION: Enables seamless handoffs between different tools (analyze →
-       codereview → debug) while preserving full conversation context and file references
-
-    3. CONTEXT INJECTION: Reconstructed conversation history is embedded into tool prompts
-       using the dual prioritization strategy:
-       - Files: Newest-first prioritization (recent file versions take precedence)
-       - Turns: Newest-first collection for token efficiency, chronological presentation for LLM
-
-    4. FOLLOW-UP GENERATION: After tool execution, generates continuation offers for ongoing
-       AI-to-AI collaboration with natural language instructions
-
-    STATELESS TO STATEFUL BRIDGE:
-    The MCP protocol is inherently stateless, but this function bridges the gap by:
-    - Loading persistent conversation state from in-memory storage
-    - Reconstructing full multi-turn context for tool execution
-    - Enabling tools to access previous exchanges and file references
-    - Supporting conversation chains across different tool types
-
-    Args:
-        name: The name of the tool to execute (e.g., "analyze", "chat", "codereview")
-        arguments: Dictionary of arguments to pass to the tool, potentially including:
-                  - continuation_id: UUID for conversation thread resumption
-                  - files: File paths for analysis (subject to deduplication)
-                  - prompt: User request or follow-up question
-                  - model: Specific AI model to use (optional)
-
-    Returns:
-        List of TextContent objects containing:
-        - Tool's primary response with analysis/results
-        - Continuation offers for follow-up conversations (when applicable)
-        - Structured JSON responses with status and content
-
-    Raises:
-        ValueError: If continuation_id is invalid or conversation thread not found
-        Exception: For tool-specific errors or execution failures
-
-    Example Conversation Flow:
-        1. The CLI calls analyze tool with files → creates new thread
-        2. Thread ID returned in continuation offer
-        3. The CLI continues with codereview tool + continuation_id → full context preserved
-        4. Multiple tools can collaborate using same thread ID
-    """
-    logger.info(f"MCP tool call: {name}")
-    logger.debug(f"MCP tool arguments: {list(arguments.keys())}")
-
-    # Log to activity file for monitoring
-    try:
-        mcp_activity_logger = logging.getLogger("mcp_activity")
-        mcp_activity_logger.info(f"TOOL_CALL: {name} with {len(arguments)} arguments")
-    except Exception:
-        pass
-
-    # Handle thread context reconstruction if continuation_id is present
-    if "continuation_id" in arguments and arguments["continuation_id"]:
-        continuation_id = arguments["continuation_id"]
-        logger.debug(f"Resuming conversation thread: {continuation_id}")
-        logger.debug(
-            f"[CONVERSATION_DEBUG] Tool '{name}' resuming thread {continuation_id} with {len(arguments)} arguments"
-        )
-        logger.debug(f"[CONVERSATION_DEBUG] Original arguments keys: {list(arguments.keys())}")
-
-        # Log to activity file for monitoring
+def _is_failure(result: list[TextContent]) -> bool:
+    for item in result:
         try:
-            mcp_activity_logger = logging.getLogger("mcp_activity")
-            mcp_activity_logger.info(f"CONVERSATION_RESUME: {name} resuming thread {continuation_id}")
-        except Exception:
-            pass
+            payload = json.loads(item.text)
+        except (ValueError, AttributeError):
+            continue
+        if isinstance(payload, dict) and (payload.get("status") == "error" or payload.get("error")):
+            return True
+    return False
 
-        arguments = await reconstruct_thread_context(arguments)
-        logger.debug(f"[CONVERSATION_DEBUG] After thread reconstruction, arguments keys: {list(arguments.keys())}")
-        if "_remaining_tokens" in arguments:
-            logger.debug(f"[CONVERSATION_DEBUG] Remaining token budget: {arguments['_remaining_tokens']:,}")
 
-    # Route to AI-powered tools that require Gemini API calls
-    if name in TOOLS:
-        logger.info(f"Executing tool '{name}' with {len(arguments)} parameter(s)")
-        tool = TOOLS[name]
+def _records_success(result: list[TextContent]) -> bool:
+    if _is_failure(result):
+        return False
+    for item in result:
+        try:
+            payload = json.loads(item.text)
+        except ValueError:
+            continue
+        if isinstance(payload, dict) and payload.get("attempt_success") is False:
+            return False
+    return True
 
-        # EARLY MODEL RESOLUTION AT MCP BOUNDARY
-        # Resolve model before passing to tool - this ensures consistent model handling
-        # NOTE: Consensus tool is exempt as it handles multiple models internally
-        from providers.registry import ModelProviderRegistry
-        from utils.file_utils import check_total_file_size
-        from utils.model_context import ModelContext
 
-        # Get model from arguments or use default
-        model_name = arguments.get("model") or DEFAULT_MODEL
-        logger.debug(f"Initial model for {name}: {model_name}")
-
-        # Parse model:option format if present
-        model_name, model_option = parse_model_option(model_name)
-        if model_option:
-            logger.info(f"Parsed model format - model: '{model_name}', option: '{model_option}'")
+def _with_replay_metadata(result: list[TextContent], call) -> list[TextContent]:
+    enriched = []
+    for item in result:
+        try:
+            payload = json.loads(item.text)
+        except ValueError:
+            enriched.append(item)
+            continue
+        if isinstance(payload, dict):
+            payload.setdefault("metadata", {})["replay"] = {
+                **call.replay_metadata,
+                "files": "current filesystem state; prior file contents are not snapshots",
+            }
+            enriched.append(TextContent(type="text", text=json.dumps(payload, ensure_ascii=False)))
         else:
-            logger.info(f"Parsed model format - model: '{model_name}'")
+            enriched.append(item)
+    return enriched
 
-        # Consensus tool handles its own model configuration validation
-        # No special handling needed at server level
 
-        # Skip model resolution for tools that don't require models (e.g., planner)
-        if not tool.requires_model():
-            logger.debug(f"Tool {name} doesn't require model resolution - skipping model validation")
-            # Execute tool directly without model context
-            return await tool.execute(arguments)
-
-        # Handle auto mode at MCP boundary - resolve to specific model
-        if model_name.lower() == "auto":
-            # Get tool category to determine appropriate model
-            tool_category = tool.get_model_category()
-            resolved_model = ModelProviderRegistry.get_preferred_fallback_model(tool_category)
-            logger.info(f"Auto mode resolved to {resolved_model} for {name} (category: {tool_category.value})")
-            model_name = resolved_model
-            # Update arguments with resolved model
-            arguments["model"] = model_name
-
-        # Validate model availability at MCP boundary
-        provider = ModelProviderRegistry.get_provider_for_model(model_name)
-        if not provider:
-            # Get list of available models for error message
-            available_models = list(ModelProviderRegistry.get_available_models(respect_restrictions=True).keys())
-            tool_category = tool.get_model_category()
-            suggested_model = ModelProviderRegistry.get_preferred_fallback_model(tool_category)
-
-            error_message = (
-                f"Model '{model_name}' is not available with current API keys. "
-                f"Available models: {', '.join(available_models)}. "
-                f"Suggested model for {name}: '{suggested_model}' "
-                f"(category: {tool_category.value})"
-            )
-            error_output = ToolOutput(
-                status="error",
-                content=error_message,
-                content_type="text",
-                metadata={"tool_name": name, "requested_model": model_name},
-            )
-            raise ToolExecutionError(error_output.model_dump_json())
-
-        # Create model context with resolved model and option
-        model_context = ModelContext(model_name, model_option)
-        arguments["_model_context"] = model_context
-        arguments["_resolved_model_name"] = model_name
-        logger.debug(
-            f"Model context created for {model_name} with {model_context.capabilities.context_window} token capacity"
-        )
-        if model_option:
-            logger.debug(f"Model option stored in context: '{model_option}'")
-
-        # EARLY FILE SIZE VALIDATION AT MCP BOUNDARY
-        # Check file sizes before tool execution using resolved model
-        argument_files = arguments.get("absolute_file_paths")
-        if argument_files:
-            logger.debug(f"Checking file sizes for {len(argument_files)} files with model {model_name}")
-            file_size_check = check_total_file_size(argument_files, model_name)
-            if file_size_check:
-                logger.warning(f"File size check failed for {name} with model {model_name}")
-                raise ToolExecutionError(ToolOutput(**file_size_check).model_dump_json())
-
-        # Execute tool with pre-resolved model context
-        result = await tool.execute(arguments)
-        logger.info(f"Tool '{name}' execution completed")
-
-        # Log completion to activity file
+def _backend_identity(result: list[TextContent]) -> dict[str, Any]:
+    for item in result:
         try:
-            mcp_activity_logger = logging.getLogger("mcp_activity")
-            mcp_activity_logger.info(f"TOOL_COMPLETED: {name}")
-        except Exception:
-            pass
+            metadata = json.loads(item.text).get("metadata", {})
+        except (ValueError, AttributeError):
+            continue
+        if isinstance(metadata, dict) and metadata.get("backend"):
+            return {key: metadata[key] for key in ("backend", "requested_model", "actual_model") if key in metadata}
+    return {}
+
+
+def _has_partial_context(result: list[TextContent]) -> bool:
+    for item in result:
+        try:
+            payload = json.loads(item.text)
+        except ValueError:
+            continue
+        if isinstance(payload, dict) and any(
+            outcome.get("status") == "success" for outcome in payload.get("accumulated_responses", [])
+        ):
+            return True
+    return False
+
+
+def _bound_response(result: list[TextContent], request_id: str) -> list[TextContent]:
+    from config import MCP_RESPONSE_SIZE_LIMIT
+
+    size = len(json.dumps([item.model_dump() for item in result], ensure_ascii=False).encode("utf-8")) + 128
+    if size <= MCP_RESPONSE_SIZE_LIMIT:
+        return result
+    return _failure("output_limit", "The complete tool response exceeds the configured MCP response limit.", request_id)
+
+
+def _replay_arguments(arguments: dict[str, Any], call) -> dict[str, Any]:
+    from utils.conversation_memory import get_conversation_file_list, get_conversation_image_list
+
+    prepared = dict(arguments)
+    prepared["_replay_history"] = call.history()
+    prepared["_replay_history_turns"] = call.history_turns()
+    prepared["_replay_omitted_turns"] = call.replay_metadata["omitted_turns"]
+    # Paths are revalidated by the selected adapter before any read or launch.
+    files = get_conversation_file_list(call.context)
+    if files:
+        key = "relevant_files" if "step_number" in arguments else "absolute_file_paths"
+        prepared[key] = list(dict.fromkeys([*arguments.get(key, []), *files]))
+    images = get_conversation_image_list(call.context)
+    if images:
+        prepared["images"] = list(dict.fromkeys([*arguments.get("images", []), *images]))
+    return prepared
+
+
+async def _execute_call(name: str, arguments: dict[str, Any], request_id: str, admitted_at: float) -> list[TextContent]:
+    from clink.contracts import BackendError
+    from utils.call_state import StateError, conversation_call
+
+    if name not in TOOLS:
+        return _failure("unknown_tool", "Unknown or disabled tool.", request_id)
+    if not isinstance(arguments, dict) or any(str(key).startswith("_") for key in arguments):
+        return _failure("invalid_request", "Tool arguments must be an object without private fields.", request_id)
+    from config import MCP_PROMPT_SIZE_LIMIT
+
+    if len(json.dumps(arguments, ensure_ascii=False).encode("utf-8")) > MCP_PROMPT_SIZE_LIMIT:
+        return _failure("input_limit", "Required tool arguments exceed the 1 MiB UTF-8 input budget.", request_id)
+    # Discovery descriptors are never used for execution. Every call owns its tool state.
+    tool = type(TOOLS[name])()
+    try:
+        request = tool.get_request_model()(**arguments)
+    except ValidationError as exc:
+        errors = exc.errors(include_input=False, include_context=False, include_url=False)
+        fields = sorted({".".join(map(str, err["loc"]))[:80] for err in errors[:8]})
+        suffix = f" ({exc.error_count()} validation errors; first eight shown)" if len(errors) > 8 else ""
+        return _failure("invalid_request", "Invalid fields: " + ", ".join(fields) + suffix, request_id)
+    original = request.model_dump(exclude_unset=True)
+    schema = tool.get_input_schema()
+    if schema.get("additionalProperties") is False and set(arguments) - set(schema.get("properties", {})):
+        return _failure("invalid_request", "Unknown fields are not accepted by this tool.", request_id)
+    if name == "clink" and original.get("action", "consult") != "consult":
+        from clink.tasks import get_task_manager
+
+        manager = get_task_manager()
+        action = original["action"]
+        if action == "start":
+            payload = await manager.start(original, admitted_at=admitted_at, request_id=request_id)
+        elif action == "followup":
+            payload = await manager.followup(original, admitted_at=admitted_at, request_id=request_id)
+        elif action == "status":
+            payload = await manager.status(original)
+        else:
+            payload = await manager.cancel(original)
+        return _bound_response(_json_response(payload), request_id)
+    deadline = admitted_at + min(1800.0, float(original.get("timeout_seconds", 1800.0)))
+    internal = {
+        "_original_arguments": original,
+        "_request_id": request_id,
+        "_admitted_at": admitted_at,
+        "_deadline": deadline,
+    }
+    if name in {"challenge", "version", "listmodels"} and not original.get("continuation_id"):
+        return _bound_response(await tool.execute({**original, **internal}), request_id)
+    async with conversation_call(
+        name, original, deadline=deadline, admitted_at=admitted_at, request_id=request_id
+    ) as call:
+        try:
+            if call.cached_result is not None:
+                if name == "consensus":
+                    await tool.validate_cached_result(call.workflow_state)
+                return [TextContent.model_validate(item) for item in call.cached_result]
+            prepared = original if name == "consensus" else _replay_arguments(original, call)
+            prepared = {**prepared, **internal, "continuation_id": call.continuation_id}
+            result = _bound_response(_with_replay_metadata(await tool.execute(prepared), call), request_id)
+        except (BackendError, StateError) as exc:
+            result = _failure(exc.code, str(exc), request_id, exc.remedy if isinstance(exc, BackendError) else "")
+        except ToolExecutionError as exc:
+            # ToolExecutionError already carries a public, structured failure.
+            try:
+                payload = json.loads(exc.payload)
+            except ValueError:
+                payload = {"status": "error", "error": {"code": "tool_error", "message": "Tool execution failed."}}
+            result = _bound_response(_json_response(payload), request_id)
+        except ValidationError:
+            result = _failure("invalid_request", "Tool context failed request validation.", request_id)
+        result = _bound_response(result, request_id)
+        success = _records_success(result)
+        call.commit(
+            result,
+            success=success,
+            user_content=tool.__dict__.get("_effective_user_prompt")
+            or original.get("prompt")
+            or original.get("step")
+            or "",
+            assistant_content="\n".join(item.text for item in result),
+            files=list(dict.fromkeys([*original.get("absolute_file_paths", []), *original.get("relevant_files", [])])),
+            images=original.get("images") or [],
+            backend_identity=_backend_identity(result),
+            retain_failure_context=name == "consensus" and not success and _has_partial_context(result),
+        )
         return result
 
-    # Handle unknown tool requests gracefully
-    else:
-        return [TextContent(type="text", text=f"Unknown tool: {name}")]
 
-
-def parse_model_option(model_string: str) -> tuple[str, Optional[str]]:
-    """
-    Parse model:option format into model name and option.
-
-    Handles different formats:
-    - OpenRouter models: preserve :free, :beta, :preview suffixes as part of model name
-    - Ollama/Custom models: split on : to extract tags like :latest
-    - Consensus stance: extract options like :for, :against
-
-    Args:
-        model_string: String that may contain "model:option" format
-
-    Returns:
-        tuple: (model_name, option) where option may be None
-    """
-    if ":" in model_string and not model_string.startswith("http"):  # Avoid parsing URLs
-        # Check if this looks like an OpenRouter model (contains /)
-        if "/" in model_string and model_string.count(":") == 1:
-            # Could be openai/gpt-4:something - check what comes after colon
-            parts = model_string.split(":", 1)
-            suffix = parts[1].strip().lower()
-
-            # Known OpenRouter suffixes to preserve
-            if suffix in ["free", "beta", "preview"]:
-                return model_string.strip(), None
-
-        # For other patterns (Ollama tags, consensus stances), split normally
-        parts = model_string.split(":", 1)
-        model_name = parts[0].strip()
-        model_option = parts[1].strip() if len(parts) > 1 else None
-        return model_name, model_option
-    return model_string.strip(), None
-
-
-def get_follow_up_instructions(current_turn_count: int, max_turns: int = None) -> str:
-    """
-    Generate dynamic follow-up instructions based on conversation turn count.
-
-    Args:
-        current_turn_count: Current number of turns in the conversation
-        max_turns: Maximum allowed turns before conversation ends (defaults to MAX_CONVERSATION_TURNS)
-
-    Returns:
-        Follow-up instructions to append to the tool prompt
-    """
-    if max_turns is None:
-        from utils.conversation_memory import MAX_CONVERSATION_TURNS
-
-        max_turns = MAX_CONVERSATION_TURNS
-
-    if current_turn_count >= max_turns - 1:
-        # We're at or approaching the turn limit - no more follow-ups
-        return """
-IMPORTANT: This is approaching the final exchange in this conversation thread.
-Do NOT include any follow-up questions in your response. Provide your complete
-final analysis and recommendations."""
-    else:
-        # Normal follow-up instructions
-        remaining_turns = max_turns - current_turn_count - 1
-        return f"""
-
-CONVERSATION CONTINUATION: You can continue this discussion with the agent! ({remaining_turns} exchanges remaining)
-
-Feel free to ask clarifying questions or suggest areas for deeper exploration naturally within your response.
-If something needs clarification or you'd benefit from additional context, simply mention it conversationally.
-
-IMPORTANT: When you suggest follow-ups or ask questions, you MUST explicitly instruct the agent to use the continuation_id
-to respond. Use clear, direct language based on urgency:
-
-For optional follow-ups: "Please continue this conversation using the continuation_id from this response if you'd "
-"like to explore this further."
-
-For needed responses: "Please respond using the continuation_id from this response - your input is needed to proceed."
-
-For essential/critical responses: "RESPONSE REQUIRED: Please immediately continue using the continuation_id from "
-"this response. Cannot proceed without your clarification/input."
-
-This ensures the agent knows both HOW to maintain the conversation thread AND whether a response is optional, "
-"needed, or essential.
-
-The tool will automatically provide a continuation_id in the structured response that the agent can use in subsequent
-tool calls to maintain full conversation context across multiple exchanges.
-
-Remember: Only suggest follow-ups when they would genuinely add value to the discussion, and always instruct "
-"The agent to use the continuation_id when you do."""
-
-
-async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any]:
-    """
-    Reconstruct conversation context for stateless-to-stateful thread continuation.
-
-    This is a critical function that transforms the inherently stateless MCP protocol into
-    stateful multi-turn conversations. It loads persistent conversation state from in-memory
-    storage and rebuilds complete conversation context using the sophisticated dual prioritization
-    strategy implemented in the conversation memory system.
-
-    CONTEXT RECONSTRUCTION PROCESS:
-
-    1. THREAD RETRIEVAL: Loads complete ThreadContext from storage using continuation_id
-       - Includes all conversation turns with tool attribution
-       - Preserves file references and cross-tool context
-       - Handles conversation chains across multiple linked threads
-
-    2. CONVERSATION HISTORY BUILDING: Uses build_conversation_history() to create
-       comprehensive context with intelligent prioritization:
-
-       FILE PRIORITIZATION (Newest-First Throughout):
-       - When same file appears in multiple turns, newest reference wins
-       - File embedding prioritizes recent versions, excludes older duplicates
-       - Token budget management ensures most relevant files are preserved
-
-       CONVERSATION TURN PRIORITIZATION (Dual Strategy):
-       - Collection Phase: Processes turns newest-to-oldest for token efficiency
-       - Presentation Phase: Presents turns chronologically for LLM understanding
-       - Ensures recent context is preserved when token budget is constrained
-
-    3. CONTEXT INJECTION: Embeds reconstructed history into tool request arguments
-       - Conversation history becomes part of the tool's prompt context
-       - Files referenced in previous turns are accessible to current tool
-       - Cross-tool knowledge transfer is seamless and comprehensive
-
-    4. TOKEN BUDGET MANAGEMENT: Applies model-specific token allocation
-       - Balances conversation history vs. file content vs. response space
-       - Gracefully handles token limits with intelligent exclusion strategies
-       - Preserves most contextually relevant information within constraints
-
-    CROSS-TOOL CONTINUATION SUPPORT:
-    This function enables seamless handoffs between different tools:
-    - Analyze tool → Debug tool: Full file context and analysis preserved
-    - Chat tool → CodeReview tool: Conversation context maintained
-    - Any tool → Any tool: Complete cross-tool knowledge transfer
-
-    ERROR HANDLING & RECOVERY:
-    - Thread expiration: Provides clear instructions for conversation restart
-    - Storage unavailability: Graceful degradation with error messaging
-    - Invalid continuation_id: Security validation and user-friendly errors
-
-    Args:
-        arguments: Original request arguments dictionary containing:
-                  - continuation_id (required): UUID of conversation thread to resume
-                  - Other tool-specific arguments that will be preserved
-
-    Returns:
-        dict[str, Any]: Enhanced arguments dictionary with conversation context:
-        - Original arguments preserved
-        - Conversation history embedded in appropriate format for tool consumption
-        - File context from previous turns made accessible
-        - Cross-tool knowledge transfer enabled
-
-    Raises:
-        ValueError: When continuation_id is invalid, thread not found, or expired
-                   Includes user-friendly recovery instructions
-
-    Performance Characteristics:
-        - O(1) thread lookup in memory
-        - O(n) conversation history reconstruction where n = number of turns
-        - Intelligent token budgeting prevents context window overflow
-        - Optimized file deduplication minimizes redundant content
-
-    Example Usage Flow:
-        1. CLI: "Continue analyzing the security issues" + continuation_id
-        2. reconstruct_thread_context() loads previous analyze conversation
-        3. Debug tool receives full context including previous file analysis
-        4. Debug tool can reference specific findings from analyze tool
-        5. Natural cross-tool collaboration without context loss
-    """
-    from utils.conversation_memory import add_turn, build_conversation_history, get_thread
-
-    continuation_id = arguments["continuation_id"]
-
-    # Get thread context from storage
-    logger.debug(f"[CONVERSATION_DEBUG] Looking up thread {continuation_id} in storage")
-    context = get_thread(continuation_id)
-    if not context:
-        logger.warning(f"Thread not found: {continuation_id}")
-        logger.debug(f"[CONVERSATION_DEBUG] Thread {continuation_id} not found in storage or expired")
-
-        # Log to activity file for monitoring
-        try:
-            mcp_activity_logger = logging.getLogger("mcp_activity")
-            mcp_activity_logger.info(f"CONVERSATION_ERROR: Thread {continuation_id} not found or expired")
-        except Exception:
-            pass
-
-        # Return error asking CLI to restart conversation with full context
-        raise ValueError(
-            f"Conversation thread '{continuation_id}' was not found or has expired. "
-            f"This may happen if the conversation was created more than 3 hours ago or if the "
-            f"server was restarted. "
-            f"Please restart the conversation by providing your full question/prompt without the "
-            f"continuation_id parameter. "
-            f"This will create a new conversation thread that can continue with follow-up exchanges."
-        )
-
-    # Add user's new input to the conversation
-    user_prompt = arguments.get("prompt", "")
-    if user_prompt:
-        # Capture files referenced in this turn
-        user_files = arguments.get("absolute_file_paths") or []
-        logger.debug(f"[CONVERSATION_DEBUG] Adding user turn to thread {continuation_id}")
-        from utils.token_utils import estimate_tokens
-
-        user_prompt_tokens = estimate_tokens(user_prompt)
-        logger.debug(
-            f"[CONVERSATION_DEBUG] User prompt length: {len(user_prompt)} chars (~{user_prompt_tokens:,} tokens)"
-        )
-        logger.debug(f"[CONVERSATION_DEBUG] User files: {user_files}")
-        success = add_turn(continuation_id, "user", user_prompt, files=user_files)
-        if not success:
-            logger.warning(f"Failed to add user turn to thread {continuation_id}")
-            logger.debug("[CONVERSATION_DEBUG] Failed to add user turn - thread may be at turn limit or expired")
-        else:
-            logger.debug(f"[CONVERSATION_DEBUG] Successfully added user turn to thread {continuation_id}")
-
-    # Create model context early to use for history building
-    from utils.model_context import ModelContext
-
-    tool = TOOLS.get(context.tool_name)
-    requires_model = tool.requires_model() if tool else True
-
-    # Check if we should use the model from the previous conversation turn
-    model_from_args = arguments.get("model")
-    if requires_model and not model_from_args and context.turns:
-        # Find the last assistant turn to get the model used
-        for turn in reversed(context.turns):
-            if turn.role == "assistant" and turn.model_name:
-                arguments["model"] = turn.model_name
-                logger.debug(f"[CONVERSATION_DEBUG] Using model from previous turn: {turn.model_name}")
-                break
-
-    # Resolve an effective model for context reconstruction when DEFAULT_MODEL=auto
-    model_context = arguments.get("_model_context")
-
-    if requires_model:
-        if model_context is None:
-            try:
-                model_context = ModelContext.from_arguments(arguments)
-                arguments.setdefault("_resolved_model_name", model_context.model_name)
-            except ValueError as exc:
-                from providers.registry import ModelProviderRegistry
-
-                fallback_model = None
-                if tool is not None:
-                    try:
-                        fallback_model = ModelProviderRegistry.get_preferred_fallback_model(tool.get_model_category())
-                    except Exception as fallback_exc:  # pragma: no cover - defensive log
-                        logger.debug(
-                            f"[CONVERSATION_DEBUG] Unable to resolve fallback model for {context.tool_name}: {fallback_exc}"
-                        )
-
-                if fallback_model is None:
-                    available_models = ModelProviderRegistry.get_available_model_names()
-                    if available_models:
-                        fallback_model = available_models[0]
-
-                if fallback_model is None:
-                    raise
-
-                logger.debug(
-                    f"[CONVERSATION_DEBUG] Falling back to model '{fallback_model}' for context reconstruction after error: {exc}"
-                )
-                model_context = ModelContext(fallback_model)
-                arguments["_model_context"] = model_context
-                arguments["_resolved_model_name"] = fallback_model
-
-        from providers.registry import ModelProviderRegistry
-
-        provider = ModelProviderRegistry.get_provider_for_model(model_context.model_name)
-        if provider is None:
-            fallback_model = None
-            if tool is not None:
-                try:
-                    fallback_model = ModelProviderRegistry.get_preferred_fallback_model(tool.get_model_category())
-                except Exception as fallback_exc:  # pragma: no cover - defensive log
-                    logger.debug(
-                        f"[CONVERSATION_DEBUG] Unable to resolve fallback model for {context.tool_name}: {fallback_exc}"
-                    )
-
-            if fallback_model is None:
-                available_models = ModelProviderRegistry.get_available_model_names()
-                if available_models:
-                    fallback_model = available_models[0]
-
-            if fallback_model is None:
-                raise ValueError(
-                    f"Conversation continuation failed: model '{model_context.model_name}' is not available with current API keys."
-                )
-
-            logger.debug(
-                f"[CONVERSATION_DEBUG] Model '{model_context.model_name}' unavailable; swapping to '{fallback_model}' for context reconstruction"
-            )
-            model_context = ModelContext(fallback_model)
-            arguments["_model_context"] = model_context
-            arguments["_resolved_model_name"] = fallback_model
-    else:
-        if model_context is None:
-            from providers.registry import ModelProviderRegistry
-
-            fallback_model = None
-            if tool is not None:
-                try:
-                    fallback_model = ModelProviderRegistry.get_preferred_fallback_model(tool.get_model_category())
-                except Exception as fallback_exc:  # pragma: no cover - defensive log
-                    logger.debug(
-                        f"[CONVERSATION_DEBUG] Unable to resolve fallback model for {context.tool_name}: {fallback_exc}"
-                    )
-
-            if fallback_model is None:
-                available_models = ModelProviderRegistry.get_available_model_names()
-                if available_models:
-                    fallback_model = available_models[0]
-
-            if fallback_model is None:
-                raise ValueError(
-                    "Conversation continuation failed: no available models detected for context reconstruction."
-                )
-
-            logger.debug(
-                f"[CONVERSATION_DEBUG] Using fallback model '{fallback_model}' for context reconstruction of tool without model requirement"
-            )
-            model_context = ModelContext(fallback_model)
-            arguments["_model_context"] = model_context
-            arguments["_resolved_model_name"] = fallback_model
-
-    # Build conversation history with model-specific limits
-    logger.debug(f"[CONVERSATION_DEBUG] Building conversation history for thread {continuation_id}")
-    logger.debug(f"[CONVERSATION_DEBUG] Thread has {len(context.turns)} turns, tool: {context.tool_name}")
-    logger.debug(f"[CONVERSATION_DEBUG] Using model: {model_context.model_name}")
-    conversation_history, conversation_tokens = build_conversation_history(context, model_context)
-    logger.debug(f"[CONVERSATION_DEBUG] Conversation history built: {conversation_tokens:,} tokens")
-    logger.debug(
-        f"[CONVERSATION_DEBUG] Conversation history length: {len(conversation_history)} chars (~{conversation_tokens:,} tokens)"
-    )
-
-    # Add dynamic follow-up instructions based on turn count
-    follow_up_instructions = get_follow_up_instructions(len(context.turns))
-    logger.debug(f"[CONVERSATION_DEBUG] Follow-up instructions added for turn {len(context.turns)}")
-
-    # All tools now use standardized 'prompt' field
-    original_prompt = arguments.get("prompt", "")
-    logger.debug("[CONVERSATION_DEBUG] Extracting user input from 'prompt' field")
-    original_prompt_tokens = estimate_tokens(original_prompt) if original_prompt else 0
-    logger.debug(
-        f"[CONVERSATION_DEBUG] User input length: {len(original_prompt)} chars (~{original_prompt_tokens:,} tokens)"
-    )
-
-    # Merge original context with new prompt and follow-up instructions
-    if conversation_history:
-        enhanced_prompt = (
-            f"{conversation_history}\n\n=== NEW USER INPUT ===\n{original_prompt}\n\n{follow_up_instructions}"
-        )
-    else:
-        enhanced_prompt = f"{original_prompt}\n\n{follow_up_instructions}"
-
-    # Update arguments with enhanced context and remaining token budget
-    enhanced_arguments = arguments.copy()
-
-    # Store the enhanced prompt in the prompt field
-    enhanced_arguments["prompt"] = enhanced_prompt
-    # Store the original user prompt separately for size validation
-    enhanced_arguments["_original_user_prompt"] = original_prompt
-    logger.debug("[CONVERSATION_DEBUG] Storing enhanced prompt in 'prompt' field")
-    logger.debug("[CONVERSATION_DEBUG] Storing original user prompt in '_original_user_prompt' field")
-
-    # Calculate remaining token budget based on current model
-    # (model_context was already created above for history building)
-    token_allocation = model_context.calculate_token_allocation()
-
-    # Calculate remaining tokens for files/new content
-    # History has already consumed some of the content budget
-    remaining_tokens = token_allocation.content_tokens - conversation_tokens
-    enhanced_arguments["_remaining_tokens"] = max(0, remaining_tokens)  # Ensure non-negative
-    enhanced_arguments["_model_context"] = model_context  # Pass context for use in tools
-
-    logger.debug("[CONVERSATION_DEBUG] Token budget calculation:")
-    logger.debug(f"[CONVERSATION_DEBUG]   Model: {model_context.model_name}")
-    logger.debug(f"[CONVERSATION_DEBUG]   Total capacity: {token_allocation.total_tokens:,}")
-    logger.debug(f"[CONVERSATION_DEBUG]   Content allocation: {token_allocation.content_tokens:,}")
-    logger.debug(f"[CONVERSATION_DEBUG]   Conversation tokens: {conversation_tokens:,}")
-    logger.debug(f"[CONVERSATION_DEBUG]   Remaining tokens: {remaining_tokens:,}")
-
-    # Merge original context parameters (files, etc.) with new request
-    if context.initial_context:
-        logger.debug(f"[CONVERSATION_DEBUG] Merging initial context with {len(context.initial_context)} parameters")
-        for key, value in context.initial_context.items():
-            if key not in enhanced_arguments and key not in ["temperature", "thinking_mode", "model"]:
-                enhanced_arguments[key] = value
-                logger.debug(f"[CONVERSATION_DEBUG] Merged initial context param: {key}")
-
-    logger.info(f"Reconstructed context for thread {continuation_id} (turn {len(context.turns)})")
-    logger.debug(f"[CONVERSATION_DEBUG] Final enhanced arguments keys: {list(enhanced_arguments.keys())}")
-
-    if "absolute_file_paths" in enhanced_arguments:
-        logger.debug(
-            f"[CONVERSATION_DEBUG] Final files in enhanced arguments: {enhanced_arguments['absolute_file_paths']}"
-        )
-
-    # Log to activity file for monitoring
+@server.call_tool()
+async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
+    """Execute with isolated per-call state and one serialized continuation transaction."""
+    from clink.contracts import BackendError
+    from utils.call_state import StateError
+
+    request_id = str(uuid.uuid4())
+    admitted_at = time.monotonic()
+    log_name = name if name in TOOLS else "unknown"
+    logger.info("tool_start request_id=%s tool=%s", request_id, log_name)
     try:
-        mcp_activity_logger = logging.getLogger("mcp_activity")
-        mcp_activity_logger.info(
-            f"CONVERSATION_CONTINUATION: Thread {continuation_id} turn {len(context.turns)} - "
-            f"{len(context.turns)} previous turns loaded"
+        result = await _execute_call(name, arguments, request_id, admitted_at)
+    except (BackendError, StateError) as exc:
+        result = _failure(
+            exc.code,
+            str(exc),
+            request_id,
+            exc.remedy if isinstance(exc, BackendError) else "",
+            missing_environment_names=(
+                exc.metadata.get("missing_environment_names") if isinstance(exc, BackendError) else None
+            ),
         )
-    except Exception:
-        pass
-
-    return enhanced_arguments
+    except asyncio.CancelledError:
+        logger.info("tool_cancelled request_id=%s tool=%s", request_id, log_name)
+        raise
+    except Exception as exc:
+        # Diagnostic type only: exception messages may contain prompts or credentials.
+        logger.error("tool_failure request_id=%s tool=%s type=%s", request_id, log_name, type(exc).__name__)
+        result = _failure("internal_error", "The tool could not complete the request.", request_id)
+    # Cached results and every early/caught failure pass the same public byte ceiling.
+    result = _bound_response(result, request_id)
+    logger.info(
+        "tool_end request_id=%s tool=%s duration=%.3f success=%s",
+        request_id,
+        log_name,
+        time.monotonic() - admitted_at,
+        not _is_failure(result),
+    )
+    if _is_failure(result):
+        raise ToolExecutionError(result[0].text)
+    return result
 
 
 @server.list_prompts()
@@ -1361,7 +748,7 @@ async def handle_get_prompt(name: str, arguments: dict[str, Any] = None) -> GetP
     Raises:
         ValueError: If the prompt name is unknown
     """
-    logger.debug(f"MCP client requested prompt: {name} with args: {arguments}")
+    logger.debug("MCP prompt requested name=%s", name)
 
     # Handle special "continue" case
     if name.lower() == "continue":
@@ -1447,74 +834,57 @@ async def handle_get_prompt(name: str, arguments: dict[str, Any] = None) -> GetP
 
 
 async def main():
-    """
-    Main entry point for the MCP server.
+    """Start stdio MCP without provider credentials or installed model CLIs."""
+    from clink.backend import get_backend
+    from clink.tasks import shutdown_task_manager
 
-    Initializes the Gemini API configuration and starts the server using
-    stdio transport. The server will continue running until the client
-    disconnects or an error occurs.
-
-    The server communicates via standard input/output streams using the
-    MCP protocol's JSON-RPC message format.
-    """
-    # Validate and configure providers based on available API keys
-    configure_providers()
-
-    # Log startup message
-    logger.info("PAL MCP Server starting up...")
-    logger.info(f"Log level: {log_level}")
-
-    # Note: MCP client info will be logged during the protocol handshake
-    # (when handle_list_tools is called)
-
-    # Log current model mode
-    from config import IS_AUTO_MODE
-
-    if IS_AUTO_MODE:
-        logger.info("Model mode: AUTO (CLI will select the best model for each task)")
-    else:
-        logger.info(f"Model mode: Fixed model '{DEFAULT_MODEL}'")
-
-    # Import here to avoid circular imports
-    from config import DEFAULT_THINKING_MODE_THINKDEEP
-
-    logger.info(f"Default thinking mode (ThinkDeep): {DEFAULT_THINKING_MODE_THINKDEEP}")
-
-    logger.info(f"Available tools: {list(TOOLS.keys())}")
-    logger.info("Server ready - waiting for tool requests...")
-
-    # Prepare dynamic instructions for the MCP client based on model mode
-    if IS_AUTO_MODE:
-        handshake_instructions = (
-            "When the user names a specific model (e.g. 'use chat with gpt5'), send that exact model in the tool call. "
-            "When no model is mentioned, first use the `listmodels` tool from PAL to obtain available models to choose the best one from."
-        )
-    else:
-        handshake_instructions = (
-            "When the user names a specific model (e.g. 'use chat with gpt5'), send that exact model in the tool call. "
-            f"When no model is mentioned, default to '{DEFAULT_MODEL}'."
-        )
-
-    # Run the server using stdio transport (standard input/output)
-    # This allows the server to be launched by MCP clients as a subprocess
-    async with stdio_server() as (read_stream, write_stream):
-        await server.run(
-            read_stream,
-            write_stream,
-            InitializationOptions(
-                server_name="PAL",
-                server_version=__version__,
-                instructions=handshake_instructions,
-                capabilities=ServerCapabilities(
-                    tools=ToolsCapability(),  # Advertise tool support capability
-                    prompts=PromptsCapability(),  # Advertise prompt support capability
+    logger.info("clink-mcp-server starting version=%s tools=%d", __version__, len(TOOLS))
+    backend = get_backend()
+    try:
+        async with stdio_server() as (read_stream, write_stream):
+            await server.run(
+                read_stream,
+                write_stream,
+                InitializationOptions(
+                    server_name="clink-mcp-server",
+                    server_version=__version__,
+                    instructions=(
+                        "Consultations and analytical tools delegate advisory analysis; default Codex/default. "
+                        "Explicit clink start/status/followup/cancel actions manage native tasks that can edit files "
+                        "and use native configured tools, hooks, MCP and subagents under native permissions. "
+                        "Start requires cli_name, project_dir, prompt and a unique request_key; poll task_handle. "
+                        "Pass native CLI model identifiers unchanged; omitted or auto uses configured/native defaults. "
+                        "Use listmodels for local CLI configuration and capability discovery. "
+                        "Consultations reuse continuation_id for PAL context; native actions reject it. "
+                        "Native completed means execution ended, not verified fulfillment. Cancellation cannot undo effects."
+                    ),
+                    capabilities=ServerCapabilities(tools=ToolsCapability(), prompts=PromptsCapability()),
                 ),
-            ),
-        )
+            )
+    finally:
+        try:
+            await shutdown_task_manager()
+        finally:
+            await backend.close()
 
 
-def run():
-    """Console script entry point for pal-mcp-server."""
+def run(argv: list[str] | None = None):
+    """Console script entry point for clink-mcp-server."""
+    from clink.registry import RegistryLoadError, get_registry
+
+    parser = argparse.ArgumentParser(description="CLI consultations and native task delegation over MCP stdio.")
+    parser.add_argument(
+        "--project",
+        metavar="EXISTING_DIR",
+        help="Bind project manifests and default workspace roots to this directory.",
+    )
+    arguments = parser.parse_args(argv)
+    if arguments.project is not None and not arguments.project.strip():
+        parser.error("--project must be a nonempty directory path")
+    try:
+        get_registry(project_dir=Path(arguments.project) if arguments.project is not None else None)
+    except RegistryLoadError as exc:
+        parser.error(str(exc))
     try:
         asyncio.run(main())
     except KeyboardInterrupt:

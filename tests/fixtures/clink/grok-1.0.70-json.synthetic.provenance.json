@@ -1,0 +1,26 @@
+{
+  "dialect": "json_single_document",
+  "fixture_kind": "synthetic_documented_shape_not_captured_native_output",
+  "fixture_sha256": {
+    "grok-1.0.70-json-error.synthetic.json": "6dc0a72d6e3ca3a10f8593e27801a0d75d1b7ee63f09f40f2c1d2443ed9997fc",
+    "grok-1.0.70-json-success.synthetic.json": "fd654e797728ac1442f57943cba76b9418d045caf5ac539c0ef8b67f5f1dab01"
+  },
+  "limitation": "Synthetic parser coverage only. Names identify the investigated installed CLI, not captured version-specific native output. Native process exit and execution policy require separate backend admission evidence.",
+  "live_execution_verified": false,
+  "native_exit_status_included": false,
+  "native_output_captured": false,
+  "observed_installed_cli_version": "1.0.70",
+  "protocol_source": {
+    "installed_document": "$GROK_HOME/docs/user-guide/14-headless-mode.md",
+    "installed_document_line_range": [
+      173,
+      300
+    ],
+    "installed_document_sha256": "4101c1e3002e7833ff417e1f21a50e508920f2765c55165d240e509aeda149ed",
+    "kind": "installed_version_adjacent_documentation",
+    "public_main_correspondence_verified": false,
+    "url": "https://github.com/xai-org/grok-build/blob/main/crates/codegen/xai-grok-pager/docs/user-guide/14-headless-mode.md"
+  },
+  "schema_version": 1,
+  "success_predicate": "Nonempty text and stopReason exactly end_turn; max_tokens, max_turn_requests, refusal and cancelled are rejected."
+}

@@ -1,81 +1,28 @@
-# Security Policy
+# Security policy
 
-## Supported Versions
+This policy covers [clink-mcp-server](https://github.com/acebytes/clink-mcp-server), a CLI-only fork of PAL MCP Server. Security fixes target the current 0.2.x release line. Historical upstream PAL 9.x versions are not releases of this fork.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 9.x.x   | :white_check_mark: |
-| < 9.0   | :x:                |
+## Report a vulnerability privately
 
-## Important Disclaimer
+Do not publish exploit details, credentials, private prompts, user records, or raw native sessions in an issue. Use this repository's [private vulnerability reporting](https://github.com/acebytes/clink-mcp-server/security/advisories/new) when available. If GitHub private reporting is unavailable, contact the repository maintainer through their public profile to arrange a private channel before sharing sensitive details. Do not send fork-specific reports to the upstream PAL project.
 
-PAL MCP is an open-source Model Context Protocol (MCP) server that acts as middleware between AI clients (Claude Code, Codex CLI, Cursor, etc.) and various AI model providers.
+Include the affected clink version and operation (consultation, native task, generation, setup, or local discovery), operating system, Python and CLI versions, sanitized reproduction steps, expected and observed behavior, and potential impact. Use synthetic files and redact sensitive values. No response-time commitment is made.
 
-**Please understand the following:**
+## Execution and data boundaries
 
-- **No Warranty**: This software is provided "AS IS" under the Apache 2.0 License, without warranties of any kind. See the [LICENSE](LICENSE) file for full terms.
-- **User Responsibility**: The AI client (not PAL MCP) controls tool invocations and workflows. Users are responsible for reviewing AI-generated outputs and actions.
-- **API Key Security**: You are responsible for securing your own API keys. Never commit keys to version control or share them publicly.
-- **Third-Party Services**: PAL MCP connects to external AI providers (Google, OpenAI, Azure, etc.). Their terms of service and privacy policies apply to data sent through this server.
+- Native CLIs own authentication and native permission decisions. Clink does not require hosted-provider API keys, copy login stores, grant native trust, or provide an approval bypass or relay.
+- Consultation, native tasks, and programmatic generation have separate admissions. A valid version string, executable installation, or successful login is insufficient; enabled operations require their pinned binary and execution bindings. Changed versions or recipes fail closed pending verification.
+- Consultations return advice and proposed edits. Explicit native tasks and native generation retain the CLI's configured capabilities and can change files or external systems. Approved roots constrain project selection and supplied context; they do not sandbox every native tool or provide OS read isolation.
+- Native execution can produce partial effects before failure, timeout, or cancellation. Cancellation does not roll back changes or guarantee detached descendants and remote jobs stopped. A completed result validates execution/final-output transport, not fulfillment. Independently inspect effects and run checks.
+- Project manifests can select executables, roots, role guidance, and inherited environment names. Load repository configuration deliberately through explicit `--project` binding and the host's trust controls. Generation loads its operator configuration independently of request paths.
+- Native tasks, consultation continuations, session mappings, and deduplication are held in memory. Restart loses that state. Save useful results and inspect ambiguous outcomes before explicitly resubmitting work.
 
-## Reporting a Vulnerability
+## Protect local configuration and reports
 
-**Please do not report security vulnerabilities through public GitHub issues.**
+Keep secrets in native CLI authentication stores or documented environment/configuration locations. Do not commit `.env`, credentials, private consumer configuration, runtime logs, or raw model/session output. Inherit only the environment variable names needed for integrations; names belong in manifests, while values remain outside tracked source.
 
-### Preferred Method
+Use disposable projects for live checks and review generated changes before using them. Keep dependency updates and native CLI upgrades deliberate: package installation is separate from ordinary server startup, and a CLI upgrade may require new admission evidence. The base [container](docker/README.md) has no CLI binaries or authentication files and is intended for provider-free startup, discovery, and local tools.
 
-Use [GitHub Security Advisories](https://github.com/BeehiveInnovations/pal-mcp-server/security/advisories/new) to report vulnerabilities privately.
+Security reports in scope include command injection, admission or path-boundary bypass, private-file cleanup failures, sensitive-data disclosure, exploitable dependency issues, and denial of service in the server. Report defects in external CLIs, MCP clients, or third-party services to their maintainers as appropriate; describe any clink boundary failure separately.
 
-### What to Include
-
-- Description of the vulnerability
-- Steps to reproduce
-- Affected versions
-- Potential impact
-- Suggested fix (optional)
-
-### What to Expect
-
-- We will acknowledge your report and assess the issue
-- Critical issues will be prioritized
-- We'll keep you informed of progress as work proceeds
-
-We cannot commit to specific response timelines, but we take security seriously.
-
-### After Resolution
-
-We welcome security researchers to submit a pull request with the fix. This is an open-source project and we appreciate community contributions to improve security.
-
-## Disclosure Policy
-
-We practice coordinated disclosure. Please allow reasonable time to address issues before public disclosure. We'll work with you on timing.
-
-## Scope
-
-### In Scope
-
-- Authentication/authorization bypasses
-- Injection vulnerabilities (command injection, prompt injection with security impact)
-- Information disclosure (API keys, sensitive data leakage)
-- Denial of service vulnerabilities in the MCP server itself
-- Dependency vulnerabilities with exploitable impact
-
-### Out of Scope
-
-- Issues in upstream AI providers (report to Google, OpenAI, etc. directly)
-- Issues in AI client software (report to Anthropic, OpenAI, Cursor, etc.)
-- AI model behavior or outputs (this is controlled by the AI client and model providers)
-- Social engineering attacks
-- Rate limiting or resource exhaustion on third-party APIs
-
-## Security Best Practices for Users
-
-1. **Protect API Keys**: Store keys in `.env` files (gitignored) or environment variables
-2. **Review AI Actions**: Always review AI-suggested code changes before applying
-3. **Use Local Models**: For sensitive codebases, consider using Ollama with local models
-4. **Network Security**: When self-hosting, ensure appropriate network controls
-5. **Keep Updated**: Regularly update to the latest version for security fixes
-
-## Recognition
-
-We appreciate responsible disclosure and will credit security researchers in release notes (unless you prefer anonymity).
+Distributed under [Apache 2.0](LICENSE), including its warranty disclaimer. Derived from PAL MCP Server; Copyright 2025 Beehive Innovations.

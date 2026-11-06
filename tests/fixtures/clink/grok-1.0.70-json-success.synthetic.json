@@ -1,0 +1,23 @@
+{
+  "text": "Synthetic advisory result.",
+  "stopReason": "end_turn",
+  "sessionId": "synthetic-session",
+  "requestId": "synthetic-request",
+  "cwd": "/synthetic-workspace",
+  "num_turns": 1,
+  "usage": {
+    "input_tokens": 1,
+    "output_tokens": 1,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "reasoning_tokens": 0,
+    "total_tokens": 2
+  },
+  "modelUsage": {
+    "grok-4.6": {
+      "inputTokens": 1,
+      "outputTokens": 1,
+      "modelCalls": 1
+    }
+  }
+}
