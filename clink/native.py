@@ -177,7 +177,7 @@ class NativeRuntime:
         if not found:
             raise BackendError("cli_missing", "The configured native CLI executable is unavailable.")
         executable = (str(Path(found).resolve()), *command[1:])
-        roots = tuple(Path(root).resolve() for root in client.allowed_roots)
+        roots = tuple(Path(root) for root in client.allowed_roots)
         cwd = _directory(project_dir, roots)
         requested_model = _model(model)
         role_model = _model(selected_role.model)

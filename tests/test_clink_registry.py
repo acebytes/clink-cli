@@ -13,6 +13,8 @@ from typing import Any
 import pytest
 
 import clink.registry as registry_module
+from clink.backend import CLIBackend
+from clink.contracts import BackendError
 from clink.registry import ClinkRegistry, RegistryLoadError
 
 
@@ -72,6 +74,31 @@ def test_builtin_names_infer_the_registered_adapter(sources: RegistrySources, na
     assert client.working_dir == sources.startup.resolve()
     assert client.allowed_roots == (sources.startup.resolve(),)
     assert client.get_role(None).prompt_text == "Give concise, read-only advice.\n"
+
+
+@pytest.mark.parametrize("initial_alias", [False, True])
+def test_loaded_canonical_root_cannot_transfer_approval_after_replacement(sources, monkeypatch, initial_alias):
+    approved = sources.startup / "approved"
+    approved.mkdir()
+    outside = sources.startup / "outside"
+    outside.mkdir()
+    configured_root = approved
+    if initial_alias:
+        configured_root = sources.startup / "alias"
+        configured_root.symlink_to(approved, target_is_directory=True)
+    sources.write(working_dir=str(approved), allowed_roots=[str(configured_root)])
+    monkeypatch.setenv("CLINK_DEFAULT_CLI", "codex")
+    registry = ClinkRegistry()
+    backend = CLIBackend(registry)
+    assert backend.resolve().client.allowed_roots == (approved,)
+    approved.rmdir()
+    approved.symlink_to(outside, target_is_directory=True)
+
+    with pytest.raises(BackendError) as caught:
+        backend.resolve(working_directory=outside)
+
+    assert caught.value.code == "path_not_allowed"
+    assert registry.get_client("codex").allowed_roots == (approved,)
 
 
 @pytest.mark.parametrize("adapter", ["codex", "claude", "gemini", "agy", "grok"])

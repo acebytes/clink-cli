@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from clink.backend import _directory
 from clink.contracts import BackendError
 from clink.generation_contracts import (
     OUTPUT_BYTES,
@@ -158,11 +159,8 @@ class GenerationService:
                 executable = str(Path(found).resolve(strict=True))
             except (OSError, RuntimeError):
                 raise BackendError("cli_missing", "The configured Codex executable is unavailable.") from None
-            try:
-                cwd = Path(client.working_dir).resolve(strict=True)
-                roots = tuple(Path(root).resolve(strict=True) for root in client.allowed_roots)
-            except (OSError, RuntimeError):
-                raise BackendError("path_not_allowed", "The configured generation directory is unavailable.") from None
+            cwd = Path(client.working_dir)
+            roots = tuple(Path(root) for root in client.allowed_roots)
             environment = {name: os.environ[name] for name in ENVIRONMENT_KEYS if name in os.environ}
             if any(name not in ENVIRONMENT_KEYS for name in client.env):
                 raise BackendError("invalid_config", "Generation environment additions exceed the verified allowlist.")
@@ -174,11 +172,7 @@ class GenerationService:
             def prelaunch() -> None:
                 identity["admission"] = "unverified"
                 self._require_runtime_ceiling()
-                if not cwd.is_dir() or not any(cwd == root or root in cwd.parents for root in roots):
-                    raise BackendError(
-                        "path_not_allowed", "The configured generation directory is outside approved roots."
-                    )
-                if cwd.resolve(strict=True) != cwd:
+                if _directory(cwd, roots) != cwd:
                     raise BackendError("path_not_allowed", "The configured generation directory changed while queued.")
                 identity["executable_sha256"] = self._verify_bindings(executable, admission)
                 identity["admission"] = "verified"

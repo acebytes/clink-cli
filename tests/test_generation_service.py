@@ -192,6 +192,39 @@ async def test_queued_binding_rechecked_immediately_before_launch(service_factor
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("queued", [False, True])
+async def test_replaced_frozen_root_blocks_generation(service_factory, tmp_path, monkeypatch, queued):
+    pool = ProcessPool(1)
+    service, client, _, _ = service_factory(pool=pool)
+    approved = tmp_path / "approved"
+    approved.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    client.allowed_roots = (approved,)
+    client.working_dir = approved
+    if queued:
+        await pool._acquire(time.monotonic() + 10)
+        task = asyncio.create_task(service.run(request()))
+        for _ in range(100):
+            if pool._waiters or task.done():
+                break
+            await asyncio.sleep(0.001)
+        assert pool._waiters
+    approved.rmdir()
+    approved.symlink_to(outside, target_is_directory=True)
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", lambda *a, **kw: pytest.fail("redirected root launched"))
+    if queued:
+        pool._release()
+        result = await task
+    else:
+        result = await service.run(request())
+
+    assert result["status"] == "failed" and result["error"]["code"] == "path_not_allowed"
+    assert result["execution"]["admission"] == "unverified"
+    assert pool.running == 0 and not pool._waiters and not pool._children
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("change", [{"model": "auto"}, {"model": "invented-model"}])
 async def test_model_must_be_explicit_catalog_entry(service_factory, monkeypatch, change):
     service, _, _, _ = service_factory()

@@ -20,6 +20,7 @@ from clink.native import NativeRuntime
 from clink.native_policy import native_recipe_digest
 from clink.policy import executable_digest, recipe_digest
 from clink.registry import ClinkRegistry, RegistryLoadError
+from clink.runner import ProcessPool
 
 
 @pytest.fixture
@@ -175,6 +176,67 @@ def test_context_roots_images_required_environment_and_known_depth(runtime, monk
     with pytest.raises(BackendError) as caught:
         prepared(runtime)
     assert caught.value.code == "recursion_blocked"
+
+
+@pytest.mark.parametrize("boundary", ["prepare", "context"])
+@pytest.mark.parametrize("replacement", ["symlink", "ancestor_symlink", "missing", "file"])
+def test_changed_approved_root_cannot_grant_native_context(runtime, tmp_path, boundary, replacement):
+    parent = tmp_path / "approved-parent"
+    approved = parent / "project"
+    approved.mkdir(parents=True)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    client = runtime.backend.registry.get_client("claude")
+    object.__setattr__(client, "allowed_roots", (approved,))
+    context = runtime.prepare("claude", None, None, str(approved))
+    if replacement == "ancestor_symlink":
+        (outside / "project").mkdir()
+        parent.rename(tmp_path / "retained-parent")
+        parent.symlink_to(outside, target_is_directory=True)
+    else:
+        approved.rmdir()
+        if replacement == "symlink":
+            approved.symlink_to(outside, target_is_directory=True)
+        elif replacement == "file":
+            approved.write_text("not a directory")
+
+    with pytest.raises(BackendError) as caught:
+        if boundary == "prepare":
+            runtime.prepare("claude", None, None, str(approved))
+        else:
+            runtime.validate_context(context.target, ())
+
+    assert caught.value.code == "path_not_allowed"
+    assert context.target.client.allowed_roots == (approved,)
+
+
+@pytest.mark.asyncio
+async def test_approved_root_replacement_while_queued_blocks_native_launch(runtime, tmp_path, monkeypatch):
+    approved = tmp_path / "approved"
+    approved.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    client = runtime.backend.registry.get_client("claude")
+    object.__setattr__(client, "allowed_roots", (approved,))
+    context = runtime.prepare("claude", None, None, str(approved))
+    pool = runtime.pool = ProcessPool(1)
+    await pool._acquire(time.monotonic() + 10)
+    task = asyncio.create_task(runtime.run(context, "task", attempt_id="changed-root"))
+    for _ in range(100):
+        if pool._waiters or task.done():
+            break
+        await asyncio.sleep(0.001)
+    assert pool._waiters
+    approved.rmdir()
+    approved.symlink_to(outside, target_is_directory=True)
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", lambda *a, **kw: pytest.fail("redirected root launched"))
+    pool._release()
+
+    with pytest.raises(BackendError) as caught:
+        await task
+
+    assert caught.value.code == "path_not_allowed"
+    assert pool.running == 0 and not pool._waiters and not pool._children
 
 
 @pytest.mark.parametrize(

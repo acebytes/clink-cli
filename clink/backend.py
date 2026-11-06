@@ -102,7 +102,20 @@ def _inside(path: Path, roots: tuple[Path, ...]) -> bool:
     return any(path == root or root in path.parents for root in roots)
 
 
+def _validate_roots(roots: tuple[Path, ...]) -> None:
+    """Keep registry-captured approvals bound to their original canonical paths."""
+    try:
+        if any(not root.is_absolute() or root.resolve(strict=True) != root or not root.is_dir() for root in roots):
+            raise OSError
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise BackendError(
+            "path_not_allowed",
+            "An approved root is unavailable or changed; review the operator manifest before proceeding.",
+        ) from exc
+
+
 def _directory(value: str | Path, roots: tuple[Path, ...]) -> Path:
+    _validate_roots(roots)
     raw = Path(value)
     if not raw.is_absolute():
         raise BackendError("path_not_allowed", "The working directory must be absolute.")
@@ -193,8 +206,8 @@ class CLIBackend:
         found = shutil.which(command[0]) if command else None
         # Executables are resolved independently of a request-provided working directory.
         executable = (str(Path(found).resolve()), *command[1:]) if found else command
-        roots = tuple(Path(root).resolve() for root in client.allowed_roots)
-        configured_cwd = Path(client.working_dir).resolve()
+        roots = tuple(Path(root) for root in client.allowed_roots)
+        configured_cwd = Path(client.working_dir)
         cwd = _directory(working_directory or configured_cwd, roots)
         requested_model = _model(model)
         role_model = _model(selected_role.model)
@@ -321,6 +334,7 @@ class CLIBackend:
 
     @staticmethod
     def _context(request: CLIRequest) -> tuple[tuple[str, ...], tuple[str, ...]]:
+        _validate_roots(request.target.client.allowed_roots)
         references = (*request.files, *request.images)
         if len(references) > CONTEXT_FILES:
             raise BackendError("input_limit", "At most 256 declared files and images are allowed.")

@@ -171,6 +171,75 @@ def test_cwd_and_context_symlink_boundaries(backend, tmp_path):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("boundary", ["resolve", "context", "run"])
+@pytest.mark.parametrize("replacement", ["symlink", "ancestor_symlink", "missing", "file"])
+async def test_changed_approved_root_fails_closed(backend, tmp_path, monkeypatch, boundary, replacement):
+    parent = tmp_path / "approved-parent"
+    approved = parent / "project"
+    approved.mkdir(parents=True)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    client = backend.registry.get_client("codex")
+    client.allowed_roots = (approved,)
+    client.working_dir = approved
+    target = backend.resolve()
+    assert target.client.allowed_roots == (approved,)
+    if replacement == "ancestor_symlink":
+        (outside / "project").mkdir()
+        parent.rename(tmp_path / "retained-parent")
+        parent.symlink_to(outside, target_is_directory=True)
+    else:
+        approved.rmdir()
+        if replacement == "symlink":
+            approved.symlink_to(outside, target_is_directory=True)
+        elif replacement == "file":
+            approved.write_text("not a directory")
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", lambda *a, **kw: pytest.fail("changed root launched"))
+
+    with pytest.raises(BackendError) as caught:
+        if boundary == "resolve":
+            backend.resolve()
+        elif boundary == "context":
+            backend.validate_files(target, ())
+        else:
+            await backend.run(CLIRequest(prompt="request", target=target))
+
+    assert caught.value.code == "path_not_allowed"
+    assert target.client.allowed_roots == (approved,)
+    assert backend.pool.running == 0 and not backend.pool._children
+
+
+@pytest.mark.asyncio
+async def test_approved_root_replacement_while_queued_blocks_advisory_launch(backend, tmp_path, monkeypatch):
+    approved = tmp_path / "approved"
+    approved.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    client = backend.registry.get_client("codex")
+    client.allowed_roots = (approved,)
+    client.working_dir = approved
+    target = backend.resolve()
+    pool = backend.pool = ProcessPool(1)
+    await pool._acquire(time.monotonic() + 10)
+    task = asyncio.create_task(backend.run(CLIRequest(prompt="request", target=target)))
+    for _ in range(100):
+        if pool._waiters or task.done():
+            break
+        await asyncio.sleep(0.001)
+    assert pool._waiters
+    approved.rmdir()
+    approved.symlink_to(outside, target_is_directory=True)
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", lambda *a, **kw: pytest.fail("redirected root launched"))
+    pool._release()
+
+    with pytest.raises(BackendError) as caught:
+        await task
+
+    assert caught.value.code == "path_not_allowed"
+    assert pool.running == 0 and not pool._waiters and not pool._children
+
+
+@pytest.mark.asyncio
 async def test_nonzero_never_recovers_valid_terminal_output(backend):
     target = backend.resolve()
     executable = Path(target.client.executable[0])
