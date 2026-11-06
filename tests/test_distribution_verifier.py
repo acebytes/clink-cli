@@ -19,7 +19,7 @@ def archive(tmp_path, kind, scripts, *, resource_mutation=None):
         resource_mutation(members)
     members["LICENSE"] = (ROOT / "LICENSE").read_bytes()
     metadata = "[console_scripts]\n" + "".join(f"{name} = {target}\n" for name, target in scripts.items())
-    members["clink_mcp_server.dist-info/entry_points.txt"] = metadata.encode()
+    members["clink_cli.dist-info/entry_points.txt"] = metadata.encode()
     if kind == "wheel":
         path = tmp_path / "synthetic.whl"
         with zipfile.ZipFile(path, "w") as output:

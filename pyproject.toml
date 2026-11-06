@@ -1,6 +1,6 @@
 [project]
-name = "clink-mcp-server"
-version = "0.2.0"
+name = "clink-cli"
+version = "0.2.1"
 description = "CLI consultation and native agent task delegation over the Model Context Protocol"
 readme = "README.md"
 license = "Apache-2.0"

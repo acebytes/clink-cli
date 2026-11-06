@@ -93,7 +93,7 @@ def smoke(source_root: Path) -> dict:
         origin = Path(importlib.util.find_spec(name).origin).resolve()
         if not origin.is_relative_to(prefix) or origin.is_relative_to(source_root):
             raise ValueError("Smoke check imported a checkout module instead of the installed release")
-    distribution = importlib.metadata.distribution("clink-mcp-server")
+    distribution = importlib.metadata.distribution("clink-cli")
     version = distribution.version
     scripts = {entry.name: entry.value for entry in distribution.entry_points if entry.group == "console_scripts"}
     if scripts != {"clink": "clink.cli:main", "clink-mcp-server": "server:run"}:
