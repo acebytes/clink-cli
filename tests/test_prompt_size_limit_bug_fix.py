@@ -5,6 +5,7 @@ This test verifies that SimpleTool correctly validates only the original user pr
 when conversation history is embedded, rather than validating the full enhanced prompt.
 """
 
+from config import MCP_PROMPT_SIZE_LIMIT
 from tools.chat import ChatTool
 from tools.shared.base_models import ToolRequest
 
@@ -22,7 +23,9 @@ class TestPromptSizeLimitBugFix:
         short_user_prompt = "Thanks for the help!"
 
         # Simulate conversation history (large content)
-        conversation_history = "=== CONVERSATION HISTORY ===\n" + ("Previous conversation content. " * 5000)
+        conversation_history = "=== CONVERSATION HISTORY ===\n" + (
+            "Previous conversation content. " * (MCP_PROMPT_SIZE_LIMIT // 20)
+        )
 
         # Simulate enhanced prompt with conversation history (what server.py creates)
         enhanced_prompt = f"{conversation_history}\n\n=== NEW USER INPUT ===\n{short_user_prompt}"
@@ -43,7 +46,7 @@ class TestPromptSizeLimitBugFix:
         assert len(validation_content) < 1000  # Much smaller than enhanced prompt
 
         # Verify the enhanced prompt would have triggered the bug
-        assert len(enhanced_prompt) > 50000  # This would trigger size limit
+        assert len(enhanced_prompt) > MCP_PROMPT_SIZE_LIMIT  # This would trigger size limit
 
         # Test that size check passes with the original prompt
         size_check = tool.check_prompt_size(validation_content)
@@ -52,7 +55,8 @@ class TestPromptSizeLimitBugFix:
         # Test that size check would fail with enhanced prompt
         size_check_enhanced = tool.check_prompt_size(enhanced_prompt)
         assert size_check_enhanced is not None  # Would trigger size limit
-        assert size_check_enhanced["status"] == "resend_prompt"
+        assert size_check_enhanced["status"] == "error"
+        assert size_check_enhanced["metadata"]["code"] == "input_limit"
 
     def test_prompt_size_validation_without_original_prompt(self):
         """Test fallback behavior when no original prompt is stored (new conversations)"""

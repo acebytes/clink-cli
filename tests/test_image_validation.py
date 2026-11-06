@@ -3,7 +3,6 @@
 import base64
 import os
 import tempfile
-from unittest.mock import Mock, patch
 
 import pytest
 
@@ -217,45 +216,35 @@ class TestImageValidation:
                 os.unlink(tmp_file_path)
 
 
-class TestProviderIntegration:
-    """Test image validation integration with different providers."""
+class TestCLIImageAdmission:
+    """The CLI boundary requires explicit local images and validates their headers."""
 
-    @patch("providers.gemini.logger")
-    def test_gemini_provider_uses_validation(self, mock_logger: Mock) -> None:
-        """Test that Gemini provider uses the base validation."""
-        from providers.gemini import GeminiModelProvider
+    def test_rejects_missing_image(self, tmp_path):
+        from clink.backend import CLIBackend
+        from clink.contracts import BackendError, CLIRequest
+        from tests.cli_helpers import context_target
 
-        # Create a provider instance
-        provider = GeminiModelProvider(api_key="test-key")
+        request = CLIRequest("Inspect image", context_target(tmp_path), images=(str(tmp_path / "missing.png"),))
+        with pytest.raises(BackendError) as error:
+            CLIBackend._context(request)
+        assert error.value.code == "path_not_allowed"
 
-        # Test with non-existent file
-        result = provider._process_image("/nonexistent/image.png")
-        assert result is None
-        mock_logger.warning.assert_called_with("Image file not found: /nonexistent/image.png")
+    def test_rejects_data_url_at_cli_boundary(self, tmp_path):
+        from clink.backend import CLIBackend
+        from clink.contracts import BackendError, CLIRequest
+        from tests.cli_helpers import context_target
 
-    @patch("providers.openai_compatible.logging")
-    def test_openai_compatible_provider_uses_validation(self, mock_logging: Mock) -> None:
-        """Test that OpenAI-compatible providers use the base validation."""
-        from providers.xai import XAIModelProvider
+        request = CLIRequest("Inspect image", context_target(tmp_path), images=("data:image/png;base64,AAA",))
+        with pytest.raises(BackendError) as error:
+            CLIBackend._context(request)
+        assert error.value.code == "path_not_allowed"
 
-        # Create a provider instance (XAI inherits from OpenAICompatibleProvider)
-        provider = XAIModelProvider(api_key="test-key")
+    def test_accepts_validated_local_png(self, tmp_path):
+        from clink.backend import CLIBackend
+        from clink.contracts import CLIRequest
+        from tests.cli_helpers import context_target
 
-        # Test with non-existent file
-        result = provider._process_image("/nonexistent/image.png")
-        assert result is None
-        mock_logging.warning.assert_called_with("Image file not found: /nonexistent/image.png")
-
-    def test_data_url_preservation(self) -> None:
-        """Test that data URLs are properly preserved through validation."""
-        from providers.xai import XAIModelProvider
-
-        provider = XAIModelProvider(api_key="test-key")
-
-        # Valid data URL
-        data_url = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
-
-        result = provider._process_image(data_url)
-        assert result is not None
-        assert result["type"] == "image_url"
-        assert result["image_url"]["url"] == data_url
+        path = tmp_path / "diagram.png"
+        path.write_bytes(b"\x89PNG\r\n\x1a\nsynthetic fixture")
+        request = CLIRequest("Inspect image", context_target(tmp_path), images=(str(path),))
+        assert CLIBackend._context(request) == ((), (str(path),))

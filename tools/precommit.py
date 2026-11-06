@@ -374,7 +374,7 @@ class PrecommitTool(WorkflowTool):
     def prepare_expert_analysis_context(self, consolidated_findings) -> str:
         """Prepare context for external model call for final pre-commit validation."""
         context_parts = [
-            f"=== PRE-COMMIT ANALYSIS REQUEST ===\\n{self.initial_request or 'Pre-commit validation initiated'}\\n=== END REQUEST ==="
+            f"=== PRE-COMMIT ANALYSIS REQUEST ===\\n{self.get_expert_initial_request(self.initial_request, 'Pre-commit validation initiated')}\\n=== END REQUEST ==="
         ]
 
         # Add investigation summary

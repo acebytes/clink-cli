@@ -1,13 +1,12 @@
 {
-  "comment": "Windows configuration using WSL with standalone server",
-  "comment2": "Run './run-server.sh' in WSL to set up the environment and get exact paths",
-  "comment3": "Use './run-server.sh -c' to display the correct configuration",
+  "comment": "WSL Linux paths; set up dependencies inside WSL explicitly. Local discovery is independent of CLI admission; recorded macOS binaries do not admit WSL execution.",
   "mcpServers": {
-    "pal": {
+    "clink": {
       "command": "wsl.exe",
       "args": [
-        "/path/to/pal-mcp-server/.pal_venv/bin/python",
-        "/path/to/pal-mcp-server/server.py"
+        "/absolute/path/to/clink-mcp-server/run-server.sh",
+        "--project",
+        "/absolute/path/to/your-project"
       ]
     }
   }

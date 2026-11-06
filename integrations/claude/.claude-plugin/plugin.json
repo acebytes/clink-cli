@@ -1,0 +1,8 @@
+{
+  "name": "clink",
+  "version": "0.1.0",
+  "description": "Set up project-scoped clink MCP configuration using an existing local installation.",
+  "author": {"name": "acebytes"},
+  "repository": "https://github.com/acebytes/clink-mcp-server",
+  "license": "Apache-2.0"
+}

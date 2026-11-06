@@ -1,450 +1,199 @@
-# PAL MCP: Many Workflows. One Context.
+# clink-mcp-server
 
-<div align="center">
+Delegate work to installed CLI agents through MCP. Consultations return advice and proposed code. Explicit native tasks can edit files, run tests, and use the selected CLI's configured tools, hooks, skills, plugins, MCP integrations, and subagents under its native permissions.
 
-  <em>Your AI's PAL – a Provider Abstraction Layer</em><br />
-  <sub><a href="docs/name-change.md">Formerly known as Zen MCP</a></sub>
+Version **0.2.0** preserves PAL's **18 MCP tools** and adds a separate `clink generate` command for bounded programmatic text generation. Install from this repository or a locally built package; the instructions below do not require a published PyPI package.
 
-  [PAL in action](https://github.com/user-attachments/assets/0d26061e-5f21-4ab1-b7d0-f883ddc2c3da)
+Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-server), formerly Zen MCP. **Copyright 2025 Beehive Innovations.** Retains upstream attribution and the [Apache 2.0 license](LICENSE).
 
-👉 **[Watch more examples](#-watch-tools-in-action)**
+## Supported operations
 
-### Your CLI + Multiple Models = Your AI Dev Team
+Admission is specific to an operation, executable, launch recipe, and parser. Support in one column does not enable another.
 
-**Use the 🤖 CLI you love:**  
-[Claude Code](https://www.anthropic.com/claude-code) · [Gemini CLI](https://github.com/google-gemini/gemini-cli) · [Codex CLI](https://github.com/openai/codex) · [Qwen Code CLI](https://qwenlm.github.io/qwen-code-docs/) · [Cursor](https://cursor.com) · _and more_
+| CLI | Consultation | Native MCP tasks | Programmatic generation |
+| --- | --- | --- | --- |
+| Codex 0.166.0 | Admitted for text, explicit local images, and structured search. | Disabled: supported output omits a genuine prelaunch permission refusal. | Admitted; schema 2 or 3 with an explicit model. |
+| Claude Code 2.1.304 | Unavailable under the advisory policy. | Admitted. | Admitted; schema 2 or 3 with an explicit full model ID. |
+| xAI Grok Build 1.0.70 (`grok`) | Unverified. | Admitted. | Admitted; schema 3 with `native_default` selection. |
+| Antigravity 1.4.12 (`agy`) | Unverified. | Admitted. | Implemented but unverified; execution is refused. |
+| Gemini | Unverified. | Not implemented. | Not implemented. |
 
-**With multiple models within a single prompt:**  
-Gemini · OpenAI · Anthropic · Grok · Azure · Ollama · OpenRouter · DIAL · On-Device Model
+The recorded admissions cover exact macOS arm64 binaries. Other builds, operating systems, versions, or changed recipes require verification and fail closed. An installed executable or successful login alone is insufficient. Grok reported `grok-4.7-build` in the recorded successful generation text/action checks. Antigravity's native-task actual model remains unknown; its native-task admission does not admit generation. See [release evidence and limits](docs/release-evidence.md).
 
-</div>
+Python 3.10+ is required; Python 3.12 is the tested runtime. Process supervision targets POSIX systems. Local discovery and offline tests can run without CLI credentials. Native Windows delegation is unavailable; the [container](docker/README.md) supports local tools without installing CLI agents.
 
----
+## Install and connect
 
-## 🆕 Now with CLI-to-CLI Bridge
+Use the reviewed **0.2.0 release contents** or a wheel built from them. Do not assume an unversioned checkout of the repository's default branch contains this release. No PyPI or container-registry publication is assumed.
 
-The new **[`clink`](docs/tools/clink.md)** (CLI + Link) tool connects external AI CLIs directly into your workflow:
+For a standalone wheel installation, replace the wheel path and choose a persistent environment outside the source tree:
 
-- **Connect external CLIs** like [Gemini CLI](https://github.com/google-gemini/gemini-cli), [Codex CLI](https://github.com/openai/codex), and [Claude Code](https://www.anthropic.com/claude-code) directly into your workflow
-- **CLI Subagents** - Launch isolated CLI instances from _within_ your current CLI! Claude Code can spawn Codex subagents, Codex can spawn Gemini CLI subagents, etc. Offload heavy tasks (code reviews, bug hunting) to fresh contexts while your main session's context window remains unpolluted. Each subagent returns only final results.
-- **Context Isolation** - Run separate investigations without polluting your primary workspace
-- **Role Specialization** - Spawn `planner`, `codereviewer`, or custom role agents with specialized system prompts
-- **Full CLI Capabilities** - Web search, file inspection, MCP tool access, latest documentation lookups
-- **Seamless Continuity** - Sub-CLIs participate as first-class members with full conversation context between tools
-
-```bash
-# Codex spawns Codex subagent for isolated code review in fresh context
-clink with codex codereviewer to audit auth module for security issues
-# Subagent reviews in isolation, returns final report without cluttering your context as codex reads each file and walks the directory structure
-
-# Consensus from different AI models → Implementation handoff with full context preservation between tools
-Use consensus with gpt-5 and gemini-pro to decide: dark mode or offline support next
-Continue with clink gemini - implement the recommended feature
-# Gemini receives full debate context and starts coding immediately
+```sh
+python3 -m venv /absolute/path/to/clink-runtime
+/absolute/path/to/clink-runtime/bin/python -m pip install /absolute/path/to/clink_mcp_server-0.2.0-py3-none-any.whl
+/absolute/path/to/clink-runtime/bin/python -m clink.setup --project /absolute/path/to/your-project
 ```
 
-👉 **[Learn more about clink](docs/tools/clink.md)**
+The installed package contains its manifests, prompts, and admission resources. It does not need the original checkout at runtime. To register its console entrypoint directly in an MCP client, use:
 
----
-
-## Why PAL MCP?
-
-**Why rely on one AI model when you can orchestrate them all?**
-
-A Model Context Protocol server that supercharges tools like [Claude Code](https://www.anthropic.com/claude-code), [Codex CLI](https://developers.openai.com/codex/cli), and IDE clients such
-as [Cursor](https://cursor.com) or the [Claude Dev VS Code extension](https://marketplace.visualstudio.com/items?itemName=Anthropic.claude-vscode). **PAL MCP connects your favorite AI tool
-to multiple AI models** for enhanced code analysis, problem-solving, and collaborative development.
-
-### True AI Collaboration with Conversation Continuity
-
-PAL supports **conversation threading** so your CLI can **discuss ideas with multiple AI models, exchange reasoning, get second opinions, and even run collaborative debates between models** to help you reach deeper insights and better solutions.
-
-Your CLI always stays in control but gets perspectives from the best AI for each subtask. Context carries forward seamlessly across tools and models, enabling complex workflows like: code reviews with multiple models → automated planning → implementation → pre-commit validation.
-
-> **You're in control.** Your CLI of choice orchestrates the AI team, but you decide the workflow. Craft powerful prompts that bring in Gemini Pro, GPT 5, Flash, or local offline models exactly when needed.
-
-<details>
-<summary><b>Reasons to Use PAL MCP</b></summary>
-
-A typical workflow with Claude Code as an example:
-
-1. **Multi-Model Orchestration** - Claude coordinates with Gemini Pro, O3, GPT-5, and 50+ other models to get the best analysis for each task
-
-2. **Context Revival Magic** - Even after Claude's context resets, continue conversations seamlessly by having other models "remind" Claude of the discussion
-
-3. **Guided Workflows** - Enforces systematic investigation phases that prevent rushed analysis and ensure thorough code examination
-
-4. **Extended Context Windows** - Break Claude's limits by delegating to Gemini (1M tokens) or O3 (200K tokens) for massive codebases
-
-5. **True Conversation Continuity** - Full context flows across tools and models - Gemini remembers what O3 said 10 steps ago
-
-6. **Model-Specific Strengths** - Extended thinking with Gemini Pro, blazing speed with Flash, strong reasoning with O3, privacy with local Ollama
-
-7. **Professional Code Reviews** - Multi-pass analysis with severity levels, actionable feedback, and consensus from multiple AI experts
-
-8. **Smart Debugging Assistant** - Systematic root cause analysis with hypothesis tracking and confidence levels
-
-9. **Automatic Model Selection** - Claude intelligently picks the right model for each subtask (or you can specify)
-
-10. **Vision Capabilities** - Analyze screenshots, diagrams, and visual content with vision-enabled models
-
-11. **Local Model Support** - Run Llama, Mistral, or other models locally for complete privacy and zero API costs
-
-12. **Bypass MCP Token Limits** - Automatically works around MCP's 25K limit for large prompts and responses
-
-**The Killer Feature:** When Claude's context resets, just ask to "continue with O3" - the other model's response magically revives Claude's understanding without re-ingesting documents!
-
-#### Example: Multi-Model Code Review Workflow
-
-1. `Perform a codereview using gemini pro and o3 and use planner to generate a detailed plan, implement the fixes and do a final precommit check by continuing from the previous codereview`
-2. This triggers a [`codereview`](docs/tools/codereview.md) workflow where Claude walks the code, looking for all kinds of issues
-3. After multiple passes, collects relevant code and makes note of issues along the way
-4. Maintains a `confidence` level between `exploring`, `low`, `medium`, `high` and `certain` to track how confidently it's been able to find and identify issues
-5. Generates a detailed list of critical -> low issues
-6. Shares the relevant files, findings, etc with **Gemini Pro** to perform a deep dive for a second [`codereview`](docs/tools/codereview.md)
-7. Comes back with a response and next does the same with o3, adding to the prompt if a new discovery comes to light
-8. When done, Claude takes in all the feedback and combines a single list of all critical -> low issues, including good patterns in your code. The final list includes new findings or revisions in case Claude misunderstood or missed something crucial and one of the other models pointed this out
-9. It then uses the [`planner`](docs/tools/planner.md) workflow to break the work down into simpler steps if a major refactor is required
-10. Claude then performs the actual work of fixing highlighted issues
-11. When done, Claude returns to Gemini Pro for a [`precommit`](docs/tools/precommit.md) review
-
-All within a single conversation thread! Gemini Pro in step 11 _knows_ what was recommended by O3 in step 7! Taking that context
-and review into consideration to aid with its final pre-commit review.
-
-**Think of it as Claude Code _for_ Claude Code.** This MCP isn't magic. It's just **super-glue**.
-
-> **Remember:** Claude stays in full control — but **YOU** call the shots.
-> PAL is designed to have Claude engage other models only when needed — and to follow through with meaningful back-and-forth.
-> **You're** the one who crafts the powerful prompt that makes Claude bring in Gemini, Flash, O3 — or fly solo.
-> You're the guide. The prompter. The puppeteer.
-> #### You are the AI - **Actually Intelligent**.
-</details>
-
-#### Recommended AI Stack
-
-<details>
-<summary>For Claude Code Users</summary>
-
-For best results when using [Claude Code](https://claude.ai/code):  
-
-- **Sonnet 4.5** - All agentic work and orchestration
-- **Gemini 3.0 Pro** OR **GPT-5.2 / Pro** - Deep thinking, additional code reviews, debugging and validations, pre-commit analysis
-</details>
-
-<details>
-<summary>For Codex Users</summary>
-
-For best results when using [Codex CLI](https://developers.openai.com/codex/cli):  
-
-- **GPT-5.2 Codex Medium** - All agentic work and orchestration
-- **Gemini 3.0 Pro** OR **GPT-5.2-Pro** - Deep thinking, additional code reviews, debugging and validations, pre-commit analysis
-</details>
-
-## Quick Start (5 minutes)
-
-**Prerequisites:** Python 3.10+, Git, [uv installed](https://docs.astral.sh/uv/getting-started/installation/)
-
-**1. Get API Keys** (choose one or more):
-- **[OpenRouter](https://openrouter.ai/)** - Access multiple models with one API
-- **[Gemini](https://makersuite.google.com/app/apikey)** - Google's latest models
-- **[OpenAI](https://platform.openai.com/api-keys)** - O3, GPT-5 series
-- **[Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/)** - Enterprise deployments of GPT-4o, GPT-4.1, GPT-5 family
-- **[X.AI](https://console.x.ai/)** - Grok models
-- **[DIAL](https://dialx.ai/)** - Vendor-agnostic model access
-- **[Ollama](https://ollama.ai/)** - Local models (free)
-
-**2. Install** (choose one):
-
-**Option A: Clone and Automatic Setup** (recommended)
-```bash
-git clone https://github.com/BeehiveInnovations/pal-mcp-server.git
-cd pal-mcp-server
-
-# Handles everything: setup, config, API keys from system environment. 
-# Auto-configures Claude Desktop, Claude Code, Gemini CLI, Codex CLI, Qwen CLI
-# Enable / disable additional settings in .env
-./run-server.sh  
-```
-
-**Option B: Instant Setup with [uvx](https://docs.astral.sh/uv/getting-started/installation/)**
 ```json
-// Add to ~/.claude/settings.json or .mcp.json
-// Don't forget to add your API keys under env
 {
   "mcpServers": {
-    "pal": {
-      "command": "bash",
-      "args": ["-c", "for p in $(which uvx 2>/dev/null) $HOME/.local/bin/uvx /opt/homebrew/bin/uvx /usr/local/bin/uvx uvx; do [ -x \"$p\" ] && exec \"$p\" --from git+https://github.com/BeehiveInnovations/pal-mcp-server.git pal-mcp-server; done; echo 'uvx not found' >&2; exit 1"],
-      "env": {
-        "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin",
-        "GEMINI_API_KEY": "your-key-here",
-        "DISABLED_TOOLS": "analyze,refactor,testgen,secaudit,docgen,tracer",
-        "DEFAULT_MODEL": "auto"
-      }
+    "clink": {
+      "command": "/absolute/path/to/clink-runtime/bin/clink-mcp-server",
+      "args": ["--project", "/absolute/path/to/your-project"]
     }
   }
 }
 ```
 
-**3. Start Using!**
-```
-"Use pal to analyze this code for security issues with gemini pro"
-"Debug this error with o3 and then get flash to suggest optimizations"
-"Plan the migration strategy with pal, get consensus from multiple models"
-"clink with cli_name=\"gemini\" role=\"planner\" to draft a phased rollout plan"
-```
+Alternatively, from the reviewed 0.2.0 source tree:
 
-👉 **[Complete Setup Guide](docs/getting-started.md)** with detailed installation, configuration for Gemini / Codex / Qwen, and troubleshooting
-👉 **[Cursor & VS Code Setup](docs/getting-started.md#ide-clients)** for IDE integration instructions
-📺 **[Watch tools in action](#-watch-tools-in-action)** to see real-world examples
-
-## Provider Configuration
-
-PAL activates any provider that has credentials in your `.env`. See `.env.example` for deeper customization.
-
-## Core Tools
-
-> **Note:** Each tool comes with its own multi-step workflow, parameters, and descriptions that consume valuable context window space even when not in use. To optimize performance, some tools are disabled by default. See [Tool Configuration](#tool-configuration) below to enable them.
-
-**Collaboration & Planning** *(Enabled by default)*
-- **[`clink`](docs/tools/clink.md)** - Bridge requests to external AI CLIs (Gemini planner, codereviewer, etc.)
-- **[`chat`](docs/tools/chat.md)** - Brainstorm ideas, get second opinions, validate approaches. With capable models (GPT-5.2 Pro, Gemini 3.0 Pro), generates complete code / implementation
-- **[`thinkdeep`](docs/tools/thinkdeep.md)** - Extended reasoning, edge case analysis, alternative perspectives
-- **[`planner`](docs/tools/planner.md)** - Break down complex projects into structured, actionable plans
-- **[`consensus`](docs/tools/consensus.md)** - Get expert opinions from multiple AI models with stance steering
-
-**Code Analysis & Quality**
-- **[`debug`](docs/tools/debug.md)** - Systematic investigation and root cause analysis
-- **[`precommit`](docs/tools/precommit.md)** - Validate changes before committing, prevent regressions
-- **[`codereview`](docs/tools/codereview.md)** - Professional reviews with severity levels and actionable feedback
-- **[`analyze`](docs/tools/analyze.md)** *(disabled by default - [enable](#tool-configuration))* - Understand architecture, patterns, dependencies across entire codebases
-
-**Development Tools** *(Disabled by default - [enable](#tool-configuration))*
-- **[`refactor`](docs/tools/refactor.md)** - Intelligent code refactoring with decomposition focus
-- **[`testgen`](docs/tools/testgen.md)** - Comprehensive test generation with edge cases
-- **[`secaudit`](docs/tools/secaudit.md)** - Security audits with OWASP Top 10 analysis
-- **[`docgen`](docs/tools/docgen.md)** - Generate documentation with complexity analysis
-
-**Utilities**
-- **[`apilookup`](docs/tools/apilookup.md)** - Forces current-year API/SDK documentation lookups in a sub-process (saves tokens within the current context window), prevents outdated training data responses
-- **[`challenge`](docs/tools/challenge.md)** - Prevent "You're absolutely right!" responses with critical analysis
-- **[`tracer`](docs/tools/tracer.md)** *(disabled by default - [enable](#tool-configuration))* - Static analysis prompts for call-flow mapping
-
-<details>
-<summary><b id="tool-configuration">👉 Tool Configuration</b></summary>
-
-### Default Configuration
-
-To optimize context window usage, only essential tools are enabled by default:
-
-**Enabled by default:**
-- `chat`, `thinkdeep`, `planner`, `consensus` - Core collaboration tools
-- `codereview`, `precommit`, `debug` - Essential code quality tools
-- `apilookup` - Rapid API/SDK information lookup
-- `challenge` - Critical thinking utility
-
-**Disabled by default:**
-- `analyze`, `refactor`, `testgen`, `secaudit`, `docgen`, `tracer`
-
-### Enabling Additional Tools
-
-To enable additional tools, remove them from the `DISABLED_TOOLS` list:
-
-**Option 1: Edit your .env file**
-```bash
-# Default configuration (from .env.example)
-DISABLED_TOOLS=analyze,refactor,testgen,secaudit,docgen,tracer
-
-# To enable specific tools, remove them from the list
-# Example: Enable analyze tool
-DISABLED_TOOLS=refactor,testgen,secaudit,docgen,tracer
-
-# To enable ALL tools
-DISABLED_TOOLS=
+```sh
+cd /absolute/path/to/clink-mcp-server
+./run-server.sh --setup
 ```
 
-**Option 2: Configure in MCP settings**
+This explicitly creates `.venv`, installs runtime requirements, and exits. Ordinary startup installs nothing. The launcher does not create `.env`, copy credentials, change native CLI configuration, or register MCP clients. Optional server settings are documented in [.env.example](.env.example). To build a wheel from this tree, install the development requirements and run `.venv/bin/python -m build`; the wheel is written under `dist/`.
+
+Configure an existing project from that source installation:
+
+```sh
+.venv/bin/python -m clink.setup --project /absolute/path/to/your-project
+```
+
+Setup creates project-local `.clink/cli_clients/` manifests, `.clink/prompts/`, and `.mcp.json`. It makes no model calls and preserves custom files by reporting conflicts. The generated MCP registration binds a server explicitly to that project. Reconnect your MCP client, then call `version` and `listmodels` with empty arguments. These calls need no native CLI login.
+
+Claude Code users can load the checkout-local setup plugin:
+
+```sh
+cd /absolute/path/to/your-project
+claude --plugin-dir /absolute/path/to/clink-mcp-server/integrations/claude
+```
+
+Then run `/clink:setup`. This command is available only when that local plugin is loaded; MCP registration alone does not install it. See the [project setup guide](docs/project-setup.md) for selected clients, configuration precedence, conflicts, and recovery.
+
+For another MCP client, adapt this stdio registration to its configuration format:
+
 ```json
-// In ~/.claude/settings.json or .mcp.json
 {
   "mcpServers": {
-    "pal": {
-      "env": {
-        // Tool configuration
-        "DISABLED_TOOLS": "refactor,testgen,secaudit,docgen,tracer",
-        "DEFAULT_MODEL": "pro",
-        "DEFAULT_THINKING_MODE_THINKDEEP": "high",
-        
-        // API configuration
-        "GEMINI_API_KEY": "your-gemini-key",
-        "OPENAI_API_KEY": "your-openai-key",
-        "OPENROUTER_API_KEY": "your-openrouter-key",
-        
-        // Logging and performance
-        "LOG_LEVEL": "INFO",
-        "CONVERSATION_TIMEOUT_HOURS": "6",
-        "MAX_CONVERSATION_TURNS": "50"
-      }
+    "clink": {
+      "command": "/absolute/path/to/clink-mcp-server/run-server.sh",
+      "args": ["--project", "/absolute/path/to/your-project"]
     }
   }
 }
 ```
 
-**Option 3: Enable all tools**
+Authenticate the chosen CLI through its own login mechanism before an admitted model call. Ensure the MCP client's `PATH` can find it, or configure its executable path in a manifest. The server does not require hosted-provider API keys. See [getting started](docs/getting-started.md), [CLI configuration](docs/cli-configuration.md), and [migration from PAL](docs/migration.md).
+
+## Consult or delegate
+
+Omitting `action` selects consultation with `codex` and the `default` role. The following is a `clink` MCP tool argument, not a shell command:
+
 ```json
-// Remove or empty the DISABLED_TOOLS to enable everything
+{"prompt":"Review this proposed change and return suggested improvements.","cli_name":"codex"}
+```
+
+For native work, select an admitted CLI and a project inside its configured roots:
+
+```json
 {
-  "mcpServers": {
-    "pal": {
-      "env": {
-        "DISABLED_TOOLS": ""
-      }
-    }
-  }
+  "action": "start",
+  "cli_name": "claude",
+  "project_dir": "/absolute/path/to/your-project",
+  "prompt": "Fix the failing test, run the relevant checks, and report changed files and unfinished work.",
+  "request_key": "fix-test-1",
+  "timeout_seconds": 180
 }
 ```
 
-**Note:**
-- Essential tools (`version`, `listmodels`) cannot be disabled
-- After changing tool configuration, restart your Claude session for changes to take effect
-- Each tool adds to context window usage, so only enable what you need
+Save the returned `task_handle`. Poll, follow up when `followup_available` is true, or cancel:
 
-</details>
-
-## 📺 Watch Tools In Action
-
-<details>
-<summary><b>Chat Tool</b> - Collaborative decision making and multi-turn conversations</summary>
-
-**Picking Redis vs Memcached:**
-
-[Chat Redis or Memcached_web.webm](https://github.com/user-attachments/assets/41076cfe-dd49-4dfc-82f5-d7461b34705d)
-
-**Multi-turn conversation with continuation:**
-
-[Chat With Gemini_web.webm](https://github.com/user-attachments/assets/37bd57ca-e8a6-42f7-b5fb-11de271e95db)
-
-</details>
-
-<details>
-<summary><b>Consensus Tool</b> - Multi-model debate and decision making</summary>
-
-**Multi-model consensus debate:**
-
-[PAL Consensus Debate](https://github.com/user-attachments/assets/76a23dd5-887a-4382-9cf0-642f5cf6219e)
-
-</details>
-
-<details>
-<summary><b>PreCommit Tool</b> - Comprehensive change validation</summary>
-
-**Pre-commit validation workflow:**
-
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/584adfa6-d252-49b4-b5b0-0cd6e97fb2c6" width="950">
-</div>
-
-</details>
-
-<details>
-<summary><b>API Lookup Tool</b> - Current vs outdated API documentation</summary>
-
-**Without PAL - outdated APIs:**
-
-[API without PAL](https://github.com/user-attachments/assets/01a79dc9-ad16-4264-9ce1-76a56c3580ee)
-
-**With PAL - current APIs:**
-
-[API with PAL](https://github.com/user-attachments/assets/5c847326-4b66-41f7-8f30-f380453dce22)
-
-</details>
-
-<details>
-<summary><b>Challenge Tool</b> - Critical thinking vs reflexive agreement</summary>
-
-**Without PAL:**
-
-![without_pal@2x](https://github.com/user-attachments/assets/64f3c9fb-7ca9-4876-b687-25e847edfd87)
-
-**With PAL:**
-
-![with_pal@2x](https://github.com/user-attachments/assets/9d72f444-ba53-4ab1-83e5-250062c6ee70)
-
-</details>
-
-## Key Features
-
-**AI Orchestration**
-- **Auto model selection** - Claude picks the right AI for each task
-- **Multi-model workflows** - Chain different models in single conversations
-- **Conversation continuity** - Context preserved across tools and models
-- **[Context revival](docs/context-revival.md)** - Continue conversations even after context resets
-
-**Model Support**
-- **Multiple providers** - Gemini, OpenAI, Azure, X.AI, OpenRouter, DIAL, Ollama
-- **Latest models** - GPT-5, Gemini 3.0 Pro, O3, Grok-4, local Llama
-- **[Thinking modes](docs/advanced-usage.md#thinking-modes)** - Control reasoning depth vs cost
-- **Vision support** - Analyze images, diagrams, screenshots
-
-**Developer Experience**
-- **Guided workflows** - Systematic investigation prevents rushed analysis
-- **Smart file handling** - Auto-expand directories, manage token limits
-- **Web search integration** - Access current documentation and best practices
-- **[Large prompt support](docs/advanced-usage.md#working-with-large-prompts)** - Bypass MCP's 25K token limit
-
-## Example Workflows
-
-**Multi-model Code Review:**
+```json
+{"action":"status","task_handle":"<returned task_handle>"}
 ```
-"Perform a codereview using gemini pro and o3, then use planner to create a fix strategy"
+
+```json
+{"action":"followup","task_handle":"<returned task_handle>","prompt":"Check one edge case and report the result.","request_key":"fix-test-followup-1"}
 ```
-→ Claude reviews code systematically → Consults Gemini Pro → Gets O3's perspective → Creates unified action plan
 
-**Collaborative Debugging:**
+```json
+{"action":"cancel","task_handle":"<returned task_handle>"}
 ```
-"Debug this race condition with max thinking mode, then validate the fix with precommit"
+
+A follow-up resumes the private native session with a new attempt; native handles are separate from consultation `continuation_id` values. Identical submissions with the same request key are deduplicated while retained. Changed input with that key returns `request_key_conflict`. Handles, session mapping, and deduplication are volatile and are lost on restart. See [native task usage](docs/native-cli-tasks.md) for states, bounds, and ownership rules.
+
+## Programmatic generation
+
+The examples below use the source installation's `.venv/bin`. For a standalone wheel, use `/absolute/path/to/clink-runtime/bin` instead. Install the checkout's console commands locally if needed:
+
+```sh
+.venv/bin/python -m pip install -e .
+.venv/bin/clink generation-capabilities --json
 ```
-→ Deep investigation → Expert analysis → Solution implementation → Pre-commit validation
 
-**Architecture Planning:**
+Capabilities discovery is read-only: it does not launch a CLI, authenticate, or grant execution authority. It reports schemas 2 and 3 with operation-specific admission. Optional `--cli NAME --executable /absolute/path/to/executable` checks one local executable's identity without running it. Launch admission is checked again before execution.
+
+Approve an existing project folder independently of MCP project setup:
+
+```sh
+.venv/bin/clink allow /absolute/path/to/your-project --cli grok
 ```
-"Plan our microservices migration, get consensus from pro and o3 on the approach"
+
+The command shows the resolved path and asks a default-No question; `--yes` explicitly preapproves it for scripts. It saves an `allowed_roots` entry in operator configuration and preserves existing settings. This does not grant native CLI trust or permissions. Generation does not discover project manifests from request paths.
+
+Schema 3 example `request.json`, using an existing canonical project path:
+
+```json
+{
+  "schema_version": 3,
+  "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+  "execution_mode": "native",
+  "project_dir": "/absolute/path/to/your-project",
+  "cli": "grok",
+  "model_selection": {"kind": "native_default"},
+  "instructions": "Rewrite the supplied text for clarity. Return only the revision.",
+  "input": "Explain the tradeoffs of a cache for this application.",
+  "timeout_seconds": 120
+}
 ```
-→ Structured planning → Multiple expert opinions → Consensus building → Implementation roadmap
 
-👉 **[Advanced Usage Guide](docs/advanced-usage.md)** for complex workflows, model configuration, and power-user features
+```sh
+.venv/bin/clink generate --request-json - < request.json
+```
 
-## Quick Links
+Generation reads one JSON request followed by EOF and writes one terminal JSON result. Schema 3 uses `model_selection`: Codex and Claude require `{"kind":"explicit","id":"<native model ID>"}`; Grok and Antigravity accept only `{"kind":"native_default"}`. Antigravity still refuses execution because its generation admission is unverified. Schema 2 preserves Codex/Claude's explicit `model` field. The older no-tools schema 1 profile remains refused.
 
-**📖 Documentation**
-- [Docs Overview](docs/index.md) - High-level map of major guides
-- [Getting Started](docs/getting-started.md) - Complete setup guide
-- [Tools Reference](docs/tools/) - All tools with examples
-- [Advanced Usage](docs/advanced-usage.md) - Power user features
-- [Configuration](docs/configuration.md) - Environment variables, restrictions
-- [Adding Providers](docs/adding_providers.md) - Provider-specific setup (OpenAI, Azure, custom gateways)
-- [Model Ranking Guide](docs/model_ranking.md) - How intelligence scores drive auto-mode suggestions
+Each accepted request makes at most one top-level CLI invocation, with no wrapper retry, resume, or fallback. Only `status: "completed"` with exit `0` is ordinary success; validate the result's request identity and hashes before using its text. Completion validates final-response transport, not fulfillment. Requested/effective model selection is distinct from CLI-reported actual identity, which remains `null` when unreported. See [generation setup](docs/generation-native-setup.md), [schema 2 protocol](docs/generation-native-protocol.md), and [schema 3 and family discovery](docs/generation-native-families.md).
 
-**🔧 Setup & Support**
-- [WSL Setup](docs/wsl-setup.md) - Windows users
-- [Troubleshooting](docs/troubleshooting.md) - Common issues
-- [Contributing](docs/contributions.md) - Code standards, PR process
+## Tools and configuration
 
-## License
+All 18 tools are enabled unless listed in `DISABLED_TOOLS`; `version` and `listmodels` remain available.
 
-Apache 2.0 License - see [LICENSE](LICENSE) file for details.
+| Tools | Purpose |
+| --- | --- |
+| `chat`, `clink` | Advisory consultations; `clink` also provides explicit native tasks. |
+| `thinkdeep`, `codereview`, `precommit`, `debug`, `secaudit`, `analyze`, `refactor`, `testgen` | Caller-driven investigation with final expert-call conditions. |
+| `consensus` | Independent consultations for caller synthesis, sequential by default with explicit parallel mode. |
+| `apilookup` | Verified native search with structured sources. |
+| `planner`, `docgen`, `tracer`, `challenge` | Local workflow guidance. |
+| `listmodels`, `version` | Local configuration discovery and provenance. |
 
-## Acknowledgments
+Manifest precedence is bundled defaults → legacy `~/.pal/cli_clients/` → user `~/.clink/cli_clients/` → explicitly bound project `.clink/cli_clients/` → `CLI_CLIENTS_CONFIG_PATH`. Each later manifest replaces the entire named client. Consultation and native task model defaults are separate; generation has its own request and admission contracts. See [CLI configuration](docs/cli-configuration.md).
 
-Built with the power of **Multi-Model AI** collaboration 🤝
-- **A**ctual **I**ntelligence by real Humans
-- [MCP (Model Context Protocol)](https://modelcontextprotocol.com)
-- [Codex CLI](https://developers.openai.com/codex/cli)
-- [Claude Code](https://claude.ai/code)
-- [Gemini](https://ai.google.dev/)
-- [OpenAI](https://openai.com/)
-- [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/)
+**Risk & Mitigation:** Native execution can change files or external systems before failure or cancellation. Approved roots constrain project selection and supplied context, not all native authority. Cancellation does not roll back effects or guarantee detached/remote work stopped. Inspect actual changes and independently run checks before accepting work. Clink preserves native permission controls and provides no approval bypass or relay. See [security policy](SECURITY.md).
 
-### Star History
+## Development
 
-[![Star History Chart](https://api.star-history.com/svg?repos=BeehiveInnovations/pal-mcp-server&type=Date)](https://www.star-history.com/#BeehiveInnovations/pal-mcp-server&Date)
+```sh
+.venv/bin/python -m pip install -r requirements-dev.txt
+.venv/bin/python -m pytest tests/ -v -m "not integration and not real_cli and not private_evidence"
+.venv/bin/python -m ruff check .
+.venv/bin/python -m black --check .
+.venv/bin/python -m isort --check-only .
+.venv/bin/python -m build
+```
+
+Ordinary verification uses synthetic executables and makes no live model calls. Historical live verification requires the private evidence and approval process; the public verification scripts do not submit model requests. See [release evidence](docs/release-evidence.md) and [changelog](CHANGELOG.md). Report bugs in this fork's [issue tracker](https://github.com/acebytes/clink-mcp-server/issues), excluding secrets and private transcripts.

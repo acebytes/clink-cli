@@ -1,0 +1,1 @@
+{"cli":"codex","input":"  Explain {{name}} at C:\\work\\src with café and 😀.\n","instructions":"Return only a clearer version. Keep {{name}}, paths, and Unicode.\r\n","model":"gpt-6.1-sol","schema_version":1,"timeout_ms":120125}

@@ -78,7 +78,7 @@ class TestPIISanitizer(unittest.TestCase):
         data = {
             "user": {
                 "email": "john.doe@example.com",
-                "api_key": "sk-proj-abcd1234567890ABCD1234567890abcd1234567890ABCD12",
+                "api_key": "sk-proj-" + "A1b2" * 12,
             },
             "tokens": [
                 "ghp_1234567890abcdefghijklmnopqrstuvwxyz",

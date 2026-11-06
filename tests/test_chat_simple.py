@@ -6,8 +6,6 @@ This module contains unit tests to ensure that the Chat tool
 """
 
 import json
-from types import SimpleNamespace
-from unittest.mock import patch
 
 import pytest
 
@@ -78,27 +76,17 @@ class TestChatTool:
         with pytest.raises(ValidationError):
             ChatRequest(model="anthropic/claude-opus-4.1", working_directory_absolute_path="/tmp")
 
-    def test_model_availability(self):
-        """Test that model availability works"""
-        models = self.tool._get_available_models()
-        assert len(models) > 0  # Should have some models
-        assert isinstance(models, list)
+    def test_model_selection_uses_native_defaults(self):
+        """Discovery does not make native model choices mandatory."""
+        assert self.tool.is_effective_auto_mode() is False
+        assert "model" not in self.tool.get_input_schema()["required"]
 
     def test_model_field_schema(self):
-        """Test that model field schema generation works correctly"""
+        """The public field describes native selection and default precedence."""
         schema = self.tool.get_model_field_schema()
-
         assert schema["type"] == "string"
-        assert "description" in schema
-
-        # Description should route callers to listmodels, regardless of mode
-        assert "listmodels" in schema["description"]
-        if self.tool.is_effective_auto_mode():
-            assert "auto mode" in schema["description"].lower()
-        else:
-            import config
-
-            assert f"'{config.DEFAULT_MODEL}'" in schema["description"]
+        assert "native" in schema["description"].lower()
+        assert "role/client/native defaults" in schema["description"]
 
     @pytest.mark.asyncio
     async def test_prompt_preparation(self):
@@ -109,17 +97,10 @@ class TestChatTool:
             working_directory_absolute_path="/tmp",
         )
 
-        # Mock the system prompt and file handling
-        with patch.object(self.tool, "get_system_prompt", return_value="System prompt"):
-            with patch.object(self.tool, "handle_prompt_file_with_fallback", return_value="Test prompt"):
-                with patch.object(self.tool, "_prepare_file_content_for_prompt", return_value=("", [])):
-                    with patch.object(self.tool, "_validate_token_limit"):
-                        with patch.object(self.tool, "get_websearch_instruction", return_value=""):
-                            prompt = await self.tool.prepare_prompt(request)
-
-                            assert "Test prompt" in prompt
-                            assert prompt.startswith("=== USER REQUEST ===")
-                            assert "System prompt" not in prompt
+        prompt = await self.tool.prepare_prompt(request)
+        assert "Test prompt" in prompt
+        assert prompt.startswith("=== USER REQUEST ===")
+        assert self.tool.get_system_prompt() not in prompt
 
     def test_response_formatting(self):
         """Test that response formatting works correctly"""
@@ -133,9 +114,8 @@ class TestChatTool:
         assert "Evaluate this perspective" in formatted
 
     def test_format_response_multiple_generated_code_blocks(self, tmp_path):
-        """All generated-code blocks should be combined and saved to pal_generated.code."""
+        """Multiple generated snippets remain inline for caller review."""
         tool = ChatTool()
-        tool._model_context = SimpleNamespace(capabilities=SimpleNamespace(allow_code_generation=True))
 
         response = (
             "Intro text\n"
@@ -148,19 +128,14 @@ class TestChatTool:
 
         formatted = tool.format_response(response, request)
 
-        saved_path = tmp_path / "pal_generated.code"
-        saved_content = saved_path.read_text(encoding="utf-8")
-
-        assert "print('world')" in saved_content
-        assert "print('hello')" not in saved_content
-        assert saved_content.count("<GENERATED-CODE>") == 1
-        assert "<GENERATED-CODE>print('hello')" in formatted
-        assert str(saved_path) in formatted
+        assert not (tmp_path / "pal_generated.code").exists()
+        assert "print('world')" in formatted
+        assert "print('hello')" in formatted
+        assert "Other text" in formatted
 
     def test_format_response_single_generated_code_block(self, tmp_path):
-        """Single <GENERATED-CODE> block should be saved and removed from narrative."""
+        """A generated snippet remains inline without filesystem writes."""
         tool = ChatTool()
-        tool._model_context = SimpleNamespace(capabilities=SimpleNamespace(allow_code_generation=True))
 
         response = (
             "Intro text before code.\n"
@@ -172,18 +147,13 @@ class TestChatTool:
 
         formatted = tool.format_response(response, request)
 
-        saved_path = tmp_path / "pal_generated.code"
-        saved_content = saved_path.read_text(encoding="utf-8")
-
-        assert "print('only-once')" in saved_content
-        assert "<GENERATED-CODE>" in saved_content
-        assert "print('only-once')" not in formatted
+        assert not (tmp_path / "pal_generated.code").exists()
+        assert "print('only-once')" in formatted
         assert "Closing thoughts after code." in formatted
 
     def test_format_response_ignores_unclosed_generated_code(self, tmp_path):
         """Unclosed generated-code tags should be ignored to avoid accidental clipping."""
         tool = ChatTool()
-        tool._model_context = SimpleNamespace(capabilities=SimpleNamespace(allow_code_generation=True))
 
         response = "Intro text\n<GENERATED-CODE>print('oops')\nStill ongoing"
 
@@ -198,7 +168,6 @@ class TestChatTool:
     def test_format_response_ignores_orphaned_closing_tag(self, tmp_path):
         """Stray closing tags should not trigger extraction."""
         tool = ChatTool()
-        tool._model_context = SimpleNamespace(capabilities=SimpleNamespace(allow_code_generation=True))
 
         response = "Intro text\n</GENERATED-CODE> just text"
 
@@ -213,7 +182,6 @@ class TestChatTool:
     def test_format_response_preserves_narrative_after_generated_code(self, tmp_path):
         """Narrative content after generated code must remain intact in the formatted output."""
         tool = ChatTool()
-        tool._model_context = SimpleNamespace(capabilities=SimpleNamespace(allow_code_generation=True))
 
         response = (
             "Summary before code.\n"
@@ -229,7 +197,8 @@ class TestChatTool:
         assert "Summary before code." in formatted
         assert "### Follow-up" in formatted
         assert "Further analysis and guidance after the generated snippet." in formatted
-        assert "print('demo')" not in formatted
+        assert "print('demo')" in formatted
+        assert not (tmp_path / "pal_generated.code").exists()
 
     def test_tool_name(self):
         """Test tool name is correct"""

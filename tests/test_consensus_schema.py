@@ -1,24 +1,21 @@
-"""Schema-related tests for ConsensusTool."""
-
-from types import MethodType
+"""Public schema advertises native CLI participant defaults and bounded modes."""
 
 from tools.consensus import ConsensusTool
 
 
-def test_consensus_models_field_includes_available_models(monkeypatch):
-    """Consensus schema should surface available model guidance like single-model tools."""
-
-    tool = ConsensusTool()
-
-    monkeypatch.setattr(
-        tool,
-        "_get_ranked_model_summaries",
-        MethodType(lambda self, limit=5: (["gemini-2.5-pro (score 100, 1.0M ctx, thinking)"], 1, False), tool),
-    )
-    monkeypatch.setattr(tool, "_get_restriction_note", MethodType(lambda self: None, tool))
-
-    schema = tool.get_input_schema()
-    models_field_description = schema["properties"]["models"]["description"]
-
-    assert "listmodels" in models_field_description
-    assert "Top models" in models_field_description
+def test_consensus_schema_uses_optional_native_targets_and_bounded_roster():
+    schema = ConsensusTool().get_input_schema()
+    fields = schema["properties"]
+    assert fields["execution_mode"]["default"] == "sequential"
+    assert fields["execution_mode"]["enum"] == ["sequential", "parallel"]
+    assert fields["models"]["minItems"] == 2
+    assert fields["models"]["maxItems"] == 8
+    entry = fields["models"]["items"]
+    assert "required" not in entry
+    assert set(entry["properties"]) == {"cli_name", "role", "model", "stance", "stance_prompt"}
+    assert entry["additionalProperties"] is False
+    assert fields["model"]["deprecated"] is True
+    assert "listmodels" in fields["models"]["description"]
+    assert "temperature" not in fields
+    assert "thinking_mode" not in fields
+    assert set(schema["required"]) == {"step", "step_number", "total_steps", "next_step_required", "findings"}

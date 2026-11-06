@@ -28,9 +28,11 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 from mcp.types import TextContent
+from pydantic import ValidationError
 
+from clink.contracts import BackendError
 from config import MCP_PROMPT_SIZE_LIMIT
-from utils.conversation_memory import add_turn, create_thread
+from utils.call_state import StateError
 
 from ..shared.base_models import ConsolidatedFindings
 from ..shared.exceptions import ToolExecutionError
@@ -59,11 +61,8 @@ class BaseWorkflowMixin(ABC):
 
     Requirements:
     This class expects to be used with BaseTool and requires implementation of:
-    - get_model_provider(model_name)
-    - _resolve_model_context(arguments, request)
     - get_system_prompt()
     - get_default_temperature()
-    - _prepare_file_content_for_prompt()
     """
 
     def __init__(self) -> None:
@@ -99,31 +98,6 @@ class BaseWorkflowMixin(ABC):
     @abstractmethod
     def get_default_temperature(self) -> float:
         """Return the default temperature for this tool. Usually provided by BaseTool."""
-        pass
-
-    @abstractmethod
-    def get_model_provider(self, model_name: str) -> Any:
-        """Get model provider for the given model. Usually provided by BaseTool."""
-        pass
-
-    @abstractmethod
-    def _resolve_model_context(self, arguments: dict[str, Any], request: Any) -> tuple[str, Any]:
-        """Resolve model context from arguments. Usually provided by BaseTool."""
-        pass
-
-    @abstractmethod
-    def _prepare_file_content_for_prompt(
-        self,
-        request_files: list[str],
-        continuation_id: Optional[str],
-        context_description: str = "New files",
-        max_tokens: Optional[int] = None,
-        reserve_tokens: int = 1_000,
-        remaining_budget: Optional[int] = None,
-        arguments: Optional[dict[str, Any]] = None,
-        model_context: Optional[Any] = None,
-    ) -> tuple[str, list[str]]:
-        """Prepare file content for prompts. Usually provided by BaseTool."""
         pass
 
     # ================================================================================
@@ -244,23 +218,6 @@ class BaseWorkflowMixin(ABC):
         except AttributeError:
             return self.get_default_temperature()
 
-    def get_validated_temperature(self, request, model_context: Any) -> tuple[float, list[str]]:
-        """
-        Get temperature from request and validate it against model constraints.
-
-        This is a convenience method that combines temperature extraction and validation
-        for workflow tools. It ensures temperature is within valid range for the model.
-
-        Args:
-            request: The request object containing temperature
-            model_context: Model context object containing model info
-
-        Returns:
-            Tuple of (validated_temperature, warning_messages)
-        """
-        temperature = self.get_request_temperature(request)
-        return self.validate_and_correct_temperature(temperature, model_context)
-
     def get_request_thinking_mode(self, request) -> str:
         """Get thinking mode from request. Override for custom thinking mode handling."""
         try:
@@ -309,120 +266,6 @@ class BaseWorkflowMixin(ABC):
             f"AFTER completing this work."
         )
 
-    def _prepare_files_for_expert_analysis(self) -> str:
-        """
-        Prepare file content for expert analysis.
-
-        EXPERT ANALYSIS REQUIRES ACTUAL FILE CONTENT:
-        Expert analysis needs actual file content of all unique files marked as relevant
-        throughout the workflow, regardless of conversation history optimization.
-
-        SIMPLIFIED LOGIC:
-        Expert analysis gets all unique files from relevant_files across the entire workflow.
-        This includes:
-        - Current step's relevant_files (consolidated_findings.relevant_files)
-        - Plus any additional relevant_files from conversation history (if continued workflow)
-
-        This ensures expert analysis has complete context without including irrelevant files.
-        """
-        all_relevant_files = set()
-
-        # 1. Get files from current consolidated relevant_files
-        all_relevant_files.update(self.consolidated_findings.relevant_files)
-
-        # 2. Get additional relevant_files from conversation history (if continued workflow)
-        try:
-            current_arguments = self.get_current_arguments()
-            if current_arguments:
-                continuation_id = current_arguments.get("continuation_id")
-
-                if continuation_id:
-                    from utils.conversation_memory import get_conversation_file_list, get_thread
-
-                    thread_context = get_thread(continuation_id)
-                    if thread_context:
-                        # Get all files from conversation (these were relevant_files in previous steps)
-                        conversation_files = get_conversation_file_list(thread_context)
-                        all_relevant_files.update(conversation_files)
-                        logger.debug(
-                            f"[WORKFLOW_FILES] {self.get_name()}: Added {len(conversation_files)} files from conversation history"
-                        )
-        except Exception as e:
-            logger.warning(f"[WORKFLOW_FILES] {self.get_name()}: Could not get conversation files: {e}")
-
-        # Convert to list and remove any empty/None values
-        files_for_expert = [f for f in all_relevant_files if f and f.strip()]
-
-        if not files_for_expert:
-            logger.debug(f"[WORKFLOW_FILES] {self.get_name()}: No relevant files found for expert analysis")
-            return ""
-
-        # Expert analysis needs actual file content, bypassing conversation optimization
-        try:
-            file_content, processed_files = self._force_embed_files_for_expert_analysis(files_for_expert)
-
-            logger.info(
-                f"[WORKFLOW_FILES] {self.get_name()}: Prepared {len(processed_files)} unique relevant files for expert analysis "
-                f"(from {len(self.consolidated_findings.relevant_files)} current relevant files)"
-            )
-
-            return file_content
-
-        except Exception as e:
-            logger.error(f"[WORKFLOW_FILES] {self.get_name()}: Failed to prepare files for expert analysis: {e}")
-            return ""
-
-    def _force_embed_files_for_expert_analysis(self, files: list[str]) -> tuple[str, list[str]]:
-        """
-        Force embed files for expert analysis, bypassing conversation history filtering.
-
-        Expert analysis has different requirements than normal workflow steps:
-        - Normal steps: Optimize tokens by skipping files in conversation history
-        - Expert analysis: Needs actual file content regardless of conversation history
-
-        Args:
-            files: List of file paths to embed
-
-        Returns:
-            tuple[str, list[str]]: (file_content, processed_files)
-        """
-        # Use read_files directly with token budgeting, bypassing filter_new_files
-        from utils.file_utils import expand_paths, read_files
-
-        # Get token budget for files
-        current_model_context = self.get_current_model_context()
-        if current_model_context:
-            try:
-                token_allocation = current_model_context.calculate_token_allocation()
-                max_tokens = token_allocation.file_tokens
-                logger.debug(
-                    f"[WORKFLOW_FILES] {self.get_name()}: Using {max_tokens:,} tokens for expert analysis files"
-                )
-            except Exception as e:
-                logger.warning(f"[WORKFLOW_FILES] {self.get_name()}: Failed to get token allocation: {e}")
-                max_tokens = 100_000  # Fallback
-        else:
-            max_tokens = 100_000  # Fallback
-
-        # Read files directly without conversation history filtering
-        logger.debug(f"[WORKFLOW_FILES] {self.get_name()}: Force embedding {len(files)} files for expert analysis")
-        file_content = read_files(
-            files,
-            max_tokens=max_tokens,
-            reserve_tokens=1000,
-            include_line_numbers=self.wants_line_numbers_by_default(),
-        )
-
-        # Expand paths to get individual files for tracking
-        processed_files = expand_paths(files)
-
-        logger.debug(
-            f"[WORKFLOW_FILES] {self.get_name()}: Expert analysis embedding: {len(processed_files)} files, "
-            f"{len(file_content):,} characters"
-        )
-
-        return file_content, processed_files
-
     def wants_line_numbers_by_default(self) -> bool:
         """
         Whether this tool wants line numbers in file content by default.
@@ -430,139 +273,16 @@ class BaseWorkflowMixin(ABC):
         """
         return True  # Most workflow tools benefit from line numbers for analysis
 
-    def _add_files_to_expert_context(self, expert_context: str, file_content: str) -> str:
-        """
-        Add file content to the expert context.
-        Override this to customize how files are added to the context.
-        """
-        return f"{expert_context}\n\n=== ESSENTIAL FILES ===\n{file_content}\n=== END ESSENTIAL FILES ==="
-
     # ================================================================================
     # Context-Aware File Embedding - Core Implementation
     # ================================================================================
 
     def _handle_workflow_file_context(self, request: Any, arguments: dict[str, Any]) -> None:
-        """
-        Handle file context appropriately based on workflow phase.
-
-        CONTEXT-AWARE FILE EMBEDDING STRATEGY:
-        1. Intermediate steps + continuation: Only reference file names (save the CLI's context)
-        2. Final step: Embed full file content for expert analysis
-        3. Expert analysis: Always embed relevant files with token budgeting
-
-        This prevents wasting the CLI's limited context on intermediate steps while ensuring
-        the final expert analysis has complete file context.
-        """
-        continuation_id = self.get_request_continuation_id(request)
-        is_final_step = not self.get_request_next_step_required(request)
-        step_number = self.get_request_step_number(request)
-
-        # Extract model context for token budgeting
-        model_context = arguments.get("_model_context")
-        self._model_context = model_context
-
-        # Clear any previous file context to ensure clean state
+        """Keep investigation steps local; expert calls embed after path admission."""
         self._embedded_file_content = ""
         self._file_reference_note = ""
         self._actually_processed_files = []
-
-        # Determine if we should embed files or just reference them
-        should_embed_files = self._should_embed_files_in_workflow_step(step_number, continuation_id, is_final_step)
-
-        if should_embed_files:
-            # Final step or expert analysis - embed full file content
-            logger.debug(f"[WORKFLOW_FILES] {self.get_name()}: Embedding files for final step/expert analysis")
-            self._embed_workflow_files(request, arguments)
-        else:
-            # Intermediate step with continuation - only reference file names
-            logger.debug(f"[WORKFLOW_FILES] {self.get_name()}: Only referencing file names for intermediate step")
-            self._reference_workflow_files(request)
-
-    def _should_embed_files_in_workflow_step(
-        self, step_number: int, continuation_id: Optional[str], is_final_step: bool
-    ) -> bool:
-        """
-        Determine whether to embed file content based on workflow context.
-
-        CORRECT LOGIC:
-        - NEVER embed files when the CLI is getting the next step (next_step_required=True)
-        - ONLY embed files when sending to external model (next_step_required=False)
-
-        Args:
-            step_number: Current step number
-            continuation_id: Thread continuation ID (None for new conversations)
-            is_final_step: Whether this is the final step (next_step_required == False)
-
-        Returns:
-            bool: True if files should be embedded, False if only referenced
-        """
-        # RULE 1: Final steps (no more steps needed) - embed files for expert analysis
-        if is_final_step:
-            logger.debug("[WORKFLOW_FILES] Final step - will embed files for expert analysis")
-            return True
-
-        # RULE 2: Any intermediate step (more steps needed) - NEVER embed files
-        # This includes:
-        # - New conversations with next_step_required=True
-        # - Steps with continuation_id and next_step_required=True
-        logger.debug("[WORKFLOW_FILES] Intermediate step (more work needed) - will only reference files")
-        return False
-
-    def _embed_workflow_files(self, request: Any, arguments: dict[str, Any]) -> None:
-        """
-        Embed full file content for final steps and expert analysis.
-        Uses proper token budgeting like existing debug.py.
-        """
-        # Use relevant_files as the standard field for workflow tools
-        request_files = self.get_request_relevant_files(request)
-        if not request_files:
-            logger.debug(f"[WORKFLOW_FILES] {self.get_name()}: No relevant_files to embed")
-            return
-
-        try:
-            # Model context should be available from early validation, but might be deferred for tests
-            current_model_context = self.get_current_model_context()
-            if not current_model_context:
-                # Try to resolve model context now (deferred from early validation)
-                try:
-                    model_name, model_context = self._resolve_model_context(arguments, request)
-                    self._model_context = model_context
-                    self._current_model_name = model_name
-                except Exception as e:
-                    logger.error(f"[WORKFLOW_FILES] {self.get_name()}: Failed to resolve model context: {e}")
-                    # Create fallback model context (preserves existing test behavior)
-                    from utils.model_context import ModelContext
-
-                    model_name = self.get_request_model_name(request)
-                    self._model_context = ModelContext(model_name)
-                    self._current_model_name = model_name
-
-            # Use the same file preparation logic as BaseTool with token budgeting
-            continuation_id = self.get_request_continuation_id(request)
-            remaining_tokens = arguments.get("_remaining_tokens")
-
-            file_content, processed_files = self._prepare_file_content_for_prompt(
-                request_files,
-                continuation_id,
-                "Workflow files for analysis",
-                remaining_budget=remaining_tokens,
-                arguments=arguments,
-                model_context=self._model_context,
-            )
-
-            # Store for use in expert analysis
-            self._embedded_file_content = file_content
-            self._actually_processed_files = processed_files
-
-            logger.info(
-                f"[WORKFLOW_FILES] {self.get_name()}: Embedded {len(processed_files)} relevant_files for final analysis"
-            )
-
-        except Exception as e:
-            logger.error(f"[WORKFLOW_FILES] {self.get_name()}: Failed to embed files: {e}")
-            # Continue without file embedding rather than failing
-            self._embedded_file_content = ""
-            self._actually_processed_files = []
+        self._reference_workflow_files(request)
 
     def _reference_workflow_files(self, request: Any) -> None:
         """
@@ -587,7 +307,7 @@ class BaseWorkflowMixin(ABC):
         reference_note = f"Files referenced in this step: {', '.join(file_names)}\n"
 
         self._file_reference_note = reference_note
-        logger.debug(f"[WORKFLOW_FILES] {self.get_name()}: Set _file_reference_note: {self._file_reference_note}")
+        logger.debug("workflow_files_referenced tool=%s count=%d", self.get_name(), len(request_files))
 
         logger.info(
             f"[WORKFLOW_FILES] {self.get_name()}: Referenced {len(request_files)} files without embedding content"
@@ -611,7 +331,6 @@ class BaseWorkflowMixin(ABC):
         7. Step guidance and required actions
         8. Conversation memory integration
         """
-        from mcp.types import TextContent
 
         try:
             # Store arguments for access by helper methods
@@ -623,16 +342,16 @@ class BaseWorkflowMixin(ABC):
             # Validate step field size (basic validation for workflow instructions)
             # If step is too large, user should use shorter instructions and put details in files
             step_content = request.step
-            if step_content and len(step_content) > MCP_PROMPT_SIZE_LIMIT:
+            if step_content and len(step_content.encode("utf-8")) > MCP_PROMPT_SIZE_LIMIT:
                 from tools.models import ToolOutput
 
                 error_output = ToolOutput(
-                    status="resend_prompt",
+                    status="error",
+                    metadata={"code": "input_limit", "remedy": "Split or narrow the workflow step."},
                     content="Step instructions are too long. Please use shorter instructions and provide detailed context via file paths instead.",
                     content_type="text",
-                    metadata={"prompt_size": len(step_content), "limit": MCP_PROMPT_SIZE_LIMIT},
                 )
-                raise ValueError(f"MCP_SIZE_CHECK:{error_output.model_dump_json()}")
+                raise ToolExecutionError(error_output.model_dump_json())
 
             # Validate file paths for security (same as base tool)
             # Use try/except instead of hasattr as per coding standards
@@ -646,59 +365,30 @@ class BaseWorkflowMixin(ABC):
                         content=path_error,
                         content_type="text",
                     )
-                    logger.error("Path validation failed for %s: %s", self.get_name(), path_error)
+                    logger.error("workflow_path_validation_failed tool=%s", self.get_name())
                     raise ToolExecutionError(error_output.model_dump_json())
             except AttributeError:
                 # validate_file_paths method not available - skip validation
                 pass
 
-            # Try to validate model availability early for production scenarios
-            # For tests, defer model validation to later to allow mocks to work
-            try:
-                model_name, model_context = self._resolve_model_context(arguments, request)
-                # Store for later use
-                self._current_model_name = model_name
-                self._model_context = model_context
-            except ValueError as e:
-                # Model resolution failed - in production this would be an error,
-                # but for tests we defer to allow mocks to handle model resolution
-                logger.debug(f"Early model validation failed, deferring to later: {e}")
-                self._current_model_name = None
-                self._model_context = None
+            from utils.call_state import get_current_call
 
-            # Handle continuation
-            continuation_id = request.continuation_id
-
-            # Restore workflow state on continuation
-            if continuation_id:
-                from utils.conversation_memory import get_thread
-
-                thread = get_thread(continuation_id)
-                if thread and thread.turns:
-                    # Find the most recent assistant turn from this tool with workflow state
-                    for turn in reversed(thread.turns):
-                        if turn.role == "assistant" and turn.tool_name == self.get_name() and turn.model_metadata:
-                            state = turn.model_metadata
-                            if isinstance(state, dict) and "work_history" in state:
-                                self.work_history = state.get("work_history", [])
-                                self.initial_request = state.get("initial_request")
-                                # Rebuild consolidated findings from restored history
-                                self._reprocess_consolidated_findings()
-                                logger.debug(
-                                    f"[{self.get_name()}] Restored workflow state with {len(self.work_history)} history items"
-                                )
-                                break  # State restored, exit loop
+            call = get_current_call()
+            continuation_id = call.continuation_id if call is not None else request.continuation_id
+            state = call.workflow_state if call is not None else {}
+            self.work_history = list(state.get("work_history", []))
+            self.initial_request = state.get("initial_request")
+            for name in self.get_workflow_state_fields():
+                if name in state:
+                    setattr(self, name, state[name])
+            self._reprocess_consolidated_findings()
 
             # Adjust total steps if needed
             if request.step_number > request.total_steps:
                 request.total_steps = request.step_number
 
-            # Create thread for first step
-            if not continuation_id and request.step_number == 1:
-                clean_args = {k: v for k, v in arguments.items() if k not in ["_model_context", "_resolved_model_name"]}
-                continuation_id = create_thread(self.get_name(), clean_args)
+            if not self.work_history:
                 self.initial_request = request.step
-                # Allow tools to store initial description for expert analysis
                 self.store_initial_issue(request.step)
 
             # Process work step - allow tools to customize field mapping
@@ -726,33 +416,38 @@ class BaseWorkflowMixin(ABC):
             # Allow tools to customize the final response
             response_data = self.customize_workflow_response(response_data, request)
 
-            # Add metadata (provider_used and model_used) to workflow response
+            # Add bounded backend metadata to the workflow response
             self._add_workflow_metadata(response_data, arguments)
 
             # Store in conversation memory
             if continuation_id:
                 self.store_conversation_turn(continuation_id, response_data, request)
 
-            return [TextContent(type="text", text=json.dumps(response_data, indent=2, ensure_ascii=False))]
-
-        except ToolExecutionError:
-            raise
-        except Exception as e:
-            if str(e).startswith("MCP_SIZE_CHECK:"):
-                payload = str(e)[len("MCP_SIZE_CHECK:") :]
+            payload = json.dumps(response_data, indent=2, ensure_ascii=False)
+            if response_data.get("status") == "error":
                 raise ToolExecutionError(payload)
+            return [TextContent(type="text", text=payload)]
 
-            logger.error(f"Error in {self.get_name()} work: {e}", exc_info=True)
+        except (ToolExecutionError, StateError):
+            raise
+        except BackendError as exc:
+            error_data = {"status": "error", "content": str(exc), "metadata": exc.to_dict()}
+            raise ToolExecutionError(json.dumps(error_data, ensure_ascii=False)) from None
+        except (ValidationError, ValueError):
             error_data = {
-                "status": f"{self.get_name()}_failed",
-                "error": str(e),
-                "step_number": arguments.get("step_number", 0),
+                "status": "error",
+                "content": "Request validation failed; check the declared fields.",
+                "metadata": {"code": "invalid_request", "tool_name": self.get_name()},
             }
-
-            # Add metadata to error responses too
-            self._add_workflow_metadata(error_data, arguments)
-
-            raise ToolExecutionError(json.dumps(error_data, indent=2, ensure_ascii=False)) from e
+            raise ToolExecutionError(json.dumps(error_data, ensure_ascii=False)) from None
+        except Exception as exc:
+            logger.error("workflow_execution_failed tool=%s error_type=%s", self.get_name(), type(exc).__name__)
+            error_data = {
+                "status": "error",
+                "content": "The workflow could not complete this request.",
+                "metadata": {"code": "tool_error", "tool_name": self.get_name(), "error_type": type(exc).__name__},
+            }
+            raise ToolExecutionError(json.dumps(error_data, ensure_ascii=False)) from None
 
     # Hook methods for tool customization
 
@@ -931,19 +626,8 @@ class BaseWorkflowMixin(ABC):
         except AttributeError:
             return []
 
-    def get_current_model_context(self):
-        """Get current model context. Returns None if not available."""
-        try:
-            return self._model_context
-        except AttributeError:
-            return None
-
-    def get_request_model_name(self, request: Any) -> str:
-        """Get model name from request. Override for custom model handling."""
-        try:
-            return request.model or "flash"
-        except AttributeError:
-            return "flash"
+    def get_request_model_name(self, request: Any) -> Optional[str]:
+        return request.model
 
     def get_request_continuation_id(self, request: Any) -> Optional[str]:
         """Get continuation ID from request. Override for custom continuation handling."""
@@ -1113,90 +797,37 @@ class BaseWorkflowMixin(ABC):
         return response_data
 
     def store_conversation_turn(self, continuation_id: str, response_data: dict, request):
-        """
-        Store the conversation turn. Tools can override for custom memory storage.
-        """
-        # CRITICAL: Extract clean content for conversation history (exclude internal workflow metadata)
-        clean_content = self._extract_clean_workflow_content_for_history(response_data)
+        """Snapshot workflow data; the outer call transaction records history once."""
+        from utils.call_state import get_current_call
 
-        # Serialize workflow state for persistence across stateless tool calls
-        workflow_state = {"work_history": self.work_history, "initial_request": getattr(self, "initial_request", None)}
+        call = get_current_call()
+        if call is not None:
+            fields = self.get_workflow_state_fields()
+            state = {name: getattr(self, name) for name in fields if name in self.__dict__}
+            state["work_history"] = self.work_history
+            state["initial_request"] = self.initial_request
+            call.set_workflow_state(state)
 
-        add_turn(
-            thread_id=continuation_id,
-            role="assistant",
-            content=clean_content,  # Use cleaned content instead of full response_data
-            tool_name=self.get_name(),
-            files=self.get_request_relevant_files(request),
-            images=self.get_request_images(request),
-            model_metadata=workflow_state,  # Persist the state
+    def get_workflow_state_fields(self) -> tuple[str, ...]:
+        """Explicit persisted fields for existing workflows, including branches/configuration."""
+        return (
+            "branches",
+            "trace_config",
+            "security_config",
+            "analysis_config",
+            "refactor_config",
+            "git_config",
+            "review_config",
+            "stored_request_params",
+            "initial_issue",
+            "initial_planning_description",
+            "initial_tracing_description",
         )
 
     def _add_workflow_metadata(self, response_data: dict, arguments: dict[str, Any]) -> None:
-        """
-        Add metadata (provider_used and model_used) to workflow response.
-
-        This ensures workflow tools have the same metadata as regular tools,
-        making it consistent across all tool types for tracking which provider
-        and model were used for the response.
-
-        Args:
-            response_data: The response data dictionary to modify
-            arguments: The original arguments containing model context
-        """
-        try:
-            # Get model information from arguments (set by server.py)
-            resolved_model_name = arguments.get("_resolved_model_name")
-            model_context = arguments.get("_model_context")
-
-            if resolved_model_name and model_context:
-                # Extract provider information from model context
-                provider = model_context.provider
-                provider_name = provider.get_provider_type().value if provider else "unknown"
-
-                # Create metadata dictionary
-                metadata = {
-                    "tool_name": self.get_name(),
-                    "model_used": resolved_model_name,
-                    "provider_used": provider_name,
-                }
-
-                # Preserve existing metadata and add workflow metadata
-                if "metadata" not in response_data:
-                    response_data["metadata"] = {}
-                response_data["metadata"].update(metadata)
-
-                logger.debug(
-                    f"[WORKFLOW_METADATA] {self.get_name()}: Added metadata - "
-                    f"model: {resolved_model_name}, provider: {provider_name}"
-                )
-            else:
-                # Fallback - try to get model info from request
-                request = self.get_workflow_request_model()(**arguments)
-                model_name = self.get_request_model_name(request)
-
-                # Basic metadata without provider info
-                metadata = {
-                    "tool_name": self.get_name(),
-                    "model_used": model_name,
-                    "provider_used": "unknown",
-                }
-
-                # Preserve existing metadata and add workflow metadata
-                if "metadata" not in response_data:
-                    response_data["metadata"] = {}
-                response_data["metadata"].update(metadata)
-
-                logger.debug(
-                    f"[WORKFLOW_METADATA] {self.get_name()}: Added fallback metadata - "
-                    f"model: {model_name}, provider: unknown"
-                )
-
-        except Exception as e:
-            # Don't fail the workflow if metadata addition fails
-            logger.warning(f"[WORKFLOW_METADATA] {self.get_name()}: Failed to add metadata: {e}")
-            # Still add basic metadata with tool name
-            response_data["metadata"] = {"tool_name": self.get_name()}
+        metadata = response_data.setdefault("metadata", {})
+        metadata["tool_name"] = self.get_name()
+        metadata.update(getattr(self, "_backend_metadata", {}))
 
     def _extract_clean_workflow_content_for_history(self, response_data: dict) -> str:
         """
@@ -1271,7 +902,16 @@ class BaseWorkflowMixin(ABC):
         response_data[f"{self.get_name()}_complete"] = True
 
         # Check if tool wants to skip expert analysis due to high certainty
-        if self.should_skip_expert_analysis(request, self.consolidated_findings):
+        if self.requires_expert_analysis() and not self.get_request_use_assistant_model(request):
+            response_data.update(
+                {
+                    "status": "local_work_complete",
+                    "skip_expert_analysis": True,
+                    "expert_analysis": {"status": "skipped_by_user", "reason": "use_assistant_model=false"},
+                    "next_steps": self.get_completion_next_steps_message(expert_analysis_used=False),
+                }
+            )
+        elif self.should_skip_expert_analysis(request, self.consolidated_findings):
             # Handle completion without expert analysis
             completion_response = self.handle_completion_without_expert_analysis(request, self.consolidated_findings)
             response_data.update(completion_response)
@@ -1309,6 +949,7 @@ class BaseWorkflowMixin(ABC):
                 response_data["status"] = "error"
                 response_data["content"] = expert_analysis.get("error", "Expert analysis failed")
                 response_data["content_type"] = "text"
+                response_data.setdefault("metadata", {}).update(expert_analysis.get("metadata", {}))
                 del response_data["expert_analysis"]
             else:
                 # Expert analysis was successfully executed - include expert guidance
@@ -1434,105 +1075,48 @@ class BaseWorkflowMixin(ABC):
 
         return "\n".join(summary_parts)
 
+    def get_expert_initial_request(self, initial: Optional[str], fallback: str) -> str:
+        """Reference an identical current step without duplicating required input."""
+        description = initial or fallback
+        if description == self._current_arguments.get("step"):
+            return "See the current caller step supplied above."
+        return description
+
     async def _call_expert_analysis(self, arguments: dict, request) -> dict:
-        """Call external model for expert analysis"""
+        """Launch one final advisory analysis, preserving caller-controlled workflow gates."""
         try:
-            # Model context should be resolved from early validation, but handle fallback for tests
-            if not self._model_context:
-                # Try to resolve model context for expert analysis (deferred from early validation)
-                try:
-                    model_name, model_context = self._resolve_model_context(arguments, request)
-                    self._model_context = model_context
-                    self._current_model_name = model_name
-                except Exception as e:
-                    logger.error(f"Failed to resolve model context for expert analysis: {e}")
-                    # Use request model as fallback (preserves existing test behavior)
-                    model_name = self.get_request_model_name(request)
-                    from utils.model_context import ModelContext
-
-                    model_context = ModelContext(model_name)
-                    self._model_context = model_context
-                    self._current_model_name = model_name
-            else:
-                model_name = self._current_model_name
-
-            provider = self._model_context.provider
-
-            # Prepare expert analysis context
-            expert_context = self.prepare_expert_analysis_context(self.consolidated_findings)
-
-            # Check if tool wants to include files in prompt
-            if self.should_include_files_in_expert_prompt():
-                file_content = self._prepare_files_for_expert_analysis()
-                if file_content:
-                    expert_context = self._add_files_to_expert_context(expert_context, file_content)
-
-            # Get system prompt for this tool with localization support
-            base_system_prompt = self.get_system_prompt()
-            capability_augmented_prompt = self._augment_system_prompt_with_capabilities(
-                base_system_prompt, getattr(self._model_context, "capabilities", None)
+            files = self._resolve_cli_target(
+                request,
+                files=tuple(sorted(self.consolidated_findings.relevant_files)),
+                images=tuple(dict.fromkeys(self.consolidated_findings.images)),
             )
-            language_instruction = self.get_language_instruction()
-            system_prompt = language_instruction + capability_augmented_prompt
-
-            # Check if tool wants system prompt embedded in main prompt
-            if self.should_embed_system_prompt():
-                prompt = f"{system_prompt}\n\n{expert_context}\n\n{self.get_expert_analysis_instruction()}"
-                system_prompt = ""  # Clear it since we embedded it
-            else:
-                prompt = expert_context
-
-            # Validate temperature against model constraints
-            validated_temperature, temp_warnings = self.get_validated_temperature(request, self._model_context)
-
-            # Log any temperature corrections
-            for warning in temp_warnings:
-                logger.warning(warning)
-
-            # Generate AI response - use request parameters if available
-            model_response = provider.generate_content(
-                prompt=prompt,
-                model_name=model_name,
-                system_prompt=system_prompt,
-                temperature=validated_temperature,
-                thinking_mode=self.get_request_thinking_mode(request),
-                images=list(set(self.consolidated_findings.images)) if self.consolidated_findings.images else None,
+            self.consolidated_findings.relevant_files = set(files)
+            context = self.prepare_expert_analysis_context(self.consolidated_findings)
+            instruction = self.get_expert_analysis_instruction()
+            prompt = (
+                f"=== CURRENT CALLER STEP ===\n{request.step}\n=== END CURRENT CALLER STEP ===\n\n"
+                f"=== INVESTIGATION DATA ===\n{context}\n=== END INVESTIGATION DATA ===\n\n{instruction}"
             )
-
-            if model_response.content:
-                content = model_response.content.strip()
-
-                # Try to extract JSON from markdown code blocks if present
-                if "```json" in content or "```" in content:
-                    json_match = re.search(r"```(?:json)?\s*(.*?)\s*```", content, re.DOTALL)
-                    if json_match:
-                        content = json_match.group(1).strip()
-
-                try:
-                    # Try to parse as JSON
-                    analysis_result = json.loads(content)
-                    return analysis_result
-                except json.JSONDecodeError as e:
-                    # Log the parse error with more details but don't fail
-                    logger.info(
-                        f"[{self.get_name()}] Expert analysis returned non-JSON response (this is OK for smaller models). "
-                        f"Parse error: {str(e)}. Response length: {len(model_response.content)} chars."
-                    )
-                    logger.debug(f"First 500 chars of response: {model_response.content[:500]!r}")
-
-                    # Still return the analysis as plain text - this is valid
-                    return {
-                        "status": "analysis_complete",
-                        "raw_analysis": model_response.content,
-                        "format": "text",  # Indicate it's plain text, not an error
-                        "note": "Analysis provided in plain text format",
-                    }
-            else:
-                return {"error": "No response from model", "status": "empty_response"}
-
-        except Exception as e:
-            logger.error(f"Error calling expert analysis: {e}", exc_info=True)
-            return {"error": str(e), "status": "analysis_error"}
+            result = await self._run_cli(
+                request,
+                prompt,
+                self.get_system_prompt() + "\n\n" + self.get_language_instruction(),
+                files=tuple(sorted(self.consolidated_findings.relevant_files)),
+                images=tuple(dict.fromkeys(self.consolidated_findings.images)),
+            )
+            content = result.content.strip()
+            match = re.fullmatch(r"```(?:json)?\s*(.*?)\s*```", content, re.DOTALL)
+            if match:
+                content = match.group(1).strip()
+            try:
+                analysis = json.loads(content)
+            except json.JSONDecodeError:
+                analysis = None
+            if isinstance(analysis, dict):
+                return analysis
+            return {"status": "analysis_complete", "raw_analysis": result.content, "format": "text"}
+        except BackendError as exc:
+            return {"status": "analysis_error", "error": str(exc), "metadata": exc.to_dict()}
 
     def _process_work_step(self, step_data: dict):
         """
@@ -1571,16 +1155,19 @@ class BaseWorkflowMixin(ABC):
             # Delegate to execute_workflow
             return await self.execute_workflow(arguments)
 
-        except ToolExecutionError:
+        except (ToolExecutionError, StateError):
             raise
-        except Exception as e:
-            logger.error(f"Error in {self.get_name()} tool execution: {e}", exc_info=True)
+        except BackendError as exc:
+            error_data = {"status": "error", "content": str(exc), "metadata": exc.to_dict()}
+            raise ToolExecutionError(json.dumps(error_data, ensure_ascii=False)) from None
+        except Exception as exc:
+            logger.error("workflow_execution_failed tool=%s error_type=%s", self.get_name(), type(exc).__name__)
             error_data = {
                 "status": "error",
-                "content": f"Error in {self.get_name()}: {str(e)}",
-            }  # Add metadata to error responses
-            self._add_workflow_metadata(error_data, arguments)
-            raise ToolExecutionError(json.dumps(error_data, ensure_ascii=False)) from e
+                "content": "The workflow could not complete this request.",
+                "metadata": {"code": "tool_error", "tool_name": self.get_name(), "error_type": type(exc).__name__},
+            }
+            raise ToolExecutionError(json.dumps(error_data, ensure_ascii=False)) from None
 
     # Default implementations for methods that workflow-based tools typically don't need
 

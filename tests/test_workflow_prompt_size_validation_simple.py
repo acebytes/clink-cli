@@ -66,8 +66,9 @@ async def test_workflow_tool_rejects_oversized_step_with_guidance() -> None:
 
     output_payload = json.loads(exc_info.value.payload)
 
-    assert output_payload["status"] == "resend_prompt"
-    assert output_payload["metadata"]["prompt_size"] > MCP_PROMPT_SIZE_LIMIT
+    assert output_payload["status"] == "error"
+    assert output_payload["metadata"]["code"] == "input_limit"
+    assert "Split" in output_payload["metadata"]["remedy"]
 
     guidance = output_payload["content"].lower()
     assert "shorter instructions" in guidance

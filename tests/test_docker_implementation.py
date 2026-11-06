@@ -1,363 +1,128 @@
-"""
-Unit tests for Docker configuration and implementation of PAL MCP Server
-
-This module tests:
-- Docker and MCP configuration
-- Environment variable validation
-- Docker commands
-- Integration with Claude Desktop
-- stdio communication
-"""
+"""Check the container's actual configuration; no Docker or CLI is launched."""
 
 import json
-import os
-import subprocess
-import sys
-import tempfile
+import re
+from fnmatch import fnmatchcase
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
-# Import project modules
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-
-class TestDockerConfiguration:
-    """Tests for Docker configuration of PAL MCP Server"""
-
-    def setup_method(self):
-        """Setup for each test"""
-        self.project_root = Path(__file__).parent.parent
-        self.docker_compose_path = self.project_root / "docker-compose.yml"
-        self.dockerfile_path = self.project_root / "Dockerfile"
-
-    def test_dockerfile_exists(self):
-        """Test that Dockerfile exists and is valid"""
-        assert self.dockerfile_path.exists(), "Dockerfile must exist"
-
-        # Check Dockerfile content
-        content = self.dockerfile_path.read_text()
-        assert "FROM python:" in content, "Dockerfile must have a Python base"
-        # Dockerfile uses COPY . . to copy all code
-        assert "COPY . ." in content or "COPY --chown=" in content, "Dockerfile must copy source code"
-        assert "CMD" in content, "Dockerfile must have a default command"
-        assert "server.py" in content, "Dockerfile must reference server.py"
-
-    def test_docker_compose_configuration(self):
-        """Test that docker-compose.yml is properly configured"""
-        assert self.docker_compose_path.exists(), "docker-compose.yml must exist"
-
-        # Basic YAML syntax check
-        content = self.docker_compose_path.read_text()
-        assert "services:" in content, "docker-compose.yml must have services"
-        assert "pal-mcp" in content, "Service pal-mcp must be defined"
-        assert "build:" in content, "Build configuration must be present"
-
-    def test_environment_file_template(self):
-        """Test that an .env file template exists"""
-        env_example_path = self.project_root / ".env.example"
-
-        if env_example_path.exists():
-            content = env_example_path.read_text()
-            assert "GEMINI_API_KEY=" in content, "Template must contain GEMINI_API_KEY"
-            assert "OPENAI_API_KEY=" in content, "Template must contain OPENAI_API_KEY"
-            assert "LOG_LEVEL=" in content, "Template must contain LOG_LEVEL"
-
-
-class TestDockerCommands:
-    """Tests for Docker commands"""
-
-    def setup_method(self):
-        """Setup for each test"""
-        self.project_root = Path(__file__).parent.parent
-
-    @patch("subprocess.run")
-    def test_docker_build_command(self, mock_run):
-        """Test that the docker build command works"""
-        mock_run.return_value.returncode = 0
-        mock_run.return_value.stdout = "Successfully built"
-
-        # Simulate docker build
-        subprocess.run(
-            ["docker", "build", "-t", "pal-mcp-server:latest", str(self.project_root)], capture_output=True, text=True
-        )
-
-        mock_run.assert_called_once()
-
-    @patch("subprocess.run")
-    def test_docker_run_command_structure(self, mock_run):
-        """Test that the docker run command has the correct structure"""
-        mock_run.return_value.returncode = 0
-
-        # Recommended MCP command
-        cmd = [
-            "docker",
-            "run",
-            "--rm",
-            "-i",
-            "--env-file",
-            ".env",
-            "-v",
-            "logs:/app/logs",
-            "pal-mcp-server:latest",
-            "python",
-            "server.py",
-        ]
-
-        # Check command structure
-        assert cmd[0] == "docker", "First command must be docker"
-        assert "run" in cmd, "Must contain run"
-        assert "--rm" in cmd, "Must contain --rm for cleanup"
-        assert "-i" in cmd, "Must contain -i for stdio"
-        assert "--env-file" in cmd, "Must contain --env-file"
-        assert "pal-mcp-server:latest" in cmd, "Must reference the image"
-
-    @patch("subprocess.run")
-    def test_docker_health_check(self, mock_run):
-        """Test Docker health check"""
-        mock_run.return_value.returncode = 0
-        mock_run.return_value.stdout = "Health check passed"
-
-        # Simulate health check
-        subprocess.run(
-            ["docker", "run", "--rm", "pal-mcp-server:latest", "python", "/usr/local/bin/healthcheck.py"],
-            capture_output=True,
-            text=True,
-        )
-
-        mock_run.assert_called_once()
-
-
-class TestEnvironmentValidation:
-    """Tests for environment variable validation"""
-
-    def test_required_api_keys_validation(self):
-        """Test that API key validation works"""
-        # Test with valid API key
-        with patch.dict(os.environ, {"GEMINI_API_KEY": "test_key"}):
-            # Here we should have a function that validates the keys
-            # Let's simulate the validation logic
-            has_api_key = bool(os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY") or os.getenv("XAI_API_KEY"))
-            assert has_api_key, "At least one API key must be present"
-
-        # Test without API key
-        with patch.dict(os.environ, {}, clear=True):
-            has_api_key = bool(os.getenv("GEMINI_API_KEY") or os.getenv("OPENAI_API_KEY") or os.getenv("XAI_API_KEY"))
-            assert not has_api_key, "No API key should be present"
-
-    def test_environment_file_parsing(self):
-        """Test parsing of the .env file"""
-        # Create a temporary .env file
-        env_content = """
-# Test environment file
-GEMINI_API_KEY=test_gemini_key
-OPENAI_API_KEY=test_openai_key
-LOG_LEVEL=INFO
-DEFAULT_MODEL=auto
-"""
-
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".env", delete=False) as f:
-            f.write(env_content)
-            env_file_path = f.name
-
-        try:
-            # Simulate parsing of the .env file
-            env_vars = {}
-            with open(env_file_path) as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith("#") and "=" in line:
-                        key, value = line.split("=", 1)
-                        env_vars[key] = value
-
-            assert "GEMINI_API_KEY" in env_vars, "GEMINI_API_KEY must be parsed"
-            assert env_vars["GEMINI_API_KEY"] == "test_gemini_key", "Value must be correct"
-            assert env_vars["LOG_LEVEL"] == "INFO", "LOG_LEVEL must be parsed"
-
-        finally:
-            os.unlink(env_file_path)
-
-
-class TestMCPIntegration:
-    """Tests for MCP integration with Claude Desktop"""
-
-    def test_mcp_configuration_generation(self):
-        """Test MCP configuration generation"""
-        # Expected MCP configuration
-        expected_config = {
-            "servers": {
-                "pal-docker": {
-                    "command": "docker",
-                    "args": [
-                        "run",
-                        "--rm",
-                        "-i",
-                        "--env-file",
-                        "/path/to/.env",
-                        "-v",
-                        "/path/to/logs:/app/logs",
-                        "pal-mcp-server:latest",
-                        "python",
-                        "server.py",
-                    ],
-                    "env": {"DOCKER_BUILDKIT": "1"},
-                }
-            }
-        }
-
-        # Check structure
-        assert "servers" in expected_config
-        pal_docker = expected_config["servers"]["pal-docker"]
-        assert pal_docker["command"] == "docker"
-        assert "run" in pal_docker["args"]
-        assert "--rm" in pal_docker["args"]
-        assert "-i" in pal_docker["args"]
-
-    def test_stdio_communication_structure(self):
-        """Test structure of stdio communication"""
-        # Simulate an MCP message
-        mcp_message = {"jsonrpc": "2.0", "method": "initialize", "params": {}, "id": 1}
-
-        # Check that the message is valid JSON
-        json_str = json.dumps(mcp_message)
-        parsed = json.loads(json_str)
-
-        assert parsed["jsonrpc"] == "2.0"
-        assert "method" in parsed
-        assert "id" in parsed
-
-
-class TestDockerSecurity:
-    """Tests for Docker security"""
-
-    def test_non_root_user_configuration(self):
-        """Test that the container uses a non-root user"""
-        dockerfile_path = Path(__file__).parent.parent / "Dockerfile"
-
-        if dockerfile_path.exists():
-            content = dockerfile_path.read_text()
-            # Check that a non-root user is configured
-            assert "USER " in content or "useradd" in content, "Dockerfile should configure a non-root user"
-
-    def test_readonly_filesystem_configuration(self):
-        """Test read-only filesystem configuration"""
-        # This configuration should be in docker-compose.yml or Dockerfile
-        docker_compose_path = Path(__file__).parent.parent / "docker-compose.yml"
-
-        if docker_compose_path.exists():
-            content = docker_compose_path.read_text()
-            # Look for security configurations
-            security_indicators = ["read_only", "tmpfs", "security_opt", "cap_drop"]
-
-            # At least one security indicator should be present
-            # Note: This test can be adjusted according to the actual implementation
-            security_found = any(indicator in content for indicator in security_indicators)
-            assert security_found or True  # Flexible test
-
-    def test_environment_variable_security(self):
-        """Test that sensitive environment variables are not hardcoded"""
-        dockerfile_path = Path(__file__).parent.parent / "Dockerfile"
-
-        if dockerfile_path.exists():
-            content = dockerfile_path.read_text()
-
-            # Check that no API keys are hardcoded
-            sensitive_patterns = ["API_KEY=sk-", "API_KEY=gsk_", "API_KEY=xai-"]
-
-            for pattern in sensitive_patterns:
-                assert pattern not in content, f"Sensitive API key detected in Dockerfile: {pattern}"
-
-
-class TestDockerPerformance:
-    """Tests for Docker performance"""
-
-    def test_image_size_optimization(self):
-        """Test that the Docker image is not excessively large"""
-        # This test would require docker to be executed
-        # Simulate size check
-        expected_max_size_mb = 500  # 500MB max
-
-        # In production, we would do:
-        # result = subprocess.run(['docker', 'images', '--format', '{{.Size}}', 'pal-mcp-server:latest'])
-        # Here we simulate
-        simulated_size = "294MB"  # Current observed size
-
-        size_mb = float(simulated_size.replace("MB", ""))
-        assert size_mb <= expected_max_size_mb, f"Image too large: {size_mb}MB > {expected_max_size_mb}MB"
-
-    def test_startup_time_expectations(self):
-        """Test startup time expectations"""
-        # Conceptual test - in production we would measure actual time
-        expected_startup_time_seconds = 10
-
-        # Simulate a startup time measurement
-        simulated_startup_time = 3  # seconds
-
-        assert (
-            simulated_startup_time <= expected_startup_time_seconds
-        ), f"Startup time too long: {simulated_startup_time}s"
-
-
-@pytest.fixture
-def temp_project_dir():
-    """Fixture to create a temporary project directory"""
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp_path = Path(temp_dir)
-
-        # Create base structure
-        (temp_path / "logs").mkdir()
-
-        # Create base files
-        (temp_path / "server.py").write_text("# Mock server.py")
-        (temp_path / "Dockerfile").write_text(
-            """
-FROM python:3.11-slim
-COPY server.py /app/
-CMD ["python", "/app/server.py"]
-"""
-        )
-
-        yield temp_path
-
-
-class TestIntegration:
-    """Integration tests for the entire Docker setup"""
-
-    def test_complete_docker_setup_validation(self, temp_project_dir):
-        """Test complete integration of Docker setup"""
-        # Create an .env file
-        env_content = """
-GEMINI_API_KEY=test_key
-LOG_LEVEL=INFO
-"""
-        (temp_project_dir / ".env").write_text(env_content)
-
-        # Validate that everything is in place
-        assert (temp_project_dir / ".env").exists()
-        assert (temp_project_dir / "Dockerfile").exists()
-        assert (temp_project_dir / "logs").exists()
-
-        # Validate basic Docker command structure
-        docker_cmd = [
-            "docker",
-            "run",
-            "--rm",
-            "-i",
-            "--env-file",
-            ".env",
-            "pal-mcp-server:latest",
-            "python",
-            "server.py",
-        ]
-
-        # Basic structure checks
-        assert docker_cmd[0] == "docker"
-        assert "run" in docker_cmd
-        assert "--rm" in docker_cmd
-        assert "--env-file" in docker_cmd
-
-
-if __name__ == "__main__":
-    # Run tests
-    pytest.main([__file__, "-v", "--tb=short"])
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def test_runtime_installs_distribution_instead_of_source_tree():
+    dockerfile = (ROOT / "Dockerfile").read_text()
+    runtime = dockerfile.split(" AS runtime", 1)[1]
+    assert "--no-index --find-links /wheels clink-mcp-server" in runtime
+    assert "COPY ." not in dockerfile
+    assert "COPY --chown=" not in runtime
+    assert 'CMD ["clink-mcp-server"]' in runtime
+    assert "COPY conf/cli_clients/ conf/cli_clients/" in dockerfile
+    assert "providers" not in dockerfile
+
+
+def test_container_runs_without_root_or_network_authentication():
+    dockerfile = (ROOT / "Dockerfile").read_text()
+    assert "useradd --uid 10001" in dockerfile
+    assert "USER clink" in dockerfile
+    assert "HOME=/home/clink" in dockerfile
+    assert "API_KEY" not in dockerfile
+    assert "apt-get" not in dockerfile
+
+
+def test_compose_preserves_stdio_and_restricts_container():
+    compose = (ROOT / "docker-compose.yml").read_text()
+    for setting in (
+        "stdin_open: true",
+        "tty: false",
+        "network_mode: none",
+        "read_only: true",
+        "no-new-privileges:true",
+        "cap_drop:",
+        "- ALL",
+        "/tmp:noexec,nosuid,size=100m,mode=1777",
+    ):
+        assert setting in compose
+    for unsupported in ("API_KEY", "env_file:", "volumes:", "ports:", "restart:", "privileged:"):
+        assert unsupported not in compose
+
+
+def test_dockerignore_allows_only_packaging_inputs():
+    patterns = (ROOT / ".dockerignore").read_text().splitlines()
+    patterns = [line.strip() for line in patterns if line.strip() and not line.lstrip().startswith("#")]
+    assert patterns[0] == "**"
+    # Keep this test scoped to the repository's closed allowlist, rather than
+    # approximating Docker's general pattern language with a partial matcher.
+    assert patterns[-2:] == ["**/__pycache__/", "**/*.py[cod]"]
+    assert all(pattern.startswith("!") for pattern in patterns[1:-2])
+    for resource in ("!conf/cli_clients/*.json", "!systemprompts/clink/*.txt", "!LICENSE"):
+        assert resource in patterns
+    for pattern in patterns:
+        if pattern.startswith("!"):
+            assert not any(item in pattern for item in (".env", ".venv", "providers", "_models.json", "docs/", ".git"))
+
+    metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    for package, declarations in metadata["tool"]["setuptools"]["package-data"].items():
+        for declaration in declarations:
+            resource_pattern = f"{package.replace('.', '/')}/{declaration}"
+            assert f"!{resource_pattern}" in patterns, f"Package data excluded from Docker context: {resource_pattern}"
+            resources = list(ROOT.glob(resource_pattern))
+            assert resources, f"Package data declaration matches no files: {resource_pattern}"
+            for resource in resources:
+                relative = resource.relative_to(ROOT)
+                assert resource.is_file()
+                assert "__pycache__" not in relative.parts
+                assert not fnmatchcase(resource.name, "*.py[cod]")
+                for parent in relative.parents:
+                    if parent != Path("."):
+                        assert f"!{parent.as_posix()}/" in patterns, f"Docker context excludes parent: {parent}"
+
+
+@pytest.mark.parametrize("filename", ["test.yml", "docker-pr.yml"])
+def test_offline_workflows_are_read_only_and_do_not_publish(filename):
+    workflow = (ROOT / ".github" / "workflows" / filename).read_text()
+    assert "workflow_dispatch:" in workflow
+    assert "contents: read" in workflow
+    assert "persist-credentials: false" in workflow
+    assert not re.search(r"^  (release|schedule):", workflow, re.MULTILINE)
+    if filename == "test.yml":
+        assert "  pull_request:\n" in workflow
+        assert "  push:\n    branches: [main]\n" in workflow
+        assert not re.search(r"^\s+tags:", workflow, re.MULTILINE)
+    else:
+        assert not re.search(r"^  (push|pull_request):", workflow, re.MULTILINE)
+    for mutation in (
+        "packages: write",
+        "contents: write",
+        "pull-requests: write",
+        "push: true",
+        "docker/login",
+        "gh release",
+        "semantic-release",
+        "--fix",
+    ):
+        assert mutation not in workflow
+
+
+def test_workflows_have_no_release_publish_or_background_deployment():
+    workflows = ROOT / ".github" / "workflows"
+    assert {path.name for path in workflows.glob("*.yml")} == {"test.yml", "docker-pr.yml"}
+    unit_workflow = (workflows / "test.yml").read_text()
+    assert "--network none" in unit_workflow
+    assert "not integration and not real_cli" in unit_workflow
+    assert "black --check" in unit_workflow
+    assert "isort --check-only" in unit_workflow
+
+
+def test_host_client_example_is_clink_without_provider_keys():
+    config = json.loads((ROOT / "claude_config_example.json").read_text())
+    assert set(config["mcpServers"]) == {"clink"}
+    server = config["mcpServers"]["clink"]
+    assert server["command"].endswith("/clink-mcp-server/.venv/bin/python")
+    assert server["args"] == ["/path/to/clink-mcp-server/server.py"]
+    assert "env" not in server

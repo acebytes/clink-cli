@@ -1,0 +1,11 @@
+{
+  "schema_version": 2,
+  "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+  "cli": "codex",
+  "model": "gpt-6.1-sol",
+  "instructions": "Return only a clearer version. Keep {{name}}, paths, and Unicode.\r\n",
+  "input": "  Explain {{name}} at C:\\work\\src with café and 😀.\n",
+  "timeout_seconds": 120.125,
+  "execution_mode": "native",
+  "project_dir": "/private/tmp"
+}

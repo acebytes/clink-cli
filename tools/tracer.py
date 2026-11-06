@@ -220,6 +220,8 @@ class TracerTool(WorkflowTool):
 
         # Exclude common fields that tracing doesn't need
         excluded_common_fields = [
+            "cli_name",
+            "role",
             "temperature",  # Tracing doesn't need temperature control
             "thinking_mode",  # Tracing doesn't need thinking mode
             "absolute_file_paths",  # Tracing uses relevant_files instead
@@ -228,8 +230,8 @@ class TracerTool(WorkflowTool):
         return WorkflowSchemaBuilder.build_schema(
             tool_specific_fields=self.get_tool_fields(),
             required_fields=["target_description", "trace_mode"],  # Step 1 requires these
-            model_field_schema=self.get_model_field_schema(),
-            auto_mode=self.is_effective_auto_mode(),
+            model_field_schema=None,
+            auto_mode=False,
             tool_name=self.get_name(),
             excluded_workflow_fields=excluded_workflow_fields,
             excluded_common_fields=excluded_common_fields,

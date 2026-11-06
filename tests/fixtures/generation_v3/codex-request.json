@@ -1,0 +1,14 @@
+{
+  "schema_version": 3,
+  "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
+  "cli": "codex",
+  "model_selection": {
+    "kind": "explicit",
+    "id": "gpt-6.1-sol"
+  },
+  "instructions": "Keep Unicode café and whitespace\r\n",
+  "input": "  source 🦉\n",
+  "execution_mode": "native",
+  "project_dir": "/private/tmp",
+  "timeout_seconds": 120.125
+}

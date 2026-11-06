@@ -1,0 +1,309 @@
+{
+  "actual_model": null,
+  "adapter": "codex",
+  "admission": {
+    "configured_native_flow_review": "separate task-completion gate",
+    "effective_reviewer_runtime": "unverified",
+    "independent_evidence_review": "accepted",
+    "production_enabled": true,
+    "review_kind": "independent static implementation and retained-live-evidence review; not a native Flow receipt",
+    "reviewer_selected_effort": "high",
+    "reviewer_selected_model": "gpt-6.1-sol"
+  },
+  "budget": {
+    "automatic_retries": 0,
+    "maximum_authorized_submissions": 4,
+    "replacements_used": 0,
+    "top_level_submissions": 3
+  },
+  "executable_sha256": "39acf979729dd290f9a24ee38b2914e036c91b65952872e28ae2a6b88a7db7c1",
+  "final_file_sha256": "f73d73e70fef809fd1d2083dca97accf9c4123b4c05001379e69c8aedc83feff",
+  "fulfillment_verified": false,
+  "gates": [
+    {
+      "check": "text",
+      "observation": {
+        "actual_model": null,
+        "check": "text",
+        "dispatch_count": 1,
+        "effective_model": "gpt-6.1-sol",
+        "error_code": null,
+        "event_counts": {
+          "item.completed": 2,
+          "thread.started": 1,
+          "turn.completed": 1,
+          "turn.started": 1
+        },
+        "fulfillment_verified": false,
+        "input_sha256": "5fa60891346155bfd6744a39db4182e6e4579f1f2e45d48a6b86518e69d8ae5c",
+        "instructions_sha256": "b69c7566680b8208feb052d6fd7759e084c00f1788b94fddfc6b8ace9e32890a",
+        "output_bytes": 317,
+        "output_sha256": "8152f61ba0525cb612a5008b138dfc3649ccc61428c5aad80f8aadb3ddc7cd47",
+        "passed": true,
+        "permission_observability": "limited",
+        "pool_children_after_shutdown": 0,
+        "pool_running_after_shutdown": 0,
+        "private_directory_mode_0700": true,
+        "private_file_mode_0600": true,
+        "private_output_removed_after_cleanup": true,
+        "process_groups_absent_after_cleanup": true,
+        "production_final_file_validation_used": true,
+        "production_service_used": true,
+        "raw_output_retained": false,
+        "request_sha256": "b2b4384239e4add14574683b295e392ede7d78f491217c3a6fbea06bf8447915",
+        "requested_model": "gpt-6.1-sol",
+        "side_effects_possible": true,
+        "spawn_count": 1,
+        "supported_item_counts": {
+          "agent_message": 1,
+          "error": 1
+        },
+        "supported_tool_item_count": 0,
+        "terminal_status": "completed",
+        "turn_started_before_cancellation": null,
+        "unprovided_file_token_matches": null,
+        "useful_transformation": true,
+        "warnings": [
+          "native_tool_errors"
+        ]
+      },
+      "preflight": {
+        "path": "docs/verification/native-generation/native-generation-text-1/preflight.json",
+        "sha256": "dd5bba8252ed89e9fc6fd8cb1fb89b71d0ed61c37b8d38b73880540c259fdd8e"
+      },
+      "receipt": {
+        "path": "docs/verification/native-generation/native-generation-text-1/receipt.json",
+        "sha256": "5f88754b339d5d70dc023e2d555b1e5fc9c7a08798307a78366f95749bdf807b"
+      },
+      "reservation": {
+        "path": "docs/verification/native-generation/native-generation-text-1/submitted.json",
+        "sha256": "3a9a6019edf0fba9f319fb51d0d14614238865a9d49b209294371a2eac26ac15"
+      }
+    },
+    {
+      "check": "tool",
+      "observation": {
+        "actual_model": null,
+        "check": "tool",
+        "dispatch_count": 1,
+        "effective_model": "gpt-6.1-sol",
+        "error_code": null,
+        "event_counts": {
+          "item.completed": 4,
+          "item.started": 1,
+          "thread.started": 1,
+          "turn.completed": 1,
+          "turn.started": 1
+        },
+        "fulfillment_verified": false,
+        "input_sha256": "2e9d375ef1a06488573b281b88ff8d24d697b407f43411c279bbb1a74daf1a78",
+        "instructions_sha256": "55b1d1f3b60e7d3b920dd4aba966a91573391a69b75f9af863f1cb5eee657c24",
+        "output_bytes": 55,
+        "output_sha256": "044c7d71d6e66248dd245f6b45c2e6a09f749872f18a7f34eb6f4541af777a80",
+        "passed": true,
+        "permission_observability": "limited",
+        "pool_children_after_shutdown": 0,
+        "pool_running_after_shutdown": 0,
+        "private_directory_mode_0700": true,
+        "private_file_mode_0600": true,
+        "private_output_removed_after_cleanup": true,
+        "process_groups_absent_after_cleanup": true,
+        "production_final_file_validation_used": true,
+        "production_service_used": true,
+        "raw_output_retained": false,
+        "request_sha256": "50331436ae67d331d92315dd6ded79b16db817d9e0e501136b89ebfabbca87dc",
+        "requested_model": "gpt-6.1-sol",
+        "side_effects_possible": true,
+        "spawn_count": 1,
+        "supported_item_counts": {
+          "agent_message": 2,
+          "command_execution": 1,
+          "error": 1
+        },
+        "supported_tool_item_count": 1,
+        "terminal_status": "completed",
+        "turn_started_before_cancellation": null,
+        "unprovided_file_token_matches": true,
+        "useful_transformation": null,
+        "warnings": [
+          "native_tool_errors"
+        ]
+      },
+      "preflight": {
+        "path": "docs/verification/native-generation/native-generation-tool-1/preflight.json",
+        "sha256": "e3bbf6277cc3500e922e6b44943508a350520d4ae59a96bc1cdd54b4739e3b25"
+      },
+      "receipt": {
+        "path": "docs/verification/native-generation/native-generation-tool-1/receipt.json",
+        "sha256": "9a5e1520b0c2a265277f21765b1a0b4ac6a393f7bc74df5e2136c4c6b136c35f"
+      },
+      "reservation": {
+        "path": "docs/verification/native-generation/native-generation-tool-1/submitted.json",
+        "sha256": "4823601216143783a9a241ad5bf71a38401493048f1911ffa5cd200d6a86f1bf"
+      }
+    },
+    {
+      "check": "cancel",
+      "observation": {
+        "actual_model": null,
+        "check": "cancel",
+        "dispatch_count": 1,
+        "effective_model": "gpt-6.1-sol",
+        "error_code": "cancelled",
+        "event_counts": {
+          "item.completed": 1,
+          "thread.started": 1,
+          "turn.started": 1
+        },
+        "fulfillment_verified": false,
+        "input_sha256": "ef4d4a237e1a6cffd970087c5efebfb32cedc59c9f2068a089994ab6153ad497",
+        "instructions_sha256": "648111fcb34b6cb540f75dcede73c1561e94ef97a7509cd5a76013016acdfc87",
+        "output_bytes": 0,
+        "output_sha256": null,
+        "passed": true,
+        "permission_observability": "limited",
+        "pool_children_after_shutdown": 0,
+        "pool_running_after_shutdown": 0,
+        "private_directory_mode_0700": true,
+        "private_file_mode_0600": true,
+        "private_output_removed_after_cleanup": true,
+        "process_groups_absent_after_cleanup": true,
+        "production_final_file_validation_used": true,
+        "production_service_used": true,
+        "raw_output_retained": false,
+        "request_sha256": "dcc84c34ffbb957808f7f6b967296c5e6ff4e1376a321eeb13328e5db31d5216",
+        "requested_model": "gpt-6.1-sol",
+        "side_effects_possible": true,
+        "spawn_count": 1,
+        "supported_item_counts": {
+          "error": 1
+        },
+        "supported_tool_item_count": 0,
+        "terminal_status": "cancelled",
+        "turn_started_before_cancellation": true,
+        "unprovided_file_token_matches": null,
+        "useful_transformation": null,
+        "warnings": []
+      },
+      "preflight": {
+        "path": "docs/verification/native-generation/native-generation-cancel-1/preflight.json",
+        "sha256": "32c84684888100dca7db4d1c514ec2f350471f261b8e75fa18deda692a27e3b9"
+      },
+      "receipt": {
+        "path": "docs/verification/native-generation/native-generation-cancel-1/receipt.json",
+        "sha256": "012c47cf44914519a3c00be7c15d6f592baa17e074affe94e62c8eadb63f710f"
+      },
+      "reservation": {
+        "path": "docs/verification/native-generation/native-generation-cancel-1/submitted.json",
+        "sha256": "e7fb0b0c4ee1d3343ac7e3c86b0f39a992093fb9d406c0e9250c3bc103bcab24"
+      }
+    }
+  ],
+  "historical_lineages": [
+    {
+      "admission_reused": false,
+      "path": "docs/verification/generation-refusal-1/receipt.json",
+      "profile": "generation_v1",
+      "scope": "candidate_generation_policy",
+      "sha256": "1db740d2626127630a479f776904e981a2505d40a3b7ffcdf761a94ed0b623f1",
+      "submission_allowance_total": null,
+      "submissions_consumed_total": 0
+    },
+    {
+      "admission_reused": false,
+      "path": "docs/verification/native-codex-0.166.0-attempt5.json",
+      "profile": "native_task_v1",
+      "scope": "candidate_native_adapter_lifecycle",
+      "sha256": "81b16be0a95ad0baff9eaca1d1d0e3c1160e82f2383af213ffb77bdbff3f84e8",
+      "submission_allowance_total": 5,
+      "submissions_consumed_total": 4
+    }
+  ],
+  "implementation_source_sha256": "05fa0783032f81709141dd0d01f7f4db8f92498bb9daa93e419a6dbe236dd056",
+  "limitations": [
+    "Native configured tools, hooks, integrations, subagents and provider-internal retries can perform additional work.",
+    "Completed means a validated final response, not that every tool succeeded or fulfillment was verified.",
+    "Native exec omits some prelaunch refusal telemetry; permission observability remains limited.",
+    "The final file selects the last agent message with native Plan fallback; streamed messages may be incomplete.",
+    "Cancellation does not undo effects or prove detached or remote work stopped.",
+    "Candidate admission applies only inside this verifier and does not admit production or native tasks.",
+    "Live checks used process-local candidate admission; this separately reviewed production pin enables only native generation, not v1 or native-task Codex."
+  ],
+  "parser_sha256": "1af1e8e2ffb57385748cf2e79c36b24b43ffc2b59ad7b7511f18d28a1272d42d",
+  "passing_ledger": [
+    {
+      "check": "text",
+      "ordinal": 1,
+      "passed": true,
+      "replacement": false,
+      "reservation_sha256": "3a9a6019edf0fba9f319fb51d0d14614238865a9d49b209294371a2eac26ac15"
+    },
+    {
+      "check": "tool",
+      "ordinal": 2,
+      "passed": true,
+      "replacement": false,
+      "reservation_sha256": "4823601216143783a9a241ad5bf71a38401493048f1911ffa5cd200d6a86f1bf"
+    },
+    {
+      "check": "cancel",
+      "ordinal": 3,
+      "passed": true,
+      "replacement": false,
+      "reservation_sha256": "e7fb0b0c4ee1d3343ac7e3c86b0f39a992093fb9d406c0e9250c3bc103bcab24"
+    }
+  ],
+  "permission_observability": "limited",
+  "platform_scope": {
+    "machine": "arm64",
+    "scope": "exact recorded executable and recipe only",
+    "system": "Darwin"
+  },
+  "privacy": {
+    "environment_values_recorded": false,
+    "host_configuration_changed": false,
+    "native_configuration_and_persistence_preserved": true,
+    "native_sessions_recorded": false,
+    "native_trust_enrolled": false,
+    "prompts_recorded": false,
+    "raw_output_retained": false
+  },
+  "production_integration_delta": "Pin this production-only record as the default and add exact package membership/tests/docs. No launch recipe, parser, final-file behavior, existing consultation, v1 generation, or native-task admission changes.",
+  "profile": "generation_native_v1",
+  "recipe_sha256": "26461116c00265235af55b5abf8a136b7178f5a3a697ce4d3f93508018840c73",
+  "requested_model_tested": "gpt-6.1-sol",
+  "schema_version": 1,
+  "scope": "production_native_generation",
+  "source_appendices": [
+    {
+      "sha256": "c4c99cd80637b1c95c693c0e5f1fad191a09836806c894c231911e1876aca33f",
+      "source_file_count": 11,
+      "verified": true
+    },
+    {
+      "sha256": "454504f1b838b13f99677e2c5bf5c2a13040af0a1bc58d157b1f9871f09ab599",
+      "source_file_count": 2,
+      "verified": true
+    }
+  ],
+  "source_commit": "6ff1e1ca3b30fc8b914720681fcf5fe62e95f856",
+  "source_proof": {
+    "manifest_sha256": "d84ac890e02db7b655d584801c5afd0f198f82e0e6460f3d1524871fe9ac3504",
+    "model_requests_submitted": 0,
+    "source_commit": "6ff1e1ca3b30fc8b914720681fcf5fe62e95f856",
+    "source_files": {
+      "codex-rs/config/src/loader/mod.rs": "c3aa56395e7e5a2b75e17c670fbfda51a0040f78a95aeb288700dd555e46ed20",
+      "codex-rs/core/src/config/mod.rs": "e027e9fb2e4cd101abdb3984768eef07d1d0ac7c8aa631989011cd17bda0c6df",
+      "codex-rs/exec/src/cli.rs": "66643e8b3d5964b70cb8f231fb309312376272fb3ea87bcb6849f44cf112f8f6",
+      "codex-rs/exec/src/event_processor.rs": "b23e5cff350f621247ca2d7e21d2458ddd515074becf8f7de599aa495459b2b4",
+      "codex-rs/exec/src/event_processor_with_jsonl_output.rs": "41b9532fe9d480b3d427e487f3f3f940f96450e36e7d98ec8509615c9d563367",
+      "codex-rs/exec/src/exec_events.rs": "dafa872d7e86a099e56e28a329dcb9c03db90ed768c3b88cca8c91d46dc1d0e5",
+      "codex-rs/exec/src/lib.rs": "57a61d50995a365f7572d7eaa05de88054680ff339642b8a823a5c9198e4e012"
+    },
+    "verified": true
+  },
+  "status": "accepted_native_generation",
+  "tested_core_commit": "9e8d64bcb66b4fd24b7e24ff0c45666a956013c3",
+  "verifier_sha256": "7359e08347dcaaf73d7be503d92e9987504e5fd0553c8872a300631a039bdd09",
+  "version": "codex-cli 0.166.0"
+}

@@ -329,7 +329,7 @@ class CodeReviewTool(WorkflowTool):
     def prepare_expert_analysis_context(self, consolidated_findings) -> str:
         """Prepare context for external model call for final code review validation."""
         context_parts = [
-            f"=== CODE REVIEW REQUEST ===\\n{self.initial_request or 'Code review workflow initiated'}\\n=== END REQUEST ==="
+            f"=== CODE REVIEW REQUEST ===\\n{self.get_expert_initial_request(self.initial_request, 'Code review workflow initiated')}\\n=== END REQUEST ==="
         ]
 
         # Add investigation summary

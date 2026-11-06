@@ -267,7 +267,7 @@ class DebugIssueTool(WorkflowTool):
     def prepare_expert_analysis_context(self, consolidated_findings) -> str:
         """Prepare context for external model call matching original debug tool format."""
         context_parts = [
-            f"=== ISSUE DESCRIPTION ===\n{self.initial_issue or 'Investigation initiated'}\n=== END DESCRIPTION ==="
+            f"=== ISSUE DESCRIPTION ===\n{self.get_expert_initial_request(self.initial_issue, 'Investigation initiated')}\n=== END DESCRIPTION ==="
         ]
 
         # Add special note if confidence is almost_certain
@@ -312,16 +312,7 @@ class DebugIssueTool(WorkflowTool):
                 f"\n=== VISUAL DEBUGGING INFORMATION ===\n{images_text}\n=== END VISUAL INFORMATION ==="
             )
 
-        # Add file content if we have relevant files
-        if consolidated_findings.relevant_files:
-            file_content, _ = self._prepare_file_content_for_prompt(
-                list(consolidated_findings.relevant_files), None, "Essential debugging files"
-            )
-            if file_content:
-                context_parts.append(
-                    f"\n=== ESSENTIAL FILES FOR DEBUGGING ===\n{file_content}\n=== END ESSENTIAL FILES ==="
-                )
-
+        # Declared file contents are loaded once by the shared bounded backend.
         return "\n".join(context_parts)
 
     def _build_investigation_summary(self, consolidated_findings) -> str:

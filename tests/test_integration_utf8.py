@@ -20,8 +20,6 @@ def run_utf8_integration_tests():
 
     # Test environment setup
     os.environ["LOCALE"] = "fr-FR"
-    os.environ["GEMINI_API_KEY"] = "dummy-key-for-tests"
-    os.environ["OPENAI_API_KEY"] = "dummy-key-for-tests"
 
     # Test 1: Validate UTF-8 characters in json.dumps
     print("\n1️⃣ UTF-8 encoding test with json.dumps")
