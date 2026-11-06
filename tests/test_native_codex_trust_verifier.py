@@ -356,6 +356,8 @@ async def test_trust_optin_requires_the_exact_existing_packet_before_discovery(t
 
 @pytest.mark.asyncio
 async def test_changed_approved_binding_keeps_its_technical_failure_before_discovery(tmp_path, monkeypatch):
+    monkeypatch.setattr(verifier, "PROJECT", tmp_path)
+
     def changed_binding(requested_root):
         raise verifier.TrustError("fixture_file_changed")
 
@@ -382,6 +384,7 @@ async def test_changed_approved_binding_keeps_its_technical_failure_before_disco
 @pytest.mark.asyncio
 @pytest.mark.parametrize("adapter,model", [("grok", "gpt-6.1-sol"), ("codex", "other-model")])
 async def test_model_selector_is_narrow_and_never_substitutes(tmp_path, monkeypatch, adapter, model):
+    monkeypatch.setattr(verifier, "PROJECT", tmp_path)
     monkeypatch.setattr(verifier.shutil, "which", lambda *args: pytest.fail("Invalid selection reached discovery"))
     args = verifier.argument_parser().parse_args(
         [

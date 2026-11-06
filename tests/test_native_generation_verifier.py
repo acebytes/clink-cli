@@ -836,4 +836,6 @@ def test_help_is_explicit_and_read_only():
         ["--label", "prepare", "--source-manifest", "proof.json", "--source-manifest-sha256", "0" * 64]
     )
     assert parsed.live is False
-    assert "one bounded native-generation submission" in verifier.argument_parser().format_help()
+    help_text = " ".join(verifier.argument_parser().format_help().split())
+    assert "Unavailable in public snapshot" in help_text
+    assert "original private verifier and history" in help_text

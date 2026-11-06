@@ -568,4 +568,6 @@ def test_help_is_read_only_and_default_has_no_live_opt_in():
     assert parsed.live is False
     assert parsed.replace_failed_attempt is False
     assert parsed.source_proof_sha256 is None
-    assert "Currently unavailable" in verifier.argument_parser().format_help()
+    help_text = " ".join(verifier.argument_parser().format_help().split())
+    assert "Unavailable in public snapshot" in help_text
+    assert "original private verifier and history" in help_text
