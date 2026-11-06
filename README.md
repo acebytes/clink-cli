@@ -6,6 +6,25 @@ Version **0.2.1** preserves PAL's **18 MCP tools** and adds a separate `clink ge
 
 Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-server), formerly Zen MCP. **Copyright 2025 Beehive Innovations.** Retains upstream attribution and the [Apache 2.0 license](LICENSE).
 
+## Install with uv
+
+```sh
+uv tool install clink-cli
+```
+
+This installs both `clink` and `clink-mcp-server` from [PyPI](https://pypi.org/project/clink-cli/). If you installed the v0.2.0 GitHub wheel with uv, run `uv tool uninstall clink-mcp-server` first to free the command names.
+
+## Connect to Claude Code
+
+From the project directory where you use Claude Code, run:
+
+```sh
+claude mcp add --scope local --transport stdio clink -- "$(uv tool dir --bin)/clink-mcp-server" --project "$PWD"
+claude mcp get clink
+```
+
+Look for **Connected**. Local scope keeps the registration private to you in this project, and `--project "$PWD"` tells Clink which workspace to use. Open Claude Code in the same directory and run `/mcp` to see `clink`. To check the connection without calling a model, ask Claude to use Clink’s `version` tool.
+
 ## Supported operations
 
 Admission is specific to an operation, executable, launch recipe, and parser. Support in one column does not enable another.
@@ -24,15 +43,7 @@ Python 3.10+ is required; Python 3.12 is the tested runtime. Process supervision
 
 ## Install and connect
 
-To install the PyPI release into an isolated tool environment, use:
-
-```sh
-uv tool install clink-cli
-clink generation-capabilities --json
-clink-mcp-server --help
-```
-
-If you installed the v0.2.0 GitHub wheel with uv, run `uv tool uninstall clink-mcp-server` first so both executable names are available to the new distribution.
+### Install from a wheel or source checkout
 
 For a standalone wheel installation, replace the wheel path and choose a persistent environment outside the source tree:
 
