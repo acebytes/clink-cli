@@ -43,11 +43,13 @@ jobs:
         env:
           PYTHON_VERSION: ${{ matrix.python-version }}
         run: |
+          mkdir -p "$PWD/test_output" "$RUNNER_TEMP/clink-test-output"
           docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges \
             --tmpfs /tmp:exec,nosuid,size=2g --user "$(id -u):$(id -g)" \
             -e HOME=/tmp/clink-home -e PYTHONDONTWRITEBYTECODE=1 \
             -e PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 -e PAL_MCP_FORCE_ENV_OVERRIDE=false \
-            -v "$PWD:/work:ro" -v "$RUNNER_TEMP/clink-wheels:/wheels:ro" -w /work \
+            -v "$PWD:/work:ro" -v "$RUNNER_TEMP/clink-test-output:/work/test_output" \
+            -v "$RUNNER_TEMP/clink-wheels:/wheels:ro" -w /work \
             "python:$PYTHON_VERSION" sh -ec \
             'mkdir -p "$HOME"; python -m venv /tmp/test-venv; \
               /tmp/test-venv/bin/pip install --no-index --find-links /wheels \
