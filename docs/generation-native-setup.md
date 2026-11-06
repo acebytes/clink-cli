@@ -72,15 +72,15 @@ with your real canonical paths; do not overwrite an existing custom manifest:
   "env": {},
   "roles": {
     "default": {
-      "prompt_path": "/absolute/path/clink-mcp-server/systemprompts/clink/default.txt",
+      "prompt_path": "/absolute/path/clink-cli/systemprompts/clink/default.txt",
       "role_args": []
     },
     "planner": {
-      "prompt_path": "/absolute/path/clink-mcp-server/systemprompts/clink/default_planner.txt",
+      "prompt_path": "/absolute/path/clink-cli/systemprompts/clink/default_planner.txt",
       "role_args": []
     },
     "codereviewer": {
-      "prompt_path": "/absolute/path/clink-mcp-server/systemprompts/clink/codex_codereviewer.txt",
+      "prompt_path": "/absolute/path/clink-cli/systemprompts/clink/codex_codereviewer.txt",
       "role_args": []
     }
   },
@@ -91,13 +91,13 @@ with your real canonical paths; do not overwrite an existing custom manifest:
     "default_model": null,
     "roles": {
       "default": {
-        "prompt_path": "/absolute/path/clink-mcp-server/systemprompts/clink/native_default.txt"
+        "prompt_path": "/absolute/path/clink-cli/systemprompts/clink/native_default.txt"
       },
       "planner": {
-        "prompt_path": "/absolute/path/clink-mcp-server/systemprompts/clink/native_planner.txt"
+        "prompt_path": "/absolute/path/clink-cli/systemprompts/clink/native_planner.txt"
       },
       "codereviewer": {
-        "prompt_path": "/absolute/path/clink-mcp-server/systemprompts/clink/native_codereviewer.txt"
+        "prompt_path": "/absolute/path/clink-cli/systemprompts/clink/native_codereviewer.txt"
       }
     }
   },

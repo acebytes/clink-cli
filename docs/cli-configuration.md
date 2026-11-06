@@ -118,7 +118,7 @@ For new multi-repository setups, [project setup](project-setup.md) generates the
 
 The bundled Agy manifest omits `working_dir` and `allowed_roots`. Without `--project`, the registry therefore uses the server's startup working directory for both. `run-server.sh` starts in the checkout, so seeing only the checkout in `listmodels` is expected even when no operator manifest exists. Restarting without a configuration change preserves that default. An explicit `--project` binding supplies project defaults and loads its local manifests.
 
-For a project elsewhere, save this complete replacement as `~/.clink/cli_clients/agy.json`. Replace every `/absolute/path/to/clink-mcp-server` with your checkout path and both `/absolute/path/to/project` occurrences with the existing project directory. This example preserves all three consultation and native roles. If `CLI_CLIENTS_CONFIG_PATH` also defines `agy`, update that higher-priority manifest instead.
+For a project elsewhere, save this complete replacement as `~/.clink/cli_clients/agy.json`. Replace every `/absolute/path/to/clink-cli` with your checkout path and both `/absolute/path/to/project` occurrences with the existing project directory. This example preserves all three consultation and native roles. If `CLI_CLIENTS_CONFIG_PATH` also defines `agy`, update that higher-priority manifest instead.
 
 ```json
 {
@@ -130,26 +130,26 @@ For a project elsewhere, save this complete replacement as `~/.clink/cli_clients
   "allowed_roots": ["/absolute/path/to/project"],
   "roles": {
     "default": {
-      "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/default.txt"
+      "prompt_path": "/absolute/path/to/clink-cli/systemprompts/clink/default.txt"
     },
     "planner": {
-      "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/default_planner.txt"
+      "prompt_path": "/absolute/path/to/clink-cli/systemprompts/clink/default_planner.txt"
     },
     "codereviewer": {
-      "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/default_codereviewer.txt"
+      "prompt_path": "/absolute/path/to/clink-cli/systemprompts/clink/default_codereviewer.txt"
     }
   },
   "native_task": {
     "enabled": true,
     "roles": {
       "default": {
-        "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/native_default.txt"
+        "prompt_path": "/absolute/path/to/clink-cli/systemprompts/clink/native_default.txt"
       },
       "planner": {
-        "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/native_planner.txt"
+        "prompt_path": "/absolute/path/to/clink-cli/systemprompts/clink/native_planner.txt"
       },
       "codereviewer": {
-        "prompt_path": "/absolute/path/to/clink-mcp-server/systemprompts/clink/native_codereviewer.txt"
+        "prompt_path": "/absolute/path/to/clink-cli/systemprompts/clink/native_codereviewer.txt"
       }
     }
   }

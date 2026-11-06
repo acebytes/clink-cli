@@ -1,6 +1,6 @@
 # Container support
 
-The base image runs the provider-free MCP server on stdio as a non-root user. Startup, discovery and local tools need no API keys, CLI installation or login. No CLI agents or authentication files are installed or mounted. Delegated CLI execution inside this image has not been admitted; use a separately admitted host installation for CLI calls. The version 0.2.2 image is built locally; no registry publication is assumed.
+The base image runs the provider-free MCP server on stdio as a non-root user. Startup, discovery and local tools need no API keys, CLI installation or login. No CLI agents or authentication files are installed or mounted. Delegated CLI execution inside this image has not been admitted; use a separately admitted host installation for CLI calls. The version 0.2.3 image is built locally; no registry publication is assumed.
 
 Build and attach from the repository root:
 
@@ -18,7 +18,7 @@ Example client configuration after building:
   "mcpServers": {
     "clink": {
       "command": "docker",
-      "args": ["compose", "--project-directory", "/absolute/path/to/clink-mcp-server", "run", "--rm", "--no-deps", "-T", "clink-mcp"]
+      "args": ["compose", "--project-directory", "/absolute/path/to/clink-cli", "run", "--rm", "--no-deps", "-T", "clink-mcp"]
     }
   }
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+Point package metadata, documentation, and source checkout examples to the renamed [clink-cli repository](https://github.com/acebytes/clink-cli). Both installed commands retain their names.
+
 ## 0.2.2
 
 Update the PyPI description with the uv install command, project-local Claude Code setup, and the standalone JSON generation interface.

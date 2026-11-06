@@ -123,6 +123,6 @@ def test_host_client_example_is_clink_without_provider_keys():
     config = json.loads((ROOT / "claude_config_example.json").read_text())
     assert set(config["mcpServers"]) == {"clink"}
     server = config["mcpServers"]["clink"]
-    assert server["command"].endswith("/clink-mcp-server/.venv/bin/python")
-    assert server["args"] == ["/path/to/clink-mcp-server/server.py"]
+    assert server["command"].endswith("/clink-cli/.venv/bin/python")
+    assert server["args"] == ["/path/to/clink-cli/server.py"]
     assert "env" not in server

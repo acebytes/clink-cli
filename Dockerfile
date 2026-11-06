@@ -15,9 +15,9 @@ RUN python -m pip wheel --no-cache-dir --wheel-dir /wheels .
 FROM python:3.12-slim AS runtime
 LABEL org.opencontainers.image.title="clink-mcp-server" \
       org.opencontainers.image.description="CLI orchestration MCP server; discovery and local tools only in the base image" \
-      org.opencontainers.image.version="0.2.2" \
+      org.opencontainers.image.version="0.2.3" \
       org.opencontainers.image.licenses="Apache-2.0" \
-      org.opencontainers.image.source="https://github.com/acebytes/clink-mcp-server"
+      org.opencontainers.image.source="https://github.com/acebytes/clink-cli"
 RUN groupadd --gid 10001 clink && \
     useradd --uid 10001 --gid clink --create-home --shell /usr/sbin/nologin clink
 COPY --from=builder /wheels /wheels

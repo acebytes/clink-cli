@@ -416,9 +416,7 @@ def test_documented_agy_manifest_allows_external_project_and_preserves_roles(
     project = sources.startup.parent / "external-project"
     project.mkdir()
     manifest = json.loads(
-        example.replace("/absolute/path/to/clink-mcp-server", str(checkout)).replace(
-            "/absolute/path/to/project", str(project)
-        )
+        example.replace("/absolute/path/to/clink-cli", str(checkout)).replace("/absolute/path/to/project", str(project))
     )
     sources.write(name="agy", adapter="agy", command="agy")
     path = sources.write(source=source, **manifest)

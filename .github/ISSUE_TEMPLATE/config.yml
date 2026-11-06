@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Documentation
-    url: https://github.com/acebytes/clink-mcp-server/blob/main/README.md
+    url: https://github.com/acebytes/clink-cli/blob/main/README.md
     about: Installation, supported operations, and usage
   - name: Security policy
-    url: https://github.com/acebytes/clink-mcp-server/blob/main/SECURITY.md
+    url: https://github.com/acebytes/clink-cli/blob/main/SECURITY.md
     about: Arrange private reporting before sharing sensitive vulnerability details
