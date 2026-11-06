@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 def test_runtime_installs_distribution_instead_of_source_tree():
     dockerfile = (ROOT / "Dockerfile").read_text()
     runtime = dockerfile.split(" AS runtime", 1)[1]
-    assert "--no-index --find-links /wheels clink-mcp-server" in runtime
+    assert "--no-index --find-links /wheels clink-cli" in runtime
     assert "COPY ." not in dockerfile
     assert "COPY --chown=" not in runtime
     assert 'CMD ["clink-mcp-server"]' in runtime

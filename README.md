@@ -2,7 +2,7 @@
 
 Delegate work to installed CLI agents through MCP. Consultations return advice and proposed code. Explicit native tasks can edit files, run tests, and use the selected CLI's configured tools, hooks, skills, plugins, MCP integrations, and subagents under its native permissions.
 
-Version **0.2.0** preserves PAL's **18 MCP tools** and adds a separate `clink generate` command for bounded programmatic text generation. Install from this repository or a locally built package; the instructions below do not require a published PyPI package.
+Version **0.2.1** preserves PAL's **18 MCP tools** and adds a separate `clink generate` command for bounded programmatic text generation. The Python distribution is named `clink-cli` and installs both `clink` and `clink-mcp-server`.
 
 Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-server), formerly Zen MCP. **Copyright 2025 Beehive Innovations.** Retains upstream attribution and the [Apache 2.0 license](LICENSE).
 
@@ -24,13 +24,21 @@ Python 3.10+ is required; Python 3.12 is the tested runtime. Process supervision
 
 ## Install and connect
 
-Use the reviewed **0.2.0 release contents** or a wheel built from them. Do not assume an unversioned checkout of the repository's default branch contains this release. No PyPI or container-registry publication is assumed.
+To install the PyPI release into an isolated tool environment, use:
+
+```sh
+uv tool install clink-cli
+clink generation-capabilities --json
+clink-mcp-server --help
+```
+
+If you installed the v0.2.0 GitHub wheel with uv, run `uv tool uninstall clink-mcp-server` first so both executable names are available to the new distribution.
 
 For a standalone wheel installation, replace the wheel path and choose a persistent environment outside the source tree:
 
 ```sh
 python3 -m venv /absolute/path/to/clink-runtime
-/absolute/path/to/clink-runtime/bin/python -m pip install /absolute/path/to/clink_mcp_server-0.2.0-py3-none-any.whl
+/absolute/path/to/clink-runtime/bin/python -m pip install /absolute/path/to/clink_cli-0.2.1-py3-none-any.whl
 /absolute/path/to/clink-runtime/bin/python -m clink.setup --project /absolute/path/to/your-project
 ```
 
@@ -47,7 +55,7 @@ The installed package contains its manifests, prompts, and admission resources. 
 }
 ```
 
-Alternatively, from the reviewed 0.2.0 source tree:
+Alternatively, from the reviewed 0.2.1 source tree:
 
 ```sh
 cd /absolute/path/to/clink-mcp-server

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+The Python distribution is now named `clink-cli`. One installation provides the
+`clink` CLI and the `clink-mcp-server` stdio server. Existing MCP client configurations
+can continue to use the server command. Update the executable path if you move to a different installation directory.
+
 ## 0.2.0
 
 This is the CLI-only clink-mcp-server release line. The repository and locally built distribution use version 0.2.0; this entry does not assert publication to PyPI or a container registry.
