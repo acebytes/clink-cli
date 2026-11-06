@@ -9,6 +9,7 @@ import os
 import stat
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -152,8 +153,12 @@ print('Network and unrelated home reads denied')
         f"--junitxml={evidence / 'junit.xml'}",
     ]
     start = time.monotonic()
-    with (evidence / "pytest.txt").open("w") as stream:
-        result = subprocess.run(command, cwd=root, env=environment, stdout=stream, stderr=subprocess.STDOUT)
+    with (
+        tempfile.TemporaryDirectory(prefix="clink-offline-home-") as test_home,
+        (evidence / "pytest.txt").open("w") as stream,
+    ):
+        test_env = {**environment, "HOME": test_home}
+        result = subprocess.run(command, cwd=root, env=test_env, stdout=stream, stderr=subprocess.STDOUT)
     summary = {
         "command": command,
         "cwd": str(root),

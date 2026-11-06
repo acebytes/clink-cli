@@ -156,6 +156,7 @@ def test_main_uses_selected_policy_and_interpreter_and_excludes_live_cli_tests(s
         assert command[0] == "/usr/bin/sandbox-exec"
         assert command[3] == str(selected.executable.absolute())
         if "stdout" in kwargs:
+            assert Path(kwargs["env"]["HOME"]).is_dir()
             kwargs["stdout"].write("Synthetic pytest success.\n")
         return subprocess.CompletedProcess(command, 0, stdout="Synthetic isolation success.\n", stderr="")
 
@@ -170,7 +171,10 @@ def test_main_uses_selected_policy_and_interpreter_and_excludes_live_cli_tests(s
     environment = metadata_calls[0][1]
     assert environment["HOME"] == str(selected.home) and "PYTHONPATH" not in environment
     assert len(process_calls) == 2
-    assert all(kwargs["env"] == environment for _, kwargs in process_calls)
+    assert process_calls[0][1]["env"] == environment
+    test_home = Path(process_calls[1][1]["env"]["HOME"])
+    assert test_home != selected.home and not test_home.exists()
+    assert process_calls[1][1]["env"] == {**environment, "HOME": str(test_home)}
     pytest_command = process_calls[1][0]
     selectors = [pytest_command[index + 1] for index, value in enumerate(pytest_command) if value == "-m"]
     assert selectors == ["pytest", "not integration and not real_cli and not private_evidence"]
