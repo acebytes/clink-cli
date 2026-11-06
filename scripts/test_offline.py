@@ -6,18 +6,66 @@ Evidence is immutable per label. This does not launch installed model CLIs.
 import argparse
 import json
 import os
+import stat
 import subprocess
 import sys
 import time
 from pathlib import Path
 
 
-def isolation_policy(root: Path, user_home: Path, interpreter_root: Path) -> str:
+def interpreter_read_roots(executable: Path, environment: dict[str, str]) -> tuple[Path, ...]:
+    """Locate the selected Python's own environment and base runtime, never the harness's."""
+    selected = executable.expanduser().absolute()
+    probe = subprocess.run(
+        [
+            str(selected),
+            "-I",
+            "-S",
+            "-c",
+            "import json,sys; print(json.dumps({'base_prefix':sys.base_prefix}))",
+        ],
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=5,
+        check=True,
+    )
+    if len(probe.stdout) > 16384:
+        raise ValueError("Selected Python metadata exceeds its bound")
+    metadata = json.loads(probe.stdout)
+    if not isinstance(metadata, dict) or set(metadata) != {"base_prefix"}:
+        raise ValueError("Selected Python must report its base runtime")
+    roots = []
+    user_home = Path(environment["HOME"]).resolve(strict=True)
+    selected_bin = selected.parent.resolve(strict=True)
+    configuration = selected_bin.parent / "pyvenv.cfg"
+    if selected_bin.name == "bin" and (configuration.exists() or configuration.is_symlink()):
+        if not stat.S_ISREG(configuration.lstat().st_mode):
+            raise ValueError("Selected Python environment needs a regular pyvenv.cfg")
+        roots.append(selected_bin.parent)
+    roots.append(metadata["base_prefix"])
+    canonical_roots = []
+    for value in roots:
+        value = str(value) if isinstance(value, Path) else value
+        if not isinstance(value, str) or not Path(value).is_absolute():
+            raise ValueError("Selected Python roots must be absolute directories")
+        path = Path(value).resolve(strict=True)
+        if not path.is_dir() or path == user_home or path in user_home.parents:
+            raise ValueError("Selected Python must not grant a broad home ancestor")
+        canonical_roots.append(path)
+    base_prefix = canonical_roots[-1]
+    if base_prefix.is_relative_to(user_home) and not selected.resolve(strict=True).is_relative_to(base_prefix):
+        raise ValueError("Selected Python base runtime must not grant an unrelated home directory")
+    return tuple(dict.fromkeys(canonical_roots))
+
+
+def isolation_policy(root: Path, user_home: Path, interpreter_roots: tuple[Path, ...]) -> str:
     """Bind Seatbelt isolation to this checkout and interpreter without host-specific paths."""
 
     def quoted(path: Path) -> str:
         return json.dumps(str(path.resolve()))
 
+    read_roots = " ".join(f"(subpath {quoted(path)})" for path in dict.fromkeys((root, *interpreter_roots)))
     return "\n".join(
         (
             "(version 1)",
@@ -25,7 +73,7 @@ def isolation_policy(root: Path, user_home: Path, interpreter_root: Path) -> str
             "(deny network*)",
             f"(deny file-read* (subpath {quoted(user_home)}))",
             f"(allow file-read-metadata (subpath {quoted(user_home)}))",
-            f"(allow file-read* (subpath {quoted(root)}) (subpath {quoted(interpreter_root)}))",
+            f"(allow file-read* {read_roots})",
             f"(deny file-write* (subpath {quoted(user_home)}))",
             f"(allow file-write* (subpath {quoted(root)}))",
             "",
@@ -58,8 +106,12 @@ def main():
         "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
         "PAL_MCP_FORCE_ENV_OVERRIDE": "false",
     }
+    try:
+        interpreter_roots = interpreter_read_roots(args.python, environment)
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        parser.error("Selected Python isolation metadata refused: " + type(error).__name__)
     policy_path = evidence / "offline.sb"
-    policy_path.write_text(isolation_policy(root, Path.home(), Path(sys.prefix)))
+    policy_path.write_text(isolation_policy(root, Path.home(), interpreter_roots))
     prefix = [
         "/usr/bin/sandbox-exec",
         "-f",
@@ -92,7 +144,7 @@ print('Network and unrelated home reads denied')
         *args.tests,
         "-v",
         "-m",
-        "not integration",
+        "not integration and not real_cli and not private_evidence",
         "-p",
         "pytest_asyncio.plugin",
         "-p",

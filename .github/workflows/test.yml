@@ -64,8 +64,6 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - name: Check tracked public source tree
-        run: python3 scripts/verify_public_tree.py
       - name: Download dependency and pinned build-tool wheels without host credentials
         run: |
           mkdir -p "$RUNNER_TEMP/clink-wheels" "$RUNNER_TEMP/clink-artifacts"
@@ -90,7 +88,8 @@ jobs:
               /tmp/build-venv/bin/pip install --no-index --find-links /wheels \
                 -r /work/requirements.txt -r /work/requirements-dev.txt \
                 build==1.6.1 setuptools==80.9.0 wheel==0.45.1; \
-              cd /work; \
+              cd /work; git config --global --add safe.directory /work; \
+              /tmp/build-venv/bin/python scripts/verify_public_tree.py; \
               /tmp/build-venv/bin/python -m ruff check --no-cache .; \
               /tmp/build-venv/bin/python -m black --check .; \
               /tmp/build-venv/bin/python -m isort --check-only .; \
