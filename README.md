@@ -146,6 +146,8 @@ A follow-up resumes the private native session with a new attempt; native handle
 
 ## Programmatic generation
 
+[Prompter](https://prompterapp.org/) bundles Clink in its macOS app. Its Prompt Improve action calls `clink generate` with the user’s draft and displays the selected CLI agent’s rewrite in the command palette.
+
 The examples below use the source installation's `.venv/bin`. For a standalone wheel, use `/absolute/path/to/clink-runtime/bin` instead. Install the checkout's console commands locally if needed:
 
 ```sh
