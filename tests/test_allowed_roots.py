@@ -1,5 +1,6 @@
 """Isolated operator enrollment and byte-preserving publication tests."""
 
+import argparse
 import copy
 import errno
 import fcntl
@@ -13,7 +14,10 @@ import pytest
 import clink.allowed_roots as allowed_module
 import clink.registry as registry_module
 import clink.setup as project_setup
+from clink import cli
 from clink.allowed_roots import EnrollmentError, prepare_enrollment
+from clink.backend import _directory
+from clink.contracts import BackendError
 from clink.registry import ClinkRegistry, RegistryLoadError
 
 
@@ -64,7 +68,8 @@ def test_canonical_enrollment_and_repeat_noop(roots, spelling):
     assert not registry_module.USER_CONFIG_DIR.exists()
     refreshed = plan.persist()
     path = registry_module.USER_CONFIG_DIR / "codex.json"
-    assert refreshed.get_client("codex").allowed_roots == (home, target)
+    assert refreshed.get_client("codex").allowed_roots == (target,)
+    assert refreshed.get_client("codex").working_dir == target
     assert path.stat().st_mode & 0o777 == 0o600
     before = (path.read_bytes(), path.stat().st_mtime_ns)
     assert prepare_enrollment(refreshed, "codex", value).already_allowed
@@ -72,6 +77,82 @@ def test_canonical_enrollment_and_repeat_noop(roots, spelling):
     child.mkdir()
     assert prepare_enrollment(refreshed, "codex", str(child)).already_allowed
     assert (path.read_bytes(), path.stat().st_mtime_ns) == before
+
+
+@pytest.mark.asyncio
+async def test_cli_grants_only_named_projects_across_script_and_bound_mcp(roots, monkeypatch):
+    home, _, _ = roots
+    first = home / "script project"
+    second = home / "mcp project"
+    other = home / "private"
+    for directory in (first, second, other):
+        directory.mkdir()
+
+    async def allow(target, bound=None):
+        args = argparse.Namespace(
+            cli="codex", path=str(target), project=str(bound) if bound else None, yes=True, json=False
+        )
+        assert await cli._allow(args) == 0
+
+    await allow(first)
+    monkeypatch.chdir(other)
+    bound = ClinkRegistry(project_dir=second).get_client("codex")
+    assert bound.working_dir == first
+    assert bound.allowed_roots == (first,)
+    with pytest.raises(BackendError) as denied:
+        _directory(second, bound.allowed_roots)
+    assert denied.value.code == "path_not_allowed"
+
+    await allow(second, second)
+    refreshed = ClinkRegistry(project_dir=second).get_client("codex")
+    assert refreshed.working_dir == first
+    assert refreshed.allowed_roots == (first, second)
+    for allowed in (first, second):
+        assert _directory(allowed, refreshed.allowed_roots) == allowed
+    for outside in (home, other):
+        with pytest.raises(BackendError) as denied:
+            _directory(outside, refreshed.allowed_roots)
+        assert denied.value.code == "path_not_allowed"
+
+
+@pytest.mark.parametrize("explicit_null", [False, True])
+def test_operator_implicit_defaults_do_not_become_grants(roots, monkeypatch, explicit_null):
+    home, _, data = roots
+    target = home / "nested"
+    target.mkdir()
+    data["roles"]["default"]["prompt_path"] = str(registry_module.CONFIG_DIR / "prompt.txt")
+    if explicit_null:
+        data.update(working_dir=None, allowed_roots=None)
+    user = registry_module.USER_CONFIG_DIR
+    user.mkdir(parents=True)
+    path = user / "custom.json"
+    path.write_text(json.dumps(data))
+    prepare_enrollment(ClinkRegistry(), "codex", str(target)).persist()
+    monkeypatch.chdir(user)
+    client = ClinkRegistry().get_client("codex")
+    assert client.working_dir == target
+    assert client.allowed_roots == (target,)
+
+
+@pytest.mark.parametrize("explicit_null", [False, True])
+def test_operator_working_dir_outside_first_grant_requires_an_explicit_choice(roots, explicit_null):
+    home, target, data = roots
+    data["roles"]["default"]["prompt_path"] = str(registry_module.CONFIG_DIR / "prompt.txt")
+    data["working_dir"] = str(home)
+    if explicit_null:
+        data["allowed_roots"] = None
+    user = registry_module.USER_CONFIG_DIR
+    user.mkdir(parents=True)
+    path = user / "custom.json"
+    original = json.dumps(data).encode()
+    path.write_bytes(original)
+    with pytest.raises(EnrollmentError) as refused:
+        prepare_enrollment(ClinkRegistry(), "codex", str(target))
+    assert all(item in str(refused.value) for item in ("working_dir", str(home), str(path), str(target)))
+    assert path.read_bytes() == original
+    prepare_enrollment(ClinkRegistry(), "codex", str(home)).persist()
+    client = prepare_enrollment(ClinkRegistry(), "codex", str(target)).persist().get_client("codex")
+    assert client.allowed_roots == (home, target)
 
 
 @pytest.mark.parametrize("bad", ["missing", "file", "loop"])
@@ -93,7 +174,7 @@ def test_only_top_level_roots_bytes_change_and_mode_is_preserved(roots, style):
     user = registry_module.USER_CONFIG_DIR
     user.mkdir(parents=True)
     data["roles"]["default"]["prompt_path"] = str(registry_module.CONFIG_DIR / "prompt.txt")
-    data["working_dir"] = str(home)
+    data["working_dir"] = str(target) if style in {"missing", "null"} else str(home)
     if style != "missing":
         data["allowed_roots"] = None if style == "null" else [str(home)]
     content = json.dumps(data, indent=2 if style in {"pretty", "crlf"} else None)
@@ -104,7 +185,8 @@ def test_only_top_level_roots_bytes_change_and_mode_is_preserved(roots, style):
     path.chmod(0o640)
     plan = prepare_enrollment(ClinkRegistry(), "codex", str(target))
     expected = plan.content
-    assert json.loads(expected)["allowed_roots"] == [str(home), str(target)]
+    expected_roots = [str(target)] if style in {"missing", "null"} else [str(home), str(target)]
+    assert json.loads(expected)["allowed_roots"] == expected_roots
     if style not in {"missing", "null"}:
         start = content.index("[", content.index('"allowed_roots"'))
         end = content.index("]", start) + 1
@@ -240,14 +322,14 @@ def test_bundled_override_retains_relative_path_meanings_and_native_profiles(roo
     refreshed = plan.persist()
     after = refreshed.get_client("codex")
     assert after.executable == (str(executable),)
-    assert after.working_dir == work
-    assert after.allowed_roots == (bundled, target)
+    assert after.working_dir == target
+    assert after.allowed_roots == (target,)
     assert after.native_task == before.native_task
     assert after.generation_native == before.generation_native
     assert after.roles == before.roles
     assert after.model_dump(
-        exclude={"allowed_roots", "allowed_roots_explicit", "configuration_scope"}
-    ) == before.model_dump(exclude={"allowed_roots", "allowed_roots_explicit", "configuration_scope"})
+        exclude={"working_dir", "allowed_roots", "allowed_roots_explicit", "configuration_scope"}
+    ) == before.model_dump(exclude={"working_dir", "allowed_roots", "allowed_roots_explicit", "configuration_scope"})
     assert source.read_bytes() == original
     stored = json.loads(plan.destination.read_bytes())
     assert stored["command"] == shlex.join([str(executable)])
@@ -517,7 +599,7 @@ def test_registry_read_only_loading_does_not_require_posix_flags(roots, monkeypa
 def test_first_empty_root_append_preserves_surrounding_manifest_bytes(tmp_path, array):
     original = ('{ "name": "codex", "allowed_roots": ' + array + ', "unchanged": [1, 2] }\n').encode()
     roots = [str(tmp_path), str(tmp_path / "child")]
-    result = allowed_module._replace_roots(original, roots, tmp_path / "manifest.json")
+    result = allowed_module._set_manifest_field(original, "allowed_roots", roots, tmp_path / "manifest.json")
     assert json.loads(result)["allowed_roots"] == roots
     prefix, suffix = original.split(array.encode())
     assert result.startswith(prefix) and result.endswith(suffix)

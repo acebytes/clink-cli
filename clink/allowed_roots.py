@@ -73,7 +73,7 @@ def approved(registry: ClinkRegistry, cli_name: str, target: Path, *, native: bo
     return any(target == root or root in target.parents for root in client.allowed_roots)
 
 
-def _replace_roots(content: bytes, roots: list[str], path: Path) -> bytes:
+def _set_manifest_field(content: bytes, field: str, new_value: str | list[str], path: Path) -> bytes:
     """Replace only the top-level value span, or insert without rewriting existing bytes."""
     _json_object(content, path)
     text = content.decode("utf-8")
@@ -84,7 +84,7 @@ def _replace_roots(content: bytes, roots: list[str], path: Path) -> bytes:
     while True:
         index += len(text[index:]) - len(text[index:].lstrip())
         if text[index] == "}":
-            addition = json.dumps("allowed_roots") + ": " + json.dumps(roots, ensure_ascii=False)
+            addition = json.dumps(field) + ": " + json.dumps(new_value, ensure_ascii=False)
             prefix = "," if last_end != text.index("{") + 1 else ""
             separator = ("\r\n" if "\r\n" in text else "\n") + indent if "\n" in text else " "
             return (text[:last_end] + prefix + separator + addition + text[last_end:]).encode("utf-8")
@@ -96,12 +96,12 @@ def _replace_roots(content: bytes, roots: list[str], path: Path) -> bytes:
         index += len(text[index:]) - len(text[index:].lstrip())
         index += 1  # Strict object validation above established the colon.
         index += len(text[index:]) - len(text[index:].lstrip())
-        previous_roots, end = decoder.raw_decode(text, index)
-        if key == "allowed_roots":
-            value = json.dumps(roots, ensure_ascii=False)
-            if isinstance(previous_roots, list) and roots[: len(previous_roots)] == previous_roots:
+        previous, end = decoder.raw_decode(text, index)
+        if key == field:
+            value = json.dumps(new_value, ensure_ascii=False)
+            if isinstance(new_value, list) and isinstance(previous, list) and new_value[: len(previous)] == previous:
                 value = text[index:end]
-                for root in roots[len(previous_roots) :]:
+                for root in new_value[len(previous) :]:
                     entry = json.dumps(root, ensure_ascii=False)
                     insert = len(value[:-1].rstrip())
                     if "\n" in value:
@@ -110,9 +110,9 @@ def _replace_roots(content: bytes, roots: list[str], path: Path) -> bytes:
                         separator = ("\r\n" if "\r\n" in value else "\n") + array_indent
                     else:
                         separator = " "
-                    comma = "," if previous_roots else ""
+                    comma = "," if previous else ""
                     value = value[:insert] + comma + separator + entry + value[insert:]
-                    previous_roots.append(root)
+                    previous.append(root)
             return (text[:index] + value + text[end:]).encode("utf-8")
         last_end = end
         index = end + len(text[end:]) - len(text[end:].lstrip())
@@ -120,11 +120,13 @@ def _replace_roots(content: bytes, roots: list[str], path: Path) -> bytes:
             index += 1
 
 
-def _portable(registry: ClinkRegistry, cli_name: str, source: ManifestSource) -> dict[str, Any]:
+def _portable(registry: ClinkRegistry, cli_name: str, source: ManifestSource, target: Path) -> dict[str, Any]:
     data = _json_object(source.content, source.path)
     client = registry.get_client(cli_name)
-    data["working_dir"] = str(client.working_dir)
-    data["allowed_roots"] = [str(root) for root in client.allowed_roots]
+    # A bundled runtime default is not consent to persist that directory.
+    working_dir = client.working_dir if data.get("working_dir") is not None else target
+    data["working_dir"] = str(working_dir if working_dir.is_relative_to(target) else target)
+    data["allowed_roots"] = [str(target)]
     data["command"] = shlex.join(client.executable)
     role_maps = [(data.setdefault("roles", {}), client.roles)]
     if client.native_task is not None:
@@ -312,18 +314,23 @@ def prepare_enrollment(
             raise EnrollmentError("A user manifest already occupies the override destination.")
         if not portable and (previous != source.content or info is None or _identity(info) != source.identity):
             raise EnrollmentError("Selected configuration changed before approval.")
-        data = _json_object(source.content, source.path)
-        roots = list(data.get("allowed_roots") or [str(root) for root in client.allowed_roots])
-        if not any(target == root or root in target.parents for root in client.allowed_roots):
-            roots.append(str(target))
         if portable:
-            data = _portable(registry, cli_name, source)
-            data["allowed_roots"] = [str(root) for root in client.allowed_roots]
-            if str(target) not in data["allowed_roots"]:
-                data["allowed_roots"].append(str(target))
+            data = _portable(registry, cli_name, source, target)
             content = (json.dumps(data, indent=2, ensure_ascii=False, allow_nan=False) + "\n").encode()
         else:
-            content = _replace_roots(source.content, roots, source.path)
+            content = source.content
+            data = _json_object(content, source.path)
+            if data.get("allowed_roots") is None:
+                if data.get("working_dir") is None:
+                    content = _set_manifest_field(content, "working_dir", str(target), source.path)
+                elif not client.working_dir.is_relative_to(target):
+                    raise EnrollmentError(
+                        f"Configured working_dir {str(client.working_dir)!r} lies outside the requested folder. "
+                        "Set working_dir inside that folder, or explicitly approve the configured working_dir first."
+                    )
+            if not already:
+                roots = [*(data.get("allowed_roots") or []), str(target)]
+                content = _set_manifest_field(content, "allowed_roots", roots, source.path)
         if len(content) > registry_module.MAX_CONFIG_BYTES:
             raise EnrollmentError("Updated configuration exceeds the bounded file limit.")
         registry.validate_manifest(

@@ -2164,8 +2164,10 @@ def test_released_family_runtime_components_match_reviewed_sources(private_evide
     expected = {item["path"] for item in helper["reviewed_components"]["files"] if item["path"].startswith("clink/")}
     released = {path.relative_to(ROOT).as_posix() for path in (ROOT / "clink").rglob("*.py")}
     assert released == expected
-    # PR 1: preserve the originally approved roots when a directory is replaced by a symlink.
     hardened = {
+        # First enrollment persists only the directory the operator approved.
+        "clink/allowed_roots.py": "10caa8a0e90248e66133ab153e280c39ee3d72b95be6637adf7f734acf8218e9",
+        # PR 1: preserve approved roots when a directory is replaced by a symlink.
         "clink/backend.py": "2f14b6ee10c1d71ed21fde5d0536fb991afb477e80ab75e3cafd8bdefcedb190",
         "clink/generation.py": "775a7ece5a8107d46ed32471d45c42afb69e4ef23c1d9e4e951f4b2dabcf823b",
         "clink/native.py": "33e772b9569cc9c664415e5c15011fc9a4c85ea0eb3b2065e1b4ffd731828961",
