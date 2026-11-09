@@ -43,15 +43,23 @@ print one breadth warning, including with `--yes`.
 Enrollment updates the effective whole-client winner, regardless of its filename.
 Use `--project` to reproduce an MCP server's explicit binding. Explicit sources
 remain highest priority and must be valid; a shadowed manifest cannot grant
-authority. Bundled defaults become a complete user override with absolute paths
-preserving executable, working directory and prompt meanings. Bundled files are
-never edited. Explicitly pointing at a bundled file must be replaced with an
-independent operator manifest before enrollment.
+authority. A first approval from bundled configuration creates a user override
+with exactly the named directory as its only root. That directory becomes the
+default working directory unless a configured bundled working directory already
+lies inside it. Executable and role-prompt paths retain their meanings.
 
-Already explicit approved roots and their descendants require no write or prompt.
-Implicit/bundled coverage still requires durable operator consent. Existing
-manifests retain all bytes outside the top-level `allowed_roots` value; strict
-JSON is required. Publication preserves modes, creates private new files, and
+Existing explicit grants cover their descendants. Approving another folder adds
+only its canonical path and preserves existing roots and the configured working
+directory. An operator manifest with omitted or null roots receives only the
+requested root. If its working directory is also implicit, Clink pins it to the
+approved folder so reloading from another directory works. An explicit working
+directory outside that first grant requires a choice: move the setting inside
+the requested root, or approve the existing working directory first if you
+intend to grant it. Clink reports the configuration file and writes nothing until
+the choice is resolved. Existing manifest edits preserve bytes outside these
+fields. Manifests use strict JSON.
+
+Publication preserves modes, creates private new files, and
 uses a nonblocking destination-directory lock with source, target and content
 checks. Observed races fail without retry. An error after publication says that
 the grant was saved; inspect it before retrying. Other editors do not share this
@@ -60,6 +68,26 @@ cooperative lock.
 Restart existing MCP servers after enrollment; their snapshots stay unchanged.
 Approved roots constrain project selection and supplied context. Native CLI trust
 and headless permission checks still apply independently.
+
+### Review grants created by 0.2.3
+
+Clink 0.2.3 could save the shell’s current directory along with the folder named
+in the first approval. In the effective manifest for that agent (normally
+`~/.clink/cli_clients/<agent>.json`), review both `allowed_roots` and
+`working_dir`. If your home directory or another parent was included by
+mistake, list the individual projects you intended to approve, set
+`working_dir` inside one of them, and remove the unintended parent. Restart
+MCP servers using that configuration. Existing entries carry no record of
+whether you intended to approve them, so Clink preserves them on upgrade.
+
+### Use another project with MCP
+
+From the new repository, run `clink allow "$(pwd -P)" --cli claude --project "$(pwd -P)"`
+and reconnect the MCP server. Substitute the CLI you intend to use. This edits
+the effective manifest for the bound project and keeps an existing explicit
+`working_dir`. A native task uses the `project_dir` you pass to `start`. If you
+want consultations to have a distinct default working directory in each
+repository, generate [project-local configuration](project-setup.md).
 
 ## Manifest example
 

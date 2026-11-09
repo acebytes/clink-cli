@@ -2,8 +2,8 @@
 
 from utils.env import get_env
 
-__version__ = "0.2.3"
-__updated__ = "2026-11-02"
+__version__ = "0.2.4"
+__updated__ = "2026-11-09"
 __author__ = "acebytes; derived from Beehive Innovations / Fahad Gilani"
 SOURCE_REPOSITORY = "https://github.com/BeehiveInnovations/pal-mcp-server"
 SOURCE_COMMIT = "7afc7c1cc96e23992c8f105f960132c657883bb1"

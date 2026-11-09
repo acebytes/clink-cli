@@ -46,7 +46,8 @@ They inspect the frozen original source rather than reinterpreting changed publi
 tooling as the historically reviewed source. A separate check compares every
 released `clink/**/*.py` file (49 files) against a pinned source. Three files
 (`clink/backend.py`, `clink/native.py`, and `clink/generation.py`) have release-specific
-digests for the approved-directory symlink fix in PR #1. The other 46 match the frozen
+digests for the approved-directory symlink fix in PR #1. The scoped enrollment fix
+adds a fourth pin for `clink/allowed_roots.py`. The other 45 match the frozen
 originals byte for byte. Package mirror checks compare the released resources with
 the original evidence. Changes to public
 verifier tooling and test organization are validated by the current synthetic

@@ -1,10 +1,8 @@
 # Clink CLI and MCP server
 
-Use `clink generate` to send a JSON request to an installed CLI agent from a script and read the result on stdout. To use Clink from Claude Code or another MCP client, connect `clink-mcp-server` for access to 18 tools. One Python package, `clink-cli`, installs both commands.
+Call an AI coding agent you already have installed. Use `clink generate` when a script or app needs one answer as JSON. Connect `clink-mcp-server` when you want an MCP client such as Claude Code to ask a second agent for advice or delegate a task. The `clink-cli` Python package installs both commands.
 
-Consultations return advice and proposed code. Explicit native tasks can edit files, run tests, and use the selected agent’s configured tools and permissions.
-
-Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-server), formerly Zen MCP. **Copyright 2025 Beehive Innovations.** Retains upstream attribution and the [Apache 2.0 license](https://github.com/acebytes/clink-cli/blob/main/LICENSE).
+Clink builds on the original CLI bridge and multi-model workflows in Beehive Innovations’ [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-server), formerly Zen MCP. **Copyright 2025 Beehive Innovations.** Clink retains the upstream attribution and [Apache 2.0 license](https://github.com/acebytes/clink-cli/blob/main/LICENSE).
 
 ## Install with uv
 
@@ -12,209 +10,163 @@ Derived from [PAL MCP Server](https://github.com/BeehiveInnovations/pal-mcp-serv
 uv tool install clink-cli
 ```
 
-This installs both `clink` and `clink-mcp-server` from [PyPI](https://pypi.org/project/clink-cli/). If you installed the v0.2.0 GitHub wheel with uv, run `uv tool uninstall clink-mcp-server` first to free the command names.
+**Check your agent build first.** Clink needs Python 3.10+ (tested on 3.12). Local tools such as `version` and `listmodels` work without a CLI login. Calling an agent requires an exact, verified Apple Silicon macOS executable for the operation you choose. A newer version, another build with the same version number, or an Intel/Linux binary can install successfully and still be refused. Sign in through the agent’s own CLI. See the [pinned downloads and fingerprints](https://github.com/acebytes/clink-cli/blob/main/docs/pinned-cli-builds.md).
+
+If uv already manages the v0.2.0 GitHub wheel under the old package name, run `uv tool uninstall clink-mcp-server` before installing `clink-cli`. Start with the [Clink documentation](https://clinkcli.org/). For a wheel, source checkout, or another MCP client, see [project setup](https://github.com/acebytes/clink-cli/blob/main/docs/project-setup.md).
+
+## Programmatic generation
+
+[Prompter](https://prompterapp.org/) bundles Clink in its macOS app. When a user chooses Prompt Improve, the app sends the draft and displays the selected CLI’s rewrite. Here is how to make the same kind of call from a script.
+
+**1. Check Claude Code.** With `claude` on your path, run this on your Mac:
+
+```sh
+clink generation-capabilities --json --cli claude --executable "$(realpath "$(command -v claude)")"
+```
+
+Look for `"status": "compatible"` in `preflight`. This checks the executable without launching it or testing login. To see the supported families without requesting an individual check, run `clink generation-capabilities --json`.
+
+**2. Approve the project.** In a project you want Claude to use, run:
+
+```sh
+clink allow "$(pwd -P)" --cli claude
+```
+
+Read the path and answer the default-No question. For an unattended script, explicitly approve that same directory with `--yes`. Version 0.2.4 grants only the folder you approve. If you first approved a project with 0.2.3, that release could also save the directory where you ran the command. If you ran it from home, [check your existing permissions](https://github.com/acebytes/clink-cli/blob/main/docs/cli-configuration.md#review-grants-created-by-023).
+
+**3. Make one request.** Save the following as `rewrite.py` and run `python3 rewrite.py` from the approved project. Use a full model ID your Claude account can access. Clink passes the project and instructions to the CLI under its native permissions.
+
+```python
+import json
+import subprocess
+from pathlib import Path
+from uuid import uuid4
+
+request = {
+    "schema_version": 3,
+    "request_id": str(uuid4()),
+    "cli": "claude",
+    "execution_mode": "native",
+    "project_dir": str(Path.cwd().resolve()),
+    "model_selection": {"kind": "explicit", "id": "claude-opus-5-5"},
+    "instructions": "Rewrite the input as one clear question. Return only the question.",
+    "input": "cache here good idea? what might go wrong",
+    "timeout_seconds": 120,
+}
+attempt = subprocess.run(
+    ["clink", "generate", "--request-json", "-"],
+    input=json.dumps(request), stdout=subprocess.PIPE, text=True, check=False,
+)
+result = json.loads(attempt.stdout)
+if attempt.returncode or result["status"] != "completed":
+    raise SystemExit(result["error"] or result["status"])
+if result["request_id"] != request["request_id"]:
+    raise SystemExit("Clink returned a result for a different request")
+print(result["output"])
+```
+
+**4. Read the result.** The CLI reads one JSON object through end-of-input and writes one terminal JSON object to stdout. For example, this excerpt shows the fields a caller reads from a successful **offline test** with a synthetic agent:
+
+```json
+{"status": "completed", "output": "final answer", "truncated": false, "error": null}
+```
+
+The full response includes the request ID, request and input hashes, execution details, and warnings. `execution.actual_model` can be null. A completed response confirms that the agent returned final text. Verify the work separately if the agent was asked to perform an action. See the [native generation contract](https://github.com/acebytes/clink-cli/blob/main/docs/generation-native-protocol.md) and [schema 3 model selection](https://github.com/acebytes/clink-cli/blob/main/docs/generation-native-families.md).
+
+| Exit | What the caller should do |
+| --- | --- |
+| 0 | Read the completed output. |
+| 1 | Inspect `error.code` and `error.message` for a configuration, policy, login or execution failure. |
+| 2 | Correct the invocation or invalid/oversized request. |
+| 3 | Treat the returned prefix as incomplete. Some families reject oversized output with exit 1 instead. |
+| 124 / 130 | The attempt timed out / was cancelled. Check for side effects before deciding whether to retry. |
 
 ## Connect to Claude Code
 
-From the project directory where you use Claude Code, run:
+From the repository where you use Claude Code, register Clink and check the connection:
 
 ```sh
-claude mcp add --scope local --transport stdio clink -- "$(uv tool dir --bin)/clink-mcp-server" --project "$PWD"
+project="$(pwd -P)"
+claude mcp add --scope local --transport stdio clink -- "$(uv tool dir --bin)/clink-mcp-server" --project "$project"
 claude mcp get clink
 ```
 
-Look for **Connected**. Local scope keeps the registration private to you in this project, and `--project "$PWD"` tells Clink which workspace to use. Open Claude Code in the same directory and run `/mcp` to see `clink`. To check the connection without calling a model, ask Claude to use Clink’s `version` tool.
+Open Claude Code in that directory. Use `/mcp` to confirm that Clink is connected, then ask it to call Clink’s `version` or `listmodels` tool. Neither makes a model call.
 
-## Supported operations
-
-Admission is specific to an operation, executable, launch recipe, and parser. Support in one column does not enable another.
-
-| CLI | Consultation | Native MCP tasks | Programmatic generation |
-| --- | --- | --- | --- |
-| Codex 0.166.0 | Admitted for text, explicit local images, and structured search. | Disabled: supported output omits a genuine prelaunch permission refusal. | Admitted; schema 2 or 3 with an explicit model. |
-| Claude Code 2.1.304 | Unavailable under the advisory policy. | Admitted. | Admitted; schema 2 or 3 with an explicit full model ID. |
-| xAI Grok Build 1.0.70 (`grok`) | Unverified. | Admitted. | Admitted; schema 3 with `native_default` selection. |
-| Antigravity 1.4.12 (`agy`) | Unverified. | Admitted. | Implemented but unverified; execution is refused. |
-| Gemini | Unverified. | Not implemented. | Not implemented. |
-
-The recorded admissions cover exact macOS arm64 binaries. Other builds, operating systems, versions, or changed recipes require verification and fail closed. An installed executable or successful login alone is insufficient. Grok reported `grok-4.7-build` in the recorded successful generation text/action checks. Antigravity's native-task actual model remains unknown; its native-task admission does not admit generation. See [release evidence and limits](https://github.com/acebytes/clink-cli/blob/main/docs/release-evidence.md).
-
-Python 3.10+ is required; Python 3.12 is the tested runtime. Process supervision targets POSIX systems. Local discovery and offline tests can run without CLI credentials. Native Windows delegation is unavailable; the [container](https://github.com/acebytes/clink-cli/blob/main/docker/README.md) supports local tools without installing CLI agents.
-
-## Install and connect
-
-### Install from a wheel or source checkout
-
-For a standalone wheel installation, replace the wheel path and choose a persistent environment outside the source tree:
+**To run a native task in this repository**, approve it for the agent that will do the work. Run this in the same directory, then reconnect Clink or restart the MCP client:
 
 ```sh
-python3 -m venv /absolute/path/to/clink-runtime
-/absolute/path/to/clink-runtime/bin/python -m pip install /absolute/path/to/clink_cli-0.2.3-py3-none-any.whl
-/absolute/path/to/clink-runtime/bin/python -m clink.setup --project /absolute/path/to/your-project
+clink allow "$(pwd -P)" --cli claude --project "$(pwd -P)"
 ```
 
-The installed package contains its manifests, prompts, and admission resources. It does not need the original checkout at runtime. To register its console entrypoint directly in an MCP client, use:
+This also works when a script has already approved a different folder for Claude. `--project` selects the configuration the server loads. An existing list of approved folders still applies. The native task below uses its explicit `project_dir`. For a separate consultation working directory in each repository, use a [project-local manifest](https://github.com/acebytes/clink-cli/blob/main/docs/project-setup.md), which takes precedence over the user manifest for MCP. Script generation reads its own user or application configuration. See [configuration precedence](https://github.com/acebytes/clink-cli/blob/main/docs/cli-configuration.md).
+
+For advice, pass these arguments to the `clink` MCP tool:
 
 ```json
-{
-  "mcpServers": {
-    "clink": {
-      "command": "/absolute/path/to/clink-runtime/bin/clink-mcp-server",
-      "args": ["--project", "/absolute/path/to/your-project"]
-    }
-  }
-}
+{"cli_name":"codex","prompt":"Review this proposed cache policy: cache successful responses for 60 seconds. What edge case should I test first?"}
 ```
 
-Alternatively, from the reviewed 0.2.3 source tree:
-
-```sh
-cd /absolute/path/to/clink-cli
-./run-server.sh --setup
-```
-
-This explicitly creates `.venv`, installs runtime requirements, and exits. Ordinary startup installs nothing. The launcher does not create `.env`, copy credentials, change native CLI configuration, or register MCP clients. Optional server settings are documented in [.env.example](https://github.com/acebytes/clink-cli/blob/main/.env.example). To build a wheel from this tree, install the development requirements and run `.venv/bin/python -m build`; the wheel is written under `dist/`.
-
-Configure an existing project from that source installation:
-
-```sh
-.venv/bin/python -m clink.setup --project /absolute/path/to/your-project
-```
-
-Setup creates project-local `.clink/cli_clients/` manifests, `.clink/prompts/`, and `.mcp.json`. It makes no model calls and preserves custom files by reporting conflicts. The generated MCP registration binds a server explicitly to that project. Reconnect your MCP client, then call `version` and `listmodels` with empty arguments. These calls need no native CLI login.
-
-Claude Code users can load the checkout-local setup plugin:
-
-```sh
-cd /absolute/path/to/your-project
-claude --plugin-dir /absolute/path/to/clink-cli/integrations/claude
-```
-
-Then run `/clink:setup`. This command is available only when that local plugin is loaded; MCP registration alone does not install it. See the [project setup guide](https://github.com/acebytes/clink-cli/blob/main/docs/project-setup.md) for selected clients, configuration precedence, conflicts, and recovery.
-
-For another MCP client, adapt this stdio registration to its configuration format:
-
-```json
-{
-  "mcpServers": {
-    "clink": {
-      "command": "/absolute/path/to/clink-cli/run-server.sh",
-      "args": ["--project", "/absolute/path/to/your-project"]
-    }
-  }
-}
-```
-
-Authenticate the chosen CLI through its own login mechanism before an admitted model call. Ensure the MCP client's `PATH` can find it, or configure its executable path in a manifest. The server does not require hosted-provider API keys. See [getting started](https://github.com/acebytes/clink-cli/blob/main/docs/getting-started.md), [CLI configuration](https://github.com/acebytes/clink-cli/blob/main/docs/cli-configuration.md), and [migration from PAL](https://github.com/acebytes/clink-cli/blob/main/docs/migration.md).
-
-## Consult or delegate
-
-Omitting `action` selects consultation with `codex` and the `default` role. The following is a `clink` MCP tool argument, not a shell command:
-
-```json
-{"prompt":"Review this proposed change and return suggested improvements.","cli_name":"codex"}
-```
-
-For native work, select an admitted CLI and a project inside its configured roots:
+For a native task, use an approved absolute project path:
 
 ```json
 {
   "action": "start",
   "cli_name": "claude",
   "project_dir": "/absolute/path/to/your-project",
-  "prompt": "Fix the failing test, run the relevant checks, and report changed files and unfinished work.",
-  "request_key": "fix-test-1",
+  "prompt": "Find the cache invalidation tests and report the file paths.",
+  "request_key": "find-cache-tests-1",
   "timeout_seconds": 180
 }
 ```
 
-Save the returned `task_handle`. Poll, follow up when `followup_available` is true, or cancel:
+Keep the returned `task_handle` and pass it to `{"action":"status","task_handle":"<returned handle>"}`. A native task also supports `followup` when offered, and `cancel`. Handles live in server memory and expire on restart. See the [native task guide](https://github.com/acebytes/clink-cli/blob/main/docs/native-cli-tasks.md).
 
-```json
-{"action":"status","task_handle":"<returned task_handle>"}
-```
+## Supported operations
 
-```json
-{"action":"followup","task_handle":"<returned task_handle>","prompt":"Check one edge case and report the result.","request_key":"fix-test-followup-1"}
-```
+A **consultation** returns advice. An **MCP native task** starts a CLI agent you can poll or follow up with. **Generation** returns one result to a script with no automatic retry or fallback. Each “Yes” below means Clink verified a specific executable and launch configuration for that operation. The [verification record](https://github.com/acebytes/clink-cli/blob/main/docs/release-evidence.md) calls this *admission*.
 
-```json
-{"action":"cancel","task_handle":"<returned task_handle>"}
-```
+| Agent and verified build | Consult | MCP native task | Generate |
+| --- | --- | --- | --- |
+| Codex 0.166.0 | Yes, including explicit images and structured search | No | Yes, explicit model |
+| Claude Code 2.1.304 (`claude`) | No | Yes | Yes, explicit full model ID |
+| xAI Grok Build 1.0.70 (`grok`) | No | Yes | Yes, native default |
+| Antigravity 1.4.12 (`agy`) | No | Yes | No |
+| Gemini CLI | No | No | No |
 
-A follow-up resumes the private native session with a new attempt; native handles are separate from consultation `continuation_id` values. Identical submissions with the same request key are deduplicated while retained. Changed input with that key returns `request_key_conflict`. Handles, session mapping, and deduplication are volatile and are lost on restart. See [native task usage](https://github.com/acebytes/clink-cli/blob/main/docs/native-cli-tasks.md) for states, bounds, and ownership rules.
-
-## Programmatic generation
-
-[Prompter](https://prompterapp.org/) bundles Clink in its macOS app. Its Prompt Improve action calls `clink generate` with the user’s draft and displays the selected CLI agent’s rewrite in the command palette.
-
-The examples below use the source installation's `.venv/bin`. For a standalone wheel, use `/absolute/path/to/clink-runtime/bin` instead. Install the checkout's console commands locally if needed:
-
-```sh
-.venv/bin/python -m pip install -e .
-.venv/bin/clink generation-capabilities --json
-```
-
-Capabilities discovery is read-only: it does not launch a CLI, authenticate, or grant execution authority. It reports schemas 2 and 3 with operation-specific admission. Optional `--cli NAME --executable /absolute/path/to/executable` checks one local executable's identity without running it. Launch admission is checked again before execution.
-
-Approve an existing project folder independently of MCP project setup:
-
-```sh
-.venv/bin/clink allow /absolute/path/to/your-project --cli grok
-```
-
-The command shows the resolved path and asks a default-No question; `--yes` explicitly preapproves it for scripts. It saves an `allowed_roots` entry in operator configuration and preserves existing settings. This does not grant native CLI trust or permissions. Generation does not discover project manifests from request paths.
-
-Schema 3 example `request.json`, using an existing canonical project path:
-
-```json
-{
-  "schema_version": 3,
-  "request_id": "66f96fc9-969d-4c0e-ab92-e355fa0e7588",
-  "execution_mode": "native",
-  "project_dir": "/absolute/path/to/your-project",
-  "cli": "grok",
-  "model_selection": {"kind": "native_default"},
-  "instructions": "Rewrite the supplied text for clarity. Return only the revision.",
-  "input": "Explain the tradeoffs of a cache for this application.",
-  "timeout_seconds": 120
-}
-```
-
-```sh
-.venv/bin/clink generate --request-json - < request.json
-```
-
-Generation reads one JSON request followed by EOF and writes one terminal JSON result. Schema 3 uses `model_selection`: Codex and Claude require `{"kind":"explicit","id":"<native model ID>"}`; Grok and Antigravity accept only `{"kind":"native_default"}`. Antigravity still refuses execution because its generation admission is unverified. Schema 2 preserves Codex/Claude's explicit `model` field. The older no-tools schema 1 profile remains refused.
-
-Each accepted request makes at most one top-level CLI invocation, with no wrapper retry, resume, or fallback. Only `status: "completed"` with exit `0` is ordinary success; validate the result's request identity and hashes before using its text. Completion validates final-response transport, not fulfillment. Requested/effective model selection is distinct from CLI-reported actual identity, which remains `null` when unreported. See [generation setup](https://github.com/acebytes/clink-cli/blob/main/docs/generation-native-setup.md), [schema 2 protocol](https://github.com/acebytes/clink-cli/blob/main/docs/generation-native-protocol.md), and [schema 3 and family discovery](https://github.com/acebytes/clink-cli/blob/main/docs/generation-native-families.md).
+Native tasks and generation can edit files, run tools, and call external services within the CLI’s own permissions. Approved folders control which project and supplied paths Clink accepts. They do not confine everything the native CLI can access. Cancellation does not undo completed actions.
 
 ## Tools and configuration
 
-All 18 tools are enabled unless listed in `DISABLED_TOOLS`; `version` and `listmodels` remain available.
+All 18 MCP tools are available by default. `DISABLED_TOOLS` can hide optional tools. `version` and `listmodels` remain available.
 
 | Tools | Purpose |
 | --- | --- |
-| `chat`, `clink` | Advisory consultations; `clink` also provides explicit native tasks. |
-| `thinkdeep`, `codereview`, `precommit`, `debug`, `secaudit`, `analyze`, `refactor`, `testgen` | Caller-driven investigation with final expert-call conditions. |
-| `consensus` | Independent consultations for caller synthesis, sequential by default with explicit parallel mode. |
-| `apilookup` | Verified native search with structured sources. |
-| `planner`, `docgen`, `tracer`, `challenge` | Local workflow guidance. |
-| `listmodels`, `version` | Local configuration discovery and provenance. |
+| `chat`, `clink` | Consult an agent. `clink` also runs native tasks. |
+| `thinkdeep`, `codereview`, `precommit`, `debug`, `secaudit`, `analyze`, `refactor`, `testgen` | Investigate in caller-driven steps, with an optional final expert consultation. |
+| `consensus`, `apilookup` | Gather independent opinions, or look up API documentation with structured sources. |
+| `planner`, `docgen`, `tracer`, `challenge` | Local planning, documentation, tracing and reasoning workflows. |
+| `listmodels`, `version` | Inspect the configured agents, supported operations and server version. |
 
-Manifest precedence is bundled defaults → legacy `~/.pal/cli_clients/` → user `~/.clink/cli_clients/` → explicitly bound project `.clink/cli_clients/` → `CLI_CLIENTS_CONFIG_PATH`. Each later manifest replaces the entire named client. Consultation and native task model defaults are separate; generation has its own request and admission contracts. See [CLI configuration](https://github.com/acebytes/clink-cli/blob/main/docs/cli-configuration.md).
+## Coming from PAL MCP
 
-**Risk & Mitigation:** Native execution can change files or external systems before failure or cancellation. Approved roots constrain project selection and supplied context, not all native authority. Cancellation does not roll back effects or guarantee detached/remote work stopped. Inspect actual changes and independently run checks before accepting work. Clink preserves native permission controls and provides no approval bypass or relay. See [security policy](https://github.com/acebytes/clink-cli/blob/main/SECURITY.md).
+PAL introduced the `clink` tool alongside its provider-backed workflows. This fork carries that work forward for people who want to call installed CLI agents from scripts, applications, or MCP clients. If you use PAL’s provider integrations, [PAL’s documentation](https://github.com/BeehiveInnovations/pal-mcp-server) covers that setup. See the [Clink migration guide](https://github.com/acebytes/clink-cli/blob/main/docs/migration.md) for configuration changes.
+
+## Troubleshooting
+
+| What you see | What to check |
+| --- | --- |
+| `policy_unverified` or preflight `admission_unverified` | Check both the agent build and the operation in the table above. Compare the [executable fingerprint](https://github.com/acebytes/clink-cli/blob/main/docs/pinned-cli-builds.md). |
+| `path_not_allowed` | Approve the exact folder for the selected CLI. For an MCP task, pass the server’s `--project` to `clink allow`, then reconnect. |
+| `permission_needed` | Review the requested action and the CLI’s own project trust and headless permissions. A Clink folder approval does not grant native permissions. |
+| Installed CLI appears in `listmodels`, but a call is refused | Check the status of the specific operation. Executable discovery and CLI authentication are separate checks. |
 
 ## Development
 
 ```sh
+./run-server.sh --setup
 .venv/bin/python -m pip install -r requirements-dev.txt
-.venv/bin/python -m pytest tests/ -v -m "not integration and not real_cli and not private_evidence"
-.venv/bin/python -m ruff check .
-.venv/bin/python -m black --check .
-.venv/bin/python -m isort --check-only .
-.venv/bin/python -m build
+.venv/bin/python -m pytest tests -m "not integration and not real_cli and not private_evidence"
 ```
 
-Ordinary verification uses synthetic executables and makes no live model calls. Historical live verification requires the private evidence and approval process; the public verification scripts do not submit model requests. See [release evidence](https://github.com/acebytes/clink-cli/blob/main/docs/release-evidence.md) and [changelog](https://github.com/acebytes/clink-cli/blob/main/CHANGELOG.md). Report bugs in this fork's [issue tracker](https://github.com/acebytes/clink-cli/issues), excluding secrets and private transcripts.
+See [public verification](https://github.com/acebytes/clink-cli/blob/main/docs/release-evidence.md) for the formatting, build and evidence checks. Report issues in the [Clink tracker](https://github.com/acebytes/clink-cli/issues).

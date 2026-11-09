@@ -1,6 +1,7 @@
 # Clink documentation
 
 - [Installation and first request](../README.md)
+- [Download and verify a supported Apple Silicon CLI build](pinned-cli-builds.md)
 - [Project setup and MCP registration](project-setup.md)
 - [CLI configuration, roles and allowed roots](cli-configuration.md)
 - [Native task lifecycle and permissions](native-cli-tasks.md)
