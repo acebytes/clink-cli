@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Fix first-time `clink allow` approvals that could persist the shell’s current
+  directory or another implicit root alongside the chosen folder. Existing
+  explicit entries are preserved. See [how to review an earlier grant](docs/cli-configuration.md#review-grants-created-by-023).
+- Document how to approve a second project for MCP and where to obtain the
+  exact [Apple Silicon agent builds](docs/pinned-cli-builds.md).
+
 ## 0.2.3
 
 Point package metadata, documentation, and source checkout examples to the renamed [clink-cli repository](https://github.com/acebytes/clink-cli). Both installed commands retain their names.
