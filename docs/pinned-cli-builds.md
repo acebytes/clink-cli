@@ -1,6 +1,6 @@
 # Get a supported CLI build on Apple Silicon
 
-Clink 0.2.3 checks the SHA-256 of the **executable** and the launch configuration for each operation. These are first-party downloads for the four recorded macOS arm64 builds. Each executable below was retrieved from the linked download, unpacked if necessary, and matched against Clink’s recorded fingerprint. A version label alone can identify several different binaries.
+Clink 0.2.4 checks the SHA-256 of the **executable** and the launch configuration for each operation. These are first-party downloads for the four recorded macOS arm64 builds. Each executable below was retrieved from the linked download, unpacked if necessary, and matched against Clink’s recorded fingerprint. A version label alone can identify several different binaries.
 
 | CLI | Where to get the exact build | Executable to check |
 | --- | --- | --- |

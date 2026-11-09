@@ -32,7 +32,7 @@ Look for `"status": "compatible"` in `preflight`. This checks the executable wit
 clink allow "$(pwd -P)" --cli claude
 ```
 
-Read the path and answer the default-No question. For an unattended script, explicitly approve that same directory with `--yes`. **If you use PyPI 0.2.3**, run the first approval from inside the project itself. That release can also save the folder the command was run from. If you previously ran it from home, [check your existing permissions](https://github.com/acebytes/clink-cli/blob/main/docs/cli-configuration.md#review-grants-created-by-023).
+Read the path and answer the default-No question. For an unattended script, explicitly approve that same directory with `--yes`. Version 0.2.4 grants only the folder you approve. If you first approved a project with 0.2.3, that release could also save the directory where you ran the command. If you ran it from home, [check your existing permissions](https://github.com/acebytes/clink-cli/blob/main/docs/cli-configuration.md#review-grants-created-by-023).
 
 **3. Make one request.** Save the following as `rewrite.py` and run `python3 rewrite.py` from the approved project. Use a full model ID your Claude account can access. Clink passes the project and instructions to the CLI under its native permissions.
 

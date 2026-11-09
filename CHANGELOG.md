@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.4
 
 - Fix first-time `clink allow` approvals that could persist the shell’s current
   directory or another implicit root alongside the chosen folder. Existing

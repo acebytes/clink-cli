@@ -1,6 +1,6 @@
 [project]
 name = "clink-cli"
-version = "0.2.3"
+version = "0.2.4"
 description = "Call installed CLI agents from scripts with JSON, or connect them to an MCP client"
 readme = "README.md"
 license = "Apache-2.0"
