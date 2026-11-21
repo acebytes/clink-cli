@@ -85,7 +85,7 @@ class NativeRuntime:
         return policy
 
     def describe(self) -> list[dict[str, Any]]:
-        """Report native profiles without authentication, inference, or executable probes."""
+        """Report provisional native availability without authentication, inference, or executable probes."""
         descriptions = []
         for name in self.backend.registry.list_clients():
             client = self.backend.registry.get_client(name)
@@ -105,7 +105,10 @@ class NativeRuntime:
                     "verification_status": policy.verification_status,
                     "version": policy.version,
                     "version_origin": "admission_receipt",
-                    "launch_validation": "exact executable, recipe and receipt rechecked for each attempt",
+                    "launch_validation": (
+                        "provisional; executable lookup only; exact executable, recipe and receipt rechecked "
+                        "for each attempt; authentication remains unknown"
+                    ),
                     "authentication": "unknown",
                     "roles": sorted(profile.roles),
                     "default_model": profile.default_model,

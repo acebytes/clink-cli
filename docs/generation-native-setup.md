@@ -26,7 +26,11 @@ explicit grants are preserved. If you used version 0.2.3, [review earlier
 approvals](cli-configuration.md#review-grants-created-by-023).
 Only `y` or `yes` approves; declining changes nothing and launches no backend.
 
-Native-v2 generation can ask on a separate foreground controlling terminal when
+Generation checks profile admission before directory enrollment. Unadmitted
+Antigravity generation returns its structured refusal without asking for or saving
+a folder grant. Its separate native-task admission does not enable generation.
+
+Native generation can ask on a separate foreground controlling terminal when
 stderr is a terminal and CI is absent. It reads JSON stdin through EOF first,
 reloads and validates the saved configuration, then continues the same parsed
 request once within its original deadline. Prompts and enrollment diagnostics go

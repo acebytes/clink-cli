@@ -92,6 +92,10 @@ class NativeGenerationService:
             cli, DEFAULT_AGY_NATIVE_ADMISSION if cli == "agy" else DEFAULT_GROK_NATIVE_ADMISSION
         )
 
+    def has_profile_admission(self, cli: str) -> bool:
+        """Check profile enrollment eligibility; execution still verifies all launch bindings."""
+        return self._admission_for(cli).verified
+
     @staticmethod
     def _recipe_digest(cli: str) -> str:
         if cli == "codex":

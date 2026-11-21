@@ -14,6 +14,10 @@ The Codex native adapter remains disabled: its installed `exec --json` interface
 
 All four adapters reuse `NativeTaskManager` and the shared process pool. Task handles, attempt tracking, deduplication, project/session ownership, cancellation, and retention follow the same rules below; adding an adapter does not create a separate pool or change the consultation defaults.
 
+`listmodels` reports provisional native availability: `installed` checks executable lookup, and `available` combines that lookup with profile enablement and platform admission. Discovery does not hash the installed binary or check login. Each explicit attempt still checks the exact executable, recipe, and admission receipt before launch.
+
+An admission or task-status error with `code: "policy_unverified"` includes fixed recovery guidance. It can indicate a binary, recipe, receipt, or platform admission problem. If the server's `PATH` selects another installation, including a Homebrew build, set the effective operator-owned CLI manifest's `command` to the absolute path of the exact admitted executable and restart the server. Other admission differences still require restoring the admitted combination or new verification. Inspect the configured manifest and admission record; the diagnostic does not expose local paths or private error details, and does not retry or change permissions.
+
 ## Submit and inspect work
 
 These examples use the separately admitted Claude native profile; use `cli_name: "grok"` or `cli_name: "agy"` for an admitted Grok or Antigravity installation. Replace the directory with an existing absolute path inside the configured client's `allowed_roots`.

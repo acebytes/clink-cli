@@ -287,7 +287,8 @@ async def _generate(started_at: float, fd: int, registry: ClinkRegistry | None =
             service = NativeGenerationService()
             if registry is not None:
                 service.registry = registry
-            service.registry = await prepare_native_generation(request, service.registry)
+            if service.has_profile_admission(request.cli):
+                service.registry = await prepare_native_generation(request, service.registry)
         else:
             request = parse_request(raw, started_at=started_at)
             service = GenerationService()

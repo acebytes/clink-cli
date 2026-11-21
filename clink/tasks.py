@@ -61,15 +61,24 @@ _ERROR_CODES = frozenset(
         "verification_required",
     }
 )
+_POLICY_DIAGNOSTIC = (
+    "Native task admission could not be verified for the executable, recipe, receipt, or platform.",
+    "Check the selected client's admitted version in `listmodels` (`native_task_clients`, when present) and "
+    "`docs/pinned-cli-builds.md`. If the server's PATH selects another build (including Homebrew), set `command` "
+    "in the effective operator-owned CLI manifest to the admitted binary's absolute executable path and restart "
+    "the server. For recipe, receipt, or platform differences, restore the admitted combination or obtain new "
+    "verification.",
+)
 # Admission exceptions may contain private diagnostics; publish only code-indexed text.
 _PREPARE_DIAGNOSTICS = {
+    "policy_unverified": _POLICY_DIAGNOSTIC,
     "path_not_allowed": (
         "Native project_dir and context paths must be absolute, accessible, and within the configured allowed_roots.",
         "Supply project_dir and context paths within an allowed_roots entry; inspect listmodels for the selected "
         "client's allowed_roots. To authorize another workspace, update allowed_roots in the operator-owned CLI "
         "manifest using `clink allow /absolute/workspace --cli NAME --yes` (replace NAME with the selected CLI; "
         "include `--project /bound/project` for a bound server), then restart the server.",
-    )
+    ),
 }
 # Native output is untrusted. Public metadata must not become a second raw-stream channel.
 _METADATA_KEYS = frozenset(
@@ -601,6 +610,8 @@ class NativeTaskManager:
             response["result"] = json.loads(json.dumps(result))
         if attempt.error_code is not None:
             response["error"] = {"code": attempt.error_code, "message": "Native execution did not establish success."}
+            if attempt.error_code == "policy_unverified":
+                response["error"]["message"], response["error"]["remedy"] = _POLICY_DIAGNOSTIC
         if latest:
             response["followup_available"] = record.session_id is not None and attempt.state not in _ACTIVE
         return response

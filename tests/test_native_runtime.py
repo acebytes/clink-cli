@@ -96,9 +96,16 @@ def test_native_selection_is_frozen_and_does_not_inherit_advisory_model(runtime)
 def test_prepare_and_discovery_never_launch_or_authenticate(runtime, monkeypatch):
     monkeypatch.setattr(asyncio, "create_subprocess_exec", lambda *a, **kw: pytest.fail("launched"))
     prepared(runtime)
+    monkeypatch.setattr(native, "executable_digest", lambda *a: pytest.fail("discovery hashed the executable"))
+    monkeypatch.setattr(native, "native_recipe_digest", lambda *a: pytest.fail("discovery checked the recipe"))
+    monkeypatch.setattr(runtime, "_validate_admission", lambda *a: pytest.fail("discovery checked admission"))
     result = runtime.describe()[0]
     assert result["authentication"] == "unknown"
     assert result["available"] is True
+    assert "provisional" in result["launch_validation"]
+    assert "executable lookup only" in result["launch_validation"]
+    assert "exact executable, recipe and receipt rechecked" in result["launch_validation"]
+    assert "authentication remains unknown" in result["launch_validation"]
     monkeypatch.setattr(native, "_VERIFIED_NATIVE_POLICIES", {})
     assert runtime.describe()[0]["available"] is False
     with pytest.raises(BackendError) as caught:

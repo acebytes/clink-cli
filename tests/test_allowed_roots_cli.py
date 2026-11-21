@@ -10,15 +10,21 @@ import signal
 import time
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
 import clink.cli as cli
 import clink.registry as registry_module
 import clink.setup as project_setup
-from clink.allowed_roots import EnrollmentError, allow_command, prepare_enrollment
+from clink.allowed_roots import Enrollment, EnrollmentError, allow_command, prepare_enrollment
 from clink.contracts import BackendError
+from clink.generation_contracts import sha256
+from clink.native_generation import NativeGenerationService
 from clink.native_generation_contracts import terminal_native_result
+from clink.native_generation_families import family_generation_parser_digest, family_generation_recipe_digest
+from clink.native_generation_policy import NativeGenerationAdmission
+from clink.policy import executable_digest
 from clink.registry import ClinkRegistry
 from clink.runner import ProcessOutput
 from tests.test_allowed_roots import roots as roots
@@ -185,6 +191,9 @@ async def test_generate_preserves_parsed_request_and_launches_once_only_after_sa
     class Service:
         registry = None
 
+        def has_profile_admission(self, cli_name):
+            return True
+
         async def run(self, request):
             assert registry_module.USER_CONFIG_DIR.exists()
             assert target in self.registry.get_client("codex").allowed_roots
@@ -228,6 +237,122 @@ async def test_generate_preserves_parsed_request_and_launches_once_only_after_sa
     else:
         assert result["status"] == "cancelled" and result["error"]["message"] == "Nothing was linked."
         assert not registry_module.USER_CONFIG_DIR.exists()
+
+
+async def test_unadmitted_agy_refuses_before_enrollment_with_service_identity_and_shutdown(
+    roots, terminal_input, monkeypatch, tmp_path
+):
+    _, target, data = roots
+    data.update(name="agy", adapter="agy", command="agy")
+    (registry_module.CONFIG_DIR / "arbitrary.json").write_text(json.dumps(data))
+    prepare = Mock(wraps=cli.prepare_enrollment)
+    persist = Mock(wraps=Enrollment.persist)
+    spawn = Mock(side_effect=AssertionError("Unadmitted generation must never launch a provider."))
+    service = NativeGenerationService()
+    run = AsyncMock(wraps=service.run)
+    shutdown = AsyncMock(wraps=service.shutdown)
+    monkeypatch.setattr(service, "run", run)
+    monkeypatch.setattr(service, "shutdown", shutdown)
+    monkeypatch.setattr(cli, "NativeGenerationService", lambda: service)
+    monkeypatch.setattr(cli, "prepare_enrollment", prepare)
+    monkeypatch.setattr(Enrollment, "persist", lambda plan, **kwargs: persist(plan, **kwargs))
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", spawn)
+    provide, stderr, _ = terminal_input
+    reader, _ = provide(b"yes\n")
+    payload = native_payload(target)
+    payload.update(schema_version=3, cli="agy", model_selection={"kind": "native_default"})
+    payload.pop("model")
+    body = tmp_path / "unadmitted-agy.json"
+    body.write_text(json.dumps(payload))
+    try:
+        with body.open("rb") as stream:
+            result = await cli._generate(time.monotonic(), stream.fileno())
+    finally:
+        os.close(reader)
+    assert result["error"]["code"] == "policy_unverified"
+    assert result["schema_version"] == 3 and result["request_id"] == payload["request_id"]
+    assert result["execution"]["admission"] == "unverified"
+    assert result["execution"]["recipe_sha256"] == family_generation_recipe_digest("agy")
+    assert result["execution"]["model_selection"] == {"kind": "native_default"}
+    assert result["execution"]["executable_sha256"] is None
+    assert result["execution"]["side_effects_possible"] is False
+    assert all(len(result[key]) == 64 for key in ("request_sha256", "instructions_sha256", "input_sha256"))
+    run.assert_awaited_once()
+    shutdown.assert_awaited_once()
+    assert "[y/N]" not in stderr.getvalue()
+    prepare.assert_not_called()
+    persist.assert_not_called()
+    spawn.assert_not_called()
+    assert not registry_module.USER_CONFIG_DIR.exists()
+
+
+async def test_admitted_grok_enrolls_once_then_checks_identity_and_cleans_private_prompt(
+    roots, terminal_input, monkeypatch, tmp_path
+):
+    _, target, data = roots
+    executable = tmp_path / "synthetic-grok"
+    executable.write_text("Synthetic binary identity; never executed.")
+    executable.chmod(0o700)
+    data.update(name="grok", adapter="grok", command=shlex.join([str(executable)]))
+    (registry_module.CONFIG_DIR / "arbitrary.json").write_text(json.dumps(data))
+    evidence = tmp_path / "synthetic-grok-admission.json"
+    evidence.write_text('{"synthetic":true}')
+    admission = NativeGenerationAdmission(
+        version="synthetic-only",
+        verified=True,
+        executable_sha256=executable_digest(str(executable)),
+        recipe_sha256=family_generation_recipe_digest("grok"),
+        parser_sha256=family_generation_parser_digest("grok"),
+        evidence_path=str(evidence),
+        evidence_sha256=sha256(evidence.read_bytes()),
+    )
+    launches = []
+    private_paths = []
+    destination = registry_module.USER_CONFIG_DIR / "grok.json"
+
+    class Pool:
+        async def execute(self, command, **kwargs):
+            assert destination.exists()
+            assert kwargs["cwd"] == str(target)
+            assert kwargs["content"] == b"" and "--model" not in command
+            prompt = Path(command[command.index("--prompt-file") + 1])
+            assert prompt.is_file() and b"Synthetic instructions" in prompt.read_bytes()
+            private_paths.append(prompt)
+            kwargs["prelaunch"]()
+            launches.append(command)
+            stdout = json.dumps(
+                {"text": "accepted", "sessionId": "66f96fc9-969d-4c0e-ab92-e355fa0e7588", "stopReason": "end_turn"}
+            )
+            return ProcessOutput(stdout, "", 0, len(stdout.encode()), 0, 0)
+
+        async def shutdown(self):
+            pass
+
+    service = NativeGenerationService(pool=Pool(), family_admissions={"grok": admission})
+    monkeypatch.setattr(cli, "NativeGenerationService", lambda: service)
+    provide, stderr, _ = terminal_input
+    reader, _ = provide(b"yes\n")
+    payload = native_payload(target)
+    payload.update(schema_version=3, cli="grok", model_selection={"kind": "native_default"})
+    payload.pop("model")
+    body = tmp_path / "admitted-grok.json"
+    body.write_text(json.dumps(payload))
+    try:
+        with body.open("rb") as stream:
+            result = await cli._generate(time.monotonic(), stream.fileno())
+    finally:
+        os.close(reader)
+    assert result["status"] == "completed" and result["output"] == "accepted", (result, stderr.getvalue())
+    assert result["execution"]["admission"] == "verified"
+    assert result["execution"]["executable_sha256"] == admission.executable_sha256
+    assert result["execution"]["model_selection"] == {"kind": "native_default"}
+    assert result["execution"]["side_effects_possible"] is True
+    assert stderr.getvalue().count("[y/N]") == 1
+    assert len(launches) == len(private_paths) == 1
+    assert all(not path.parent.exists() for path in private_paths)
+    client = ClinkRegistry().get_client("grok")
+    assert client.allowed_roots == (target,) and client.allowed_roots_explicit
+    assert client.configuration_scope == "user"
 
 
 async def test_terminal_deadline_and_cancellation_remove_reader_and_close_descriptor(roots, terminal_input):
@@ -386,6 +511,9 @@ async def test_parent_loss_during_saved_reload_preserves_grant_without_service_l
 
     class Service:
         registry = None
+
+        def has_profile_admission(self, cli_name):
+            return True
 
         async def run(self, request):
             launched.append(request)

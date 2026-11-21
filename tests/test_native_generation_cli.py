@@ -168,6 +168,9 @@ def test_published_duration_includes_service_shutdown(tmp_path, cli_environment)
             def __init__(self):
                 self.registry = None
 
+            def has_profile_admission(self, cli_name):
+                return True
+
             async def run(self, request):
                 clock.now = 100.25
                 return terminal_native_result(

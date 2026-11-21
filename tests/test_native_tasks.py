@@ -460,6 +460,71 @@ async def test_prepare_failure_is_redacted_without_retaining_request(runtime, co
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("phase", ["prepare", "before_launch", "after_launch"])
+async def test_unverified_policy_has_fixed_recovery_guidance_without_private_diagnostics(runtime, phase, caplog):
+    failure = BackendError(
+        "policy_unverified",
+        "private first input secret-token /private/secret-project",
+        "private remedy /private/secret-executable",
+        metadata={"receipt": "private-receipt", "version": "private-version"},
+    )
+    manager = NativeTaskManager(runtime)
+    if phase == "prepare":
+
+        def fail(*args, **kwargs):
+            raise failure
+
+        runtime.prepare = fail
+        with pytest.raises(BackendError) as caught:
+            await manager.start(start_args(runtime))
+        error = caught.value.to_dict()
+        assert not manager._records and not manager._jobs and not manager._keys
+        assert not runtime.calls
+    else:
+        runtime.failure = failure
+        runtime.start_child = phase == "after_launch"
+        first = await manager.start(start_args(runtime))
+        await settle(manager)
+        result = await manager.status(first["task_handle"])
+        assert result["state"] == ("uncertain" if runtime.start_child else "failed")
+        assert result["possible_partial_effects"] is runtime.start_child
+        assert result["execution_outcome"] == ("unknown" if runtime.start_child else "failed")
+        error = result["error"]
+        assert (await manager.status(first["task_handle"]))["error"] == error
+        assert len(runtime.calls) == 1
+    assert error["code"] == "policy_unverified"
+    assert error["message"] == (
+        "Native task admission could not be verified for the executable, recipe, receipt, or platform."
+    )
+    for guidance in (
+        "selected client's admitted version",
+        "`listmodels`",
+        "`native_task_clients`",
+        "`docs/pinned-cli-builds.md`",
+        "operator-owned CLI manifest",
+        "`command`",
+        "server's PATH",
+        "Homebrew",
+        "absolute executable path",
+        "restart the server",
+        "recipe, receipt, or platform",
+    ):
+        assert guidance in error["remedy"]
+    public = json.dumps(error) + caplog.text + repr(manager._records)
+    for private in (
+        "private first input",
+        "secret-token",
+        "private remedy",
+        "/private/secret-project",
+        "/private/secret-executable",
+        "private-receipt",
+        "private-version",
+    ):
+        assert private not in public
+    assert not manager._leases
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "changes",
     [
