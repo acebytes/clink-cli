@@ -2157,23 +2157,26 @@ def test_private_explicitly_injected_agy_admission_verifies_proposal_bytes_witho
 
 @pytest.mark.private_evidence
 def test_released_family_runtime_components_match_reviewed_sources(private_evidence_root):
-    """Pin the release security fix separately from the archived runtime it supersedes."""
+    """Compare the current shipping tree to the archive plus reviewed release changes."""
     helper = _pinned(
         private_evidence_root, f"{PROOFS}/helper-current-source-equivalence.json", GROK_HELPER_EQUIVALENCE_SHA256
     )
     expected = {item["path"] for item in helper["reviewed_components"]["files"] if item["path"].startswith("clink/")}
     released = {path.relative_to(ROOT).as_posix() for path in (ROOT / "clink").rglob("*.py")}
     assert released == expected
-    hardened = {
-        # First enrollment persists only the directory the operator approved.
+    released_changes = {
+        # Folder enrollment and approved-root symlink repairs.
         "clink/allowed_roots.py": "10caa8a0e90248e66133ab153e280c39ee3d72b95be6637adf7f734acf8218e9",
-        # PR 1: preserve approved roots when a directory is replaced by a symlink.
         "clink/backend.py": "2f14b6ee10c1d71ed21fde5d0536fb991afb477e80ab75e3cafd8bdefcedb190",
         "clink/generation.py": "775a7ece5a8107d46ed32471d45c42afb69e4ef23c1d9e4e951f4b2dabcf823b",
-        "clink/native.py": "33e772b9569cc9c664415e5c15011fc9a4c85ea0eb3b2065e1b4ffd731828961",
+        # Native task availability/recovery and pre-enrollment generation admission.
+        "clink/native.py": "b49adb4dada0ac1c3dbf0117df6587cd90ecd8b1d60c0f68a8abd7ebe07c0277",
+        "clink/cli.py": "2e6d10326e7d49e94c80a9e378035c6377c42edb44558bf9173864bf0f0b156b",
+        "clink/native_generation.py": "53be95632773eb0ab952a4195131e619d17afc71e22ef5cb0faffa30387d8281",
+        "clink/tasks.py": "bd5d97847c1798144de75794dff61f4345208054a27ca09e095db27c259b8dae",
     }
-    assert hardened.keys() <= released
+    assert released_changes.keys() <= released
     for filename in sorted(released):
         original = (private_evidence_root / filename).read_bytes()
-        expected_digest = hardened.get(filename, sha256(original))
+        expected_digest = released_changes.get(filename, sha256(original))
         assert sha256((ROOT / filename).read_bytes()) == expected_digest, filename
